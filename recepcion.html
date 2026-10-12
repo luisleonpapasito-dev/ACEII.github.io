@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recepción</title>
+<link rel="stylesheet" href="estilos.css">
+<script src="comun.js"></script>
+</head>
+<body>
+
+<div id="estado">Cargando...</div>
+
+<div class="caja">
+  <a href="index.html">← Menú</a>
+  <label>Proveedor</label>
+  <select id="proveedor"></select>
+  <label>Recibido por</label>
+  <select id="recibido"></select>
+  <label>¿Trae factura?</label>
+  <select id="factura"><option value="Sí">Sí</option><option value="No">No</option></select>
+</div>
+
+<div class="caja">
+  <label>Producto</label>
+  <input type="text" id="buscar" placeholder="Escribe parte del nombre o del ID">
+  <label><input type="checkbox" id="soloProv"> Solo productos de este proveedor</label>
+  <select id="lista" size="6"></select>
+  <div id="elegido">Ningún producto elegido</div>
+
+  <div id="panel" style="display:none">
+    <div class="fila">
+      <button id="btnUnd" class="tog on">Unidades</button>
+      <button id="btnPaq" class="tog">Paquetes</button>
+    </div>
+    <label>Cantidad</label>
+    <input type="number" id="cantidad" min="1" step="1" value="1" inputmode="numeric">
+    <div id="bloquePaq" style="display:none">
+      <label>Unidades por paquete (verifícalo)</label>
+      <input type="number" id="upp" min="1" step="1" inputmode="numeric">
+      <label id="lblRecordar" style="display:none"><input type="checkbox" id="recordar" checked> Recordar este tamaño para este producto</label>
+    </div>
+    <div id="total">Total: —</div>
+    <button class="main" id="btnAgregar">Agregar a la lista</button>
+  </div>
+</div>
+
+<div class="caja">
+  <label>Lista de esta recepción</label>
+  <div id="listaItems">(vacía)</div>
+  <label>Observaciones (opcional)</label>
+  <input type="text" id="obs" maxlength="300">
+  <button class="main" id="btnConfirmar" disabled>Confirmar recepción</button>
+  <div id="pend"></div>
+</div>
+
+<script>
+exigirSesion();
+
+const COLA_KEY = 'caf_cola_recepciones';
+const BORRADOR_KEY = 'caf_borrador_recepcion';
+let productos = [];
+let elegido = null;
+let modoUnidad = 'Unidades';
+let carrito = [];
+let cola = [];
+let enviando = false;
+
+function idRecepcion() {
+  const d = new Date();
+  const p = function (n) { return ('0' + n).slice(-2); };
+  return 'REC-' + String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate()) +
+    '-' + p(d.getHours()) + p(d.getMinutes()) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+}
+
+function llenarSelect(sel, items, vacio) {
+  sel.innerHTML = '';
+  sel.appendChild(new Option(vacio, ''));
+  items.forEach(function (it) { sel.appendChild(new Option(it.t, it.v)); });
+}
+
+// ---------- Cola de envío (sobrevive a cortes de internet) ----------
+function leerCola() {
+  try {
+    const a = JSON.parse(localStorage.getItem(COLA_KEY) || '[]');
+    return Array.isArray(a) ? a : [];
+  } catch (e) { return []; }
+}
+function pintarPend() {
+  $('pend').textContent = cola.length ? 'Pendientes de enviar: ' + cola.length : '';
+}
+function guardarCola() {
+  try { localStorage.setItem(COLA_KEY, JSON.stringify(cola)); } catch (e) {}
+  pintarPend();
+}
+
+async function procesarCola() {
+  if (enviando || !cola.length) return;
+  enviando = true;
+  try {
+    while (cola.length) {
+      let r = null;
+      try { r = await post(Object.assign({ accion: 'recepcion' }, cola[0])); } catch (err) { r = null; }
+      if (!r) {
+        mostrar('Sin conexión · ' + cola.length + ' recepción(es) pendiente(s). Se reintenta sola.', 'aviso');
+        setTimeout(procesarCola, 5000);
+        return;
+      }
+      if (r.error === 'Token inválido') { borrarToken(); location.href = 'index.html'; return; }
+      if (r.ok) {
+        cola.shift();
+        guardarCola();
+        mostrar('Recepción ' + r.id + ' guardada ✓' + (r.repetido ? ' (ya estaba registrada)' : ' · ' + r.lineas + ' línea(s), ' + r.unidades + ' unidades'), 'ok');
+        if (navigator.vibrate) navigator.vibrate(200);
+      } else if (r.bloqueo) {
+        cola.shift();
+        guardarCola();
+        mostrar('Recepción rechazada: ' + r.error, 'error');
+      } else {
+        mostrar('Error del servidor: ' + (r.error || 'desconocido') + ' · se reintenta', 'aviso');
+        setTimeout(procesarCola, 5000);
+        return;
+      }
+    }
+  } finally {
+    enviando = false;
+  }
+}
+
+// ---------- Borrador (si se recarga la página no se pierde la lista) ----------
+function validar() {
+  $('btnConfirmar').disabled = !(carrito.length && $('proveedor').value && $('recibido').value);
+}
+function guardarBorrador() {
+  try {
+    localStorage.setItem(BORRADOR_KEY, JSON.stringify({
+      carrito: carrito,
+      proveedor: $('proveedor').value,
+      recibido: $('recibido').value,
+      factura: $('factura').value,
+      obs: $('obs').value
+    }));
+  } catch (e) {}
+  validar();
+}
+function restaurarBorrador() {
+  try {
+    const b = JSON.parse(localStorage.getItem(BORRADOR_KEY) || 'null');
+    if (!b) return;
+    carrito = Array.isArray(b.carrito) ? b.carrito : [];
+    $('proveedor').value = b.proveedor || '';
+    $('recibido').value = b.recibido || '';
+    $('factura').value = b.factura || 'Sí';
+    $('obs').value = b.obs || '';
+  } catch (e) {}
+}
+
+// ---------- Carga de datos ----------
+async function cargarDatos() {
+  mostrar('Cargando datos...', 'aviso');
+  try {
+    const r = await Promise.all([
+      jsonp({ accion: 'productos' }, 20000),
+      jsonp({ accion: 'proveedores' }, 20000),
+      jsonp({ accion: 'usuarios' }, 20000)
+    ]);
+    if (r.some(function (x) { return x && x.error === 'Token inválido'; })) {
+      borrarToken();
+      location.href = 'index.html';
+      return;
+    }
+    const mala = r.find(function (x) { return !x || !x.ok; });
+    if (mala) throw new Error(mala && mala.error ? mala.error : 'respuesta vacía');
+    productos = r[0].items.filter(function (p) { return norm(p.modo) !== 'servicio'; });
+    llenarSelect($('proveedor'), r[1].items.map(function (n) { return { v: n, t: n }; }), 'Elige el proveedor...');
+    llenarSelect($('recibido'), r[2].items.map(function (u) { return { v: u.nombre, t: u.nombre }; }), 'Elige quién recibe...');
+    restaurarBorrador();
+    pintarLista();
+    pintarCarrito();
+    mostrar('Elige un producto para agregarlo a la lista');
+  } catch (err) {
+    mostrar('No se pudieron cargar los datos: ' + err.message, 'error');
+  }
+}
+
+// ---------- Selección del producto ----------
+function pintarLista() {
+  const q = norm($('buscar').value);
+  const prov = $('proveedor').value;
+  const soloProv = $('soloProv').checked && prov;
+  const sel = $('lista');
+  sel.innerHTML = '';
+  let n = 0;
+  productos.forEach(function (p) {
+    if (soloProv && p.proveedor !== prov) return;
+    if (q && norm(p.id + ' ' + p.nombre).indexOf(q) < 0) return;
+    n++;
+    sel.appendChild(new Option(p.id + ' · ' + p.nombre, p.id));
+  });
+  if (!n) sel.appendChild(new Option('(sin resultados)', ''));
+  if (elegido) sel.value = elegido.id;
+}
+
+function leerNum(id) {
+  const n = Number($(id).value);
+  return (n > 0 && Math.floor(n) === n) ? n : 0;
+}
+
+function recalcular() {
+  const c = leerNum('cantidad');
+  const esPaq = modoUnidad === 'Paquetes';
+  const u = esPaq ? leerNum('upp') : 1;
+  $('total').textContent = (c && u) ? 'Total: ' + (c * u) + ' unidades' : 'Total: —';
+  $('lblRecordar').style.display = (esPaq && elegido && u && u !== elegido.upp) ? 'block' : 'none';
+}
+
+function fijarModo(m) {
+  modoUnidad = m;
+  $('btnUnd').className = 'tog' + (m === 'Unidades' ? ' on' : '');
+  $('btnPaq').className = 'tog' + (m === 'Paquetes' ? ' on' : '');
+  $('bloquePaq').style.display = (m === 'Paquetes') ? 'block' : 'none';
+  recalcular();
+}
+
+function pintarPanel() {
+  $('panel').style.display = elegido ? 'block' : 'none';
+  $('elegido').textContent = elegido ? 'Elegido: ' + elegido.id + ' · ' + elegido.nombre : 'Ningún producto elegido';
+  if (!elegido) return;
+  $('cantidad').value = 1;
+  $('upp').value = elegido.upp > 0 ? elegido.upp : '';
+  $('recordar').checked = true;
+  fijarModo('Unidades');
+}
+
+$('lista').addEventListener('change', function () {
+  elegido = productos.find(function (p) { return p.id === $('lista').value; }) || null;
+  pintarPanel();
+});
+$('buscar').addEventListener('input', pintarLista);
+$('soloProv').addEventListener('change', pintarLista);
+$('btnUnd').addEventListener('click', function () { fijarModo('Unidades'); });
+$('btnPaq').addEventListener('click', function () { fijarModo('Paquetes'); });
+$('cantidad').addEventListener('input', recalcular);
+$('upp').addEventListener('input', recalcular);
+
+$('proveedor').addEventListener('change', function () { pintarLista(); guardarBorrador(); });
+$('recibido').addEventListener('change', guardarBorrador);
+$('factura').addEventListener('change', guardarBorrador);
+$('obs').addEventListener('input', guardarBorrador);
+
+// ---------- Lista de la recepción ----------
+$('btnAgregar').addEventListener('click', function () {
+  if (!elegido) return;
+  const c = leerNum('cantidad');
+  const esPaq = modoUnidad === 'Paquetes';
+  const u = esPaq ? leerNum('upp') : 1;
+  if (!c) { mostrar('Escribe una cantidad entera mayor que 0', 'error'); return; }
+  if (!u) { mostrar('Escribe cuántas unidades trae cada paquete', 'error'); return; }
+  carrito.push({
+    id: elegido.id,
+    nombre: elegido.nombre,
+    cantidad: c,
+    unidad: modoUnidad,
+    upp: u,
+    recordar: esPaq && u !== elegido.upp && $('recordar').checked
+  });
+  mostrar('Agregado: ' + elegido.nombre, 'ok');
+  elegido = null;
+  $('lista').value = '';
+  pintarPanel();
+  pintarCarrito();
+  guardarBorrador();
+});
+
+function pintarCarrito() {
+  const cont = $('listaItems');
+  if (!carrito.length) {
+    cont.textContent = '(vacía)';
+  } else {
+    cont.innerHTML = '';
+    carrito.forEach(function (it, i) {
+      const d = document.createElement('div');
+      d.className = 'linea';
+      const t = document.createElement('span');
+      t.textContent = it.nombre + ' — ' + (it.unidad === 'Paquetes'
+        ? it.cantidad + ' paq × ' + it.upp + ' = ' + (it.cantidad * it.upp) + ' und'
+        : it.cantidad + ' und');
+      const b = document.createElement('button');
+      b.textContent = '✕';
+      b.addEventListener('click', function () { carrito.splice(i, 1); pintarCarrito(); guardarBorrador(); });
+      d.appendChild(t);
+      d.appendChild(b);
+      cont.appendChild(d);
+    });
+  }
+  validar();
+}
+
+$('btnConfirmar').addEventListener('click', function () {
+  cola.push({
+    id: idRecepcion(),
+    ts: Date.now(),
+    proveedor: $('proveedor').value,
+    recibido_por: $('recibido').value,
+    con_factura: $('factura').value,
+    observaciones: $('obs').value.trim(),
+    lineas: carrito.map(function (it) {
+      return { id_producto: it.id, cantidad: it.cantidad, unidad: it.unidad, upp: it.upp, recordar: it.recordar };
+    })
+  });
+  guardarCola();
+  carrito = [];
+  $('obs').value = '';
+  pintarCarrito();
+  guardarBorrador();
+  mostrar('Recepción guardada en el celular · enviando...', 'aviso');
+  procesarCola();
+});
+
+window.addEventListener('online', procesarCola);
+cola = leerCola();
+pintarPend();
+cargarDatos().then(procesarCola);
+</script>
+</body>
+</html>

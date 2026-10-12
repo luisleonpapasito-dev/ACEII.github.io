@@ -1,0 +1,22 @@
+body { font-family: Arial, sans-serif; margin: 0; padding: 0 12px 24px; background: #111; color: #fff; }
+.caja { max-width: 480px; margin: 8px auto; background: #1e1e1e; border-radius: 10px; padding: 10px; box-sizing: border-box; }
+#estado { max-width: 480px; margin: 8px auto; padding: 12px; border-radius: 12px; background: #333; font-weight: bold; text-align: center; word-break: break-word; position: sticky; top: 0; z-index: 5; box-sizing: border-box; }
+#estado.ok { background: #1b8a3a; }
+#estado.error { background: #c62828; }
+#estado.aviso { background: #e65100; }
+input[type=text], input[type=password], input[type=number], select { width: 100%; padding: 10px; margin: 4px 0; border-radius: 8px; background: #333; color: #fff; border: 1px solid #555; font-size: 16px; box-sizing: border-box; }
+button { padding: 12px 16px; border: none; border-radius: 8px; background: #444; color: #fff; font-size: 15px; margin: 4px 4px 4px 0; }
+button.main { background: #1b8a3a; }
+button:disabled { opacity: 0.4; }
+label { font-size: 13px; color: #bbb; display: block; margin-top: 6px; }
+a { color: #8ab4f8; }
+a.op { display: block; padding: 16px; margin: 8px 0; border-radius: 10px; background: #1b8a3a; color: #fff; text-decoration: none; font-size: 18px; font-weight: bold; text-align: center; }
+a.op.off { background: #333; color: #888; }
+.fila { display: flex; gap: 8px; margin: 6px 0; }
+.tog { flex: 1; margin: 0; background: #333; color: #aaa; border: 3px solid transparent; font-weight: bold; }
+.tog.on { background: #1b8a3a; color: #fff; border-color: #7cfc9a; }
+.linea { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #333; font-size: 14px; }
+.linea button { margin: 0; padding: 6px 10px; }
+#elegido { font-size: 14px; color: #7cfc9a; margin-top: 4px; word-break: break-word; }
+#total { font-size: 18px; color: #ffd54f; font-weight: bold; margin: 8px 0; }
+#pend { color: #ffb300; font-size: 13px; margin-top: 6px; }

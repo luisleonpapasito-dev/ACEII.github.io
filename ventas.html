@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ventas</title>
+<link rel="stylesheet" href="estilos.css">
+<script src="comun.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
+<style>
+  #total { font-size: 24px; color: #ffd54f; font-weight: bold; margin: 10px 0; }
+  .item-carrito { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #333; }
+  .item-carrito small { color: #aaa; }
+  .item-carrito button { padding: 4px 10px; margin: 0; }
+  #detalleCam { display: none; }
+  #detalleCam.abierto { display: block; }
+  .flecha { cursor: pointer; user-select: none; display: inline-block; transition: transform 0.2s; }
+  .flecha.abierta { transform: rotate(90deg); }
+  #visor { position: relative; width: 100%; max-width: 480px; aspect-ratio: 4 / 3; margin: 6px auto; background: #000; border-radius: 12px; overflow: hidden; }
+  #video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+  #marco { position: absolute; left: 5%; top: 27.5%; width: 90%; height: 45%; border: 3px solid #00e676; border-radius: 8px; box-sizing: border-box; pointer-events: none; }
+  #marco.ok { border-color: #40c4ff; }
+</style>
+</head>
+<body>
+
+<div id="estado">Cargando...</div>
+
+<div class="caja">
+  <a href="index.html">← Menú</a>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <span class="flecha" id="flechaCam">▶</span>
+    <label style="margin:0; flex:1;">Escanear con cámara</label>
+  </div>
+  <div id="detalleCam">
+    <div id="visor">
+      <video id="video" playsinline muted autoplay></video>
+      <div id="marco"></div>
+    </div>
+  </div>
+</div>
+
+<div class="caja">
+  <label>Busca el producto</label>
+  <input type="text" id="buscar" placeholder="Escribe parte del nombre o del ID">
+  <select id="lista" size="6"></select>
+</div>
+
+<div class="caja">
+  <label>Carrito</label>
+  <div id="carrito">(vacío)</div>
+  <div id="total">Total: $0</div>
+
+  <label>Medio de pago</label>
+  <select id="medio">
+    <option value="Efectivo">Efectivo</option>
+    <option value="Transferencia">Transferencia (Nequi / Bre-B / Llave)</option>
+  </select>
+
+  <label>Observaciones (opcional)</label>
+  <input type="text" id="obs" maxlength="200">
+
+  <button class="main" id="btnCobrar" disabled>Cobrar</button>
+  <button id="btnVaciar">Vaciar carrito</button>
+</div>
+
+<script>
+exigirSesion();
+
+let productos = [];
+let carrito = [];
+let usuarioActual = null;
+let idVenta = '';
+let lectorZxing = null;
+let stream = null;
+let cicloActivo = false;
+let ocupado = false;
+let ultimoIntento = 0;
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+const INTERVALO_MS = 40;
+
+function pedirUsuario() {
+  const guardado = localStorage.getItem('caf_usuario_ventas');
+  if (guardado) {
+    try { usuarioActual = JSON.parse(guardado); return true; } catch (e) {}
+  }
+  const idUsr = prompt('Escribe tu ID de usuario (ej: USR-01):');
+  if (!idUsr) return false;
+  const pinUsr = prompt('Escribe tu PIN:');
+  if (!pinUsr) return false;
+  usuarioActual = { id: idUsr.trim(), pin: pinUsr.trim() };
+  localStorage.setItem('caf_usuario_ventas', JSON.stringify(usuarioActual));
+  return true;
+}
+
+async function cargarProductos() {
+  mostrar('Cargando productos...', 'aviso');
+  try {
+    const r = await jsonp({ accion: 'productos_venta' }, 25000);
+    if (r && r.error === 'Token inválido') { borrarToken(); location.href = 'index.html'; return; }
+    if (!r || !r.ok) throw new Error(r && r.error ? r.error : 'respuesta vacía');
+    productos = r.items;
+    pintarLista();
+    mostrar('Listo para vender');
+  } catch (err) {
+    mostrar('No se pudieron cargar los productos: ' + err.message, 'error');
+  }
+}
+
+function pintarLista() {
+  const q = norm($('buscar').value);
+  const sel = $('lista');
+  sel.innerHTML = '';
+  let n = 0;
+  productos.forEach(function (p) {
+    if (q && norm(p.id + ' ' + p.nombre).indexOf(q) < 0) return;
+    n++;
+    sel.appendChild(new Option(p.id + ' · ' + p.nombre + ' — $' + p.precio.toLocaleString('es-CO'), p.id));
+  });
+  if (!n) sel.appendChild(new Option('(sin resultados)', ''));
+}
+
+$('buscar').addEventListener('input', pintarLista);
+$('lista').addEventListener('change', function () {
+  const id = $('lista').value;
+  if (!id) return;
+  agregarAlCarrito(id);
+  $('lista').value = '';
+  $('buscar').value = '';
+  pintarLista();
+});
+
+function agregarAlCarrito(idProducto) {
+  const p = productos.find(function (x) { return x.id === idProducto; });
+  if (!p) return;
+  const existente = carrito.find(function (x) { return x.id === idProducto; });
+  if (existente) {
+    existente.cantidad++;
+  } else {
+    carrito.push({ id: p.id, nombre: p.nombre, precio: p.precio, cantidad: 1 });
+  }
+  if (navigator.vibrate) navigator.vibrate(60);
+  pintarCarrito();
+}
+
+function pintarCarrito() {
+  const c = $('carrito');
+  if (!carrito.length) {
+    c.textContent = '(vacío)';
+    $('total').textContent = 'Total: $0';
+    $('btnCobrar').disabled = true;
+    return;
+  }
+  c.innerHTML = '';
+  let total = 0;
+  carrito.forEach(function (it, i) {
+    total += it.precio * it.cantidad;
+    const d = document.createElement('div');
+    d.className = 'item-carrito';
+    const t = document.createElement('span');
+    t.innerHTML = '<b>' + it.cantidad + '×</b> ' + it.nombre + '<br><small>$' + it.precio.toLocaleString('es-CO') + ' c/u</small>';
+    const b = document.createElement('button');
+    b.textContent = '✕';
+    b.addEventListener('click', function () { carrito.splice(i, 1); pintarCarrito(); });
+    d.appendChild(t);
+    d.appendChild(b);
+    c.appendChild(d);
+  });
+  $('total').textContent = 'Total: $' + total.toLocaleString('es-CO');
+  $('btnCobrar').disabled = false;
+}
+
+$('btnVaciar').addEventListener('click', function () {
+  if (carrito.length && !confirm('¿Vaciar el carrito?')) return;
+  carrito = [];
+  pintarCarrito();
+});
+
+function nuevoIdVenta() {
+  const d = new Date();
+  const p = function (n) { return ('0' + n).slice(-2); };
+  return 'VEN-' + String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+}
+
+$('btnCobrar').addEventListener('click', async function () {
+  if (!carrito.length) return;
+  if (!pedirUsuario()) { mostrar('Venta cancelada', 'aviso'); return; }
+  idVenta = nuevoIdVenta();
+  $('btnCobrar').disabled = true;
+  mostrar('Guardando venta...', 'aviso');
+  try {
+    const r = await post({
+      accion: 'venta',
+      id_venta: idVenta,
+      id_usuario: usuarioActual.id,
+      pin: usuarioActual.pin,
+      medio_pago: $('medio').value,
+      observaciones: $('obs').value.trim(),
+      items: carrito.map(function (it) { return { id_producto: it.id, cantidad: it.cantidad }; })
+    });
+    if (r.ok) {
+      mostrar('Venta guardada ✓ ' + r.lineas + ' línea(s) · ' + $('medio').value, 'ok');
+      if (navigator.vibrate) navigator.vibrate(200);
+      carrito = [];
+      $('obs').value = '';
+      pintarCarrito();
+    } else if (r.error === 'Token inválido') {
+      borrarToken(); location.href = 'index.html';
+    } else if (r.error === 'PIN incorrecto' || r.error === 'Este usuario no tiene PIN configurado') {
+      localStorage.removeItem('caf_usuario_ventas');
+      usuarioActual = null;
+      mostrar(r.error + '. Vuelve a intentarlo.', 'error');
+    } else {
+      mostrar(r.error || 'Error desconocido', 'error');
+    }
+  } catch (err) {
+    mostrar('Sin conexión. Revisa internet.', 'error');
+  } finally {
+    $('btnCobrar').disabled = false;
+  }
+});
+
+$('flechaCam').addEventListener('click', async function () {
+  const d = $('detalleCam');
+  const abierto = d.classList.toggle('abierto');
+  $('flechaCam').classList.toggle('abierta', abierto);
+  if (abierto) {
+    await iniciarCamara();
+  } else {
+    detenerCamara();
+  }
+});
+
+function decodificarZxing() {
+  if (typeof ZXing === 'undefined') return null;
+  try {
+    if (!lectorZxing) {
+      const h = new Map();
+      h.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+        ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
+        ZXing.BarcodeFormat.UPC_A, ZXing.BarcodeFormat.UPC_E,
+        ZXing.BarcodeFormat.CODE_128
+      ]);
+      h.set(ZXing.DecodeHintType.TRY_HARDER, true);
+      lectorZxing = new ZXing.MultiFormatReader();
+      lectorZxing.setHints(h);
+    }
+    const fuente = new ZXing.HTMLCanvasElementLuminanceSource(canvas);
+    return lectorZxing.decode(new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(fuente))).getText();
+  } catch (e) { return null; }
+}
+
+async function procesarFrame() {
+  ocupado = true;
+  try {
+    const vw = video.videoWidth, vh = video.videoHeight;
+    if (!vw || !vh) { ocupado = false; return; }
+    const cw = Math.floor(vw * 0.9), ch = Math.floor(vh * 0.45);
+    const sx = Math.floor((vw - cw) / 2), sy = Math.floor((vh - ch) / 2);
+    const w = Math.min(cw, 960), h = Math.round(ch * w / cw);
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    ctx.drawImage(video, sx, sy, cw, ch, 0, 0, w, h);
+    const texto = decodificarZxing();
+    if (texto) {
+      const code = String(texto).trim();
+      const p = productos.find(function (x) { return x.codigo === code; });
+      if (p) {
+        agregarAlCarrito(p.id);
+        $('marco').className = 'ok';
+        setTimeout(function () { $('marco').className = ''; }, 400);
+      }
+    }
+  } catch (e) {}
+  ocupado = false;
+}
+
+function ciclo(ts) {
+  requestAnimationFrame(ciclo);
+  if (ocupado || ts - ultimoIntento < INTERVALO_MS) return;
+  if (!(video.readyState >= 2 && video.videoWidth)) return;
+  ultimoIntento = ts;
+  procesarFrame();
+}
+
+async function iniciarCamara() {
+  if (stream) return;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+      audio: false
+    });
+    video.srcObject = stream;
+    video.play().catch(function () {});
+    if (!cicloActivo) { cicloActivo = true; requestAnimationFrame(ciclo); }
+  } catch (err) {
+    mostrar('No se pudo abrir la cámara: ' + (err.name || 'Error'), 'error');
+  }
+}
+
+function detenerCamara() {
+  if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
+}
+
+if (!getToken()) { location.href = 'index.html'; }
+cargarProductos();
+</script>
+</body>
+</html>

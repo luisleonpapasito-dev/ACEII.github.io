@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cafetería</title>
+<link rel="stylesheet" href="estilos.css">
+<script src="comun.js"></script>
+</head>
+<body>
+
+<div id="estado">Cafetería</div>
+
+<div class="caja" id="login">
+  <label>Clave del sistema</label>
+  <input type="password" id="clave" placeholder="Escribe la clave">
+  <button class="main" id="btnEntrar">Entrar</button>
+</div>
+
+<div class="caja" id="menu" style="display:none">
+  <a class="op" href="recepcion.html">📥 Recepción de mercancía</a>
+  <a class="op" href="codigos.html">📷 Registrar códigos de barras</a>
+  <a class="op" href="inventario.html">📦 Inventario y ajustes</a>
+  <a class="op" href="ventas.html">🛒 Ventas</a>
+  <a class="op off">🛒 Ventas (próximamente)</a>
+  <button id="btnSalir">Cerrar sesión</button>
+</div>
+
+<script>
+function pintar() {
+  const hay = !!getToken();
+  $('login').style.display = hay ? 'none' : 'block';
+  $('menu').style.display = hay ? 'block' : 'none';
+}
+
+async function entrar() {
+  const clave = $('clave').value.trim();
+  if (!clave) return;
+  guardarToken(clave);
+  mostrar('Comprobando...', 'aviso');
+  try {
+    const r = await jsonp({ accion: 'auth' }, 15000);
+    if (r && r.ok) {
+      mostrar('Cafetería', '');
+    } else {
+      borrarToken();
+      mostrar('Clave incorrecta', 'error');
+    }
+  } catch (err) {
+    borrarToken();
+    mostrar(err.message, 'error');
+  }
+  pintar();
+}
+
+$('btnEntrar').addEventListener('click', entrar);
+$('clave').addEventListener('keydown', function (e) { if (e.key === 'Enter') entrar(); });
+$('btnSalir').addEventListener('click', function () { borrarToken(); $('clave').value = ''; pintar(); });
+pintar();
+</script>
+</body>
+</html>

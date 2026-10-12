@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Códigos de barras</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; padding: 0 12px 20px; background: #111; color: #fff; }
+  .caja { max-width: 480px; margin: 8px auto; background: #1e1e1e; border-radius: 10px; padding: 10px; box-sizing: border-box; }
+  #estado { max-width: 480px; margin: 8px auto; padding: 12px; border-radius: 12px; background: #333; font-weight: bold; text-align: center; word-break: break-word; position: sticky; top: 0; z-index: 5; box-sizing: border-box; }
+  #estado.ok { background: #1b8a3a; }
+  #estado.error { background: #c62828; }
+  #estado.aviso { background: #e65100; }
+  input[type=text], select { width: 100%; padding: 10px; margin: 4px 0; border-radius: 8px; background: #333; color: #fff; border: 1px solid #555; font-size: 16px; box-sizing: border-box; }
+  button { padding: 12px 16px; border: none; border-radius: 8px; background: #444; color: #fff; font-size: 15px; margin: 4px 4px 4px 0; }
+  button.main { background: #1b8a3a; }
+  button:disabled { opacity: 0.4; }
+  label { font-size: 13px; color: #bbb; display: block; margin-top: 4px; }
+  #visor { position: relative; width: 100%; max-width: 480px; aspect-ratio: 4 / 3; margin: 0 auto; background: #000; border-radius: 12px; overflow: hidden; }
+  #video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+  #marco { position: absolute; left: 5%; top: 27.5%; width: 90%; height: 45%; border: 3px solid #00e676; border-radius: 8px; box-sizing: border-box; pointer-events: none; }
+  #marco.ok { border-color: #40c4ff; }
+  #codigo { font-size: 22px; font-weight: bold; letter-spacing: 1px; color: #ffd54f; text-align: center; margin: 6px 0; word-break: break-all; }
+  #elegido { font-size: 14px; color: #7cfc9a; margin-top: 4px; word-break: break-word; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
+</head>
+<body>
+
+<div id="estado">Iniciando...</div>
+
+<div class="caja">
+  <label>Busca y elige el producto</label>
+  <input type="text" id="buscar" placeholder="Escribe parte del nombre o del ID">
+  <label><input type="checkbox" id="soloSinCodigo" checked> Solo productos sin código</label>
+  <label><input type="checkbox" id="soloEscaner" checked> Solo modo Escáner</label>
+  <select id="lista" size="6"></select>
+  <div id="elegido">Ningún producto elegido</div>
+</div>
+
+<div id="visor">
+  <video id="video" playsinline muted autoplay></video>
+  <div id="marco"></div>
+</div>
+
+<div class="caja">
+  <label>Escanea el código de barras de la UNIDAD (no el de la caja)</label>
+  <div id="codigo">—</div>
+  <input type="text" id="manual" placeholder="O escribe el código a mano" inputmode="numeric">
+  <button id="btnManual">Usar este código</button>
+  <button class="main" id="btnGuardar" disabled>Guardar</button>
+  <button id="btnReescanear">Reescanear</button>
+  <button id="btnCam">Reiniciar cámara</button>
+  <div id="zoomBox" style="display:none">
+    <label>Zoom</label>
+    <input type="range" id="zoom" style="width:100%">
+  </div>
+</div>
+
+<script>
+const URL_SERVIDOR = 'https://script.google.com/macros/s/AKfycbytYTtsMeI-9Pw-wWZI1WnpBQlM_NLU-wZyVMINCa--uSqKoGgvN9OKTe5ozjlvBPOv/exec';
+const FORMATOS = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'];
+const INTERVALO_MS = 40;
+
+const $ = function (id) { return document.getElementById(id); };
+const video = $('video');
+const marco = $('marco');
+const estado = $('estado');
+
+function mostrar(texto, clase) {
+  estado.textContent = texto;
+  estado.className = clase || '';
+}
+function nuevoId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 10); }
+function norm(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+
+window.addEventListener('unhandledrejection', function (e) {
+  mostrar('Error: ' + (e.reason && e.reason.message ? e.reason.message : String(e.reason)), 'error');
+});
+
+// ---------- Clave ----------
+let token = null;
+try { token = localStorage.getItem('caf_token'); } catch (e) {}
+if (!token) {
+  token = prompt('Escribe la clave del sistema:');
+  try { if (token) localStorage.setItem('caf_token', token); } catch (e) {}
+}
+
+// ---------- Comunicación con el servidor ----------
+function jsonp(params, limiteMs) {
+  return new Promise(function (resolve, reject) {
+    const nombre = 'cb_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
+    const s = document.createElement('script');
+    let fin = false;
+    let t = null;
+    function limpiar() {
+      fin = true;
+      clearTimeout(t);
+      if (s.parentNode) s.parentNode.removeChild(s);
+      delete window[nombre];
+    }
+    t = setTimeout(function () {
+      if (!fin) { limpiar(); reject(new Error('El servidor no respondió a tiempo')); }
+    }, limiteMs || 15000);
+    window[nombre] = function (r) { if (!fin) { limpiar(); resolve(r); } };
+    s.onerror = function () {
+      if (!fin) { limpiar(); reject(new Error('No se pudo conectar con el servidor (revisa internet y que la implementación sea "Cualquier persona")')); }
+    };
+    let q = '?callback=' + nombre + '&token=' + encodeURIComponent(token || '');
+    Object.keys(params).forEach(function (k) { q += '&' + k + '=' + encodeURIComponent(params[k]); });
+    s.src = URL_SERVIDOR + q;
+    document.head.appendChild(s);
+  });
+}
+
+async function post(cuerpo) {
+  const ctrl = new AbortController();
+  const t = setTimeout(function () { ctrl.abort(); }, 25000);
+  try {
+    const r = await fetch(URL_SERVIDOR, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(cuerpo),
+      signal: ctrl.signal
+    });
+    return await r.json();
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+// ---------- Productos ----------
+let productos = [];
+let elegidoId = '';
+let codigoLeido = '';
+let rid = '';
+let pausaLectura = false;
+
+function actualizarBoton() {
+  $('btnGuardar').disabled = !(elegidoId && codigoLeido);
+}
+
+function pintarElegido() {
+  const p = productos.find(function (x) { return x.id === elegidoId; });
+  $('elegido').textContent = p
+    ? 'Elegido: ' + p.id + ' · ' + p.nombre + (p.codigo ? ' (ya tiene código: ' + p.codigo + ')' : '')
+    : 'Ningún producto elegido';
+  actualizarBoton();
+}
+
+function pintarLista() {
+  const q = norm($('buscar').value);
+  const sinCod = $('soloSinCodigo').checked;
+  const soloEsc = $('soloEscaner').checked;
+  const sel = $('lista');
+  sel.innerHTML = '';
+  let n = 0;
+  productos.forEach(function (p) {
+    if (soloEsc && norm(p.modo) !== 'escaner') return;
+    if (sinCod && p.codigo) return;
+    if (q && norm(p.id + ' ' + p.nombre).indexOf(q) < 0) return;
+    n++;
+    sel.appendChild(new Option((p.codigo ? '✓ ' : '○ ') + p.id + ' · ' + p.nombre, p.id));
+  });
+  if (!n) sel.appendChild(new Option('(sin resultados)', ''));
+  if (elegidoId) sel.value = elegidoId;
+}
+
+async function cargarProductos() {
+  mostrar('Cargando productos...', 'aviso');
+  try {
+    const r = await jsonp({ accion: 'productos' }, 20000);
+    if (r && r.error === 'Token inválido') {
+      try { localStorage.removeItem('caf_token'); } catch (e) {}
+      mostrar('Clave incorrecta. Recarga la página y escríbela de nuevo.', 'error');
+      return;
+    }
+    if (!r || !r.ok) throw new Error(r && r.error ? r.error : 'respuesta vacía');
+    productos = r.items;
+    pintarLista();
+    mostrar('Elige un producto y escanea su código');
+  } catch (err) {
+    mostrar('No se pudieron cargar los productos: ' + err.message, 'error');
+  }
+}
+
+$('lista').addEventListener('change', function () {
+  elegidoId = $('lista').value;
+  pintarElegido();
+});
+$('buscar').addEventListener('input', pintarLista);
+$('soloSinCodigo').addEventListener('change', pintarLista);
+$('soloEscaner').addEventListener('change', pintarLista);
+
+// ---------- Código leído y guardado ----------
+function limpiarLectura() {
+  codigoLeido = '';
+  $('codigo').textContent = '—';
+  $('manual').value = '';
+  marco.className = '';
+  pausaLectura = false;
+  actualizarBoton();
+}
+
+function aceptarCodigo(texto) {
+  const c = String(texto).replace(/\s/g, '');
+  if (!/^[0-9A-Za-z\-]{6,20}$/.test(c)) {
+    mostrar('Código no válido: ' + c, 'error');
+    return;
+  }
+  codigoLeido = c;
+  rid = nuevoId();
+  $('codigo').textContent = c;
+  marco.className = 'ok';
+  pausaLectura = true;
+  if (navigator.vibrate) navigator.vibrate(80);
+  actualizarBoton();
+  if (elegidoId) mostrar('Código leído. Revísalo y pulsa Guardar', 'ok');
+  else mostrar('Código leído. Ahora elige el producto', 'aviso');
+}
+
+async function guardar(sobrescribir) {
+  if (!elegidoId || !codigoLeido) return;
+  $('btnGuardar').disabled = true;
+  mostrar('Guardando...', 'aviso');
+  try {
+    const r = await post({
+      token: token,
+      accion: 'asociar',
+      rid: rid,
+      id: elegidoId,
+      codigo: codigoLeido,
+      sobrescribir: !!sobrescribir
+    });
+    if (r.ok) {
+      const p = productos.find(function (x) { return x.id === elegidoId; });
+      if (p) p.codigo = codigoLeido;
+      mostrar('Guardado ✓ ' + elegidoId + ' → ' + codigoLeido, 'ok');
+      if (navigator.vibrate) navigator.vibrate(200);
+      limpiarLectura();
+      elegidoId = '';
+      pintarElegido();
+      pintarLista();
+    } else if (r.conflicto === 'ya_tiene') {
+      if (confirm('Este producto ya tiene el código ' + r.actual + '. ¿Reemplazarlo por ' + codigoLeido + '?')) {
+        rid = nuevoId();
+        await guardar(true);
+      } else {
+        mostrar('No se cambió nada', 'aviso');
+        actualizarBoton();
+      }
+    } else if (r.error === 'Token inválido') {
+      try { localStorage.removeItem('caf_token'); } catch (e) {}
+      mostrar('Clave incorrecta. Recarga la página y escríbela de nuevo.', 'error');
+    } else {
+      mostrar(r.error || 'Error desconocido', 'error');
+      actualizarBoton();
+    }
+  } catch (err) {
+    mostrar('Sin conexión con el servidor. Pulsa Guardar para reintentar.', 'error');
+    actualizarBoton();
+  }
+}
+
+$('btnGuardar').addEventListener('click', function () { guardar(false); });
+$('btnManual').addEventListener('click', function () { aceptarCodigo($('manual').value); });
+$('btnReescanear').addEventListener('click', function () {
+  limpiarLectura();
+  mostrar('Apunta al código de barras');
+});
+
+// ---------- Lectura con la cámara ----------
+let detector = null;
+let lectorZxing = null;
+let track = null;
+let stream = null;
+let cicloActivo = false;
+let ocupado = false;
+let ultimoIntento = 0;
+let numFrame = 0;
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+const soportaFiltro = ('filter' in ctx);
+
+if ('BarcodeDetector' in window) {
+  BarcodeDetector.getSupportedFormats().then(function (f) {
+    const ok = FORMATOS.filter(function (x) { return f.indexOf(x) >= 0; });
+    if (ok.length) detector = new BarcodeDetector({ formats: ok });
+  }).catch(function () {});
+}
+
+function decodificarZxing() {
+  if (typeof ZXing === 'undefined') return null;
+  try {
+    if (!lectorZxing) {
+      const h = new Map();
+      h.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+        ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
+        ZXing.BarcodeFormat.UPC_A, ZXing.BarcodeFormat.UPC_E,
+        ZXing.BarcodeFormat.CODE_128
+      ]);
+      h.set(ZXing.DecodeHintType.TRY_HARDER, true);
+      lectorZxing = new ZXing.MultiFormatReader();
+      lectorZxing.setHints(h);
+    }
+    const fuente = new ZXing.HTMLCanvasElementLuminanceSource(canvas);
+    return lectorZxing.decode(new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(fuente))).getText();
+  } catch (e) {
+    return null;
+  }
+}
+
+async function procesarFrame() {
+  ocupado = true;
+  try {
+    const vw = video.videoWidth;
+    const vh = video.videoHeight;
+    // Recorte rectangular (ancho): los códigos de barras son horizontales
+    const cw = Math.floor(vw * 0.9);
+    const ch = Math.floor(vh * 0.45);
+    const sx = Math.floor((vw - cw) / 2);
+    const sy = Math.floor((vh - ch) / 2);
+    const w = Math.min(cw, 960);
+    const h = Math.round(ch * w / cw);
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    numFrame++;
+    ctx.filter = (soportaFiltro && numFrame % 2 === 0) ? 'grayscale(1) contrast(1.5)' : 'none';
+    ctx.drawImage(video, sx, sy, cw, ch, 0, 0, w, h);
+    ctx.filter = 'none';
+
+    let texto = null;
+    if (detector) {
+      try {
+        const r = await detector.detect(canvas);
+        if (r.length) texto = r[0].rawValue;
+      } catch (e) {
+        detector = null;
+      }
+    } else {
+      texto = decodificarZxing();
+    }
+    if (texto && !pausaLectura) aceptarCodigo(texto);
+  } catch (e) {}
+  ocupado = false;
+}
+
+function ciclo(ts) {
+  requestAnimationFrame(ciclo);
+  if (ocupado || pausaLectura || ts - ultimoIntento < INTERVALO_MS) return;
+  if (!(video.readyState >= 2 && video.videoWidth)) return;
+  ultimoIntento = ts;
+  procesarFrame();
+}
+
+function conTiempo(promesa, ms) {
+  return new Promise(function (resolve, reject) {
+    let terminado = false;
+    const t = setTimeout(function () {
+      if (terminado) return;
+      terminado = true;
+      reject(new Error('La cámara no respondió. Revisa el permiso o cierra otras apps que la usen.'));
+    }, ms);
+    promesa.then(function (v) {
+      if (terminado) { v.getTracks().forEach(function (tr) { tr.stop(); }); return; }
+      terminado = true;
+      clearTimeout(t);
+      resolve(v);
+    }, function (e) {
+      if (terminado) return;
+      terminado = true;
+      clearTimeout(t);
+      reject(e);
+    });
+  });
+}
+
+async function pedirCamara() {
+  const opciones = [
+    { video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false },
+    { video: { facingMode: { ideal: 'environment' } }, audio: false },
+    { video: true, audio: false }
+  ];
+  let ultimoError = null;
+  for (let i = 0; i < opciones.length; i++) {
+    try {
+      return await conTiempo(navigator.mediaDevices.getUserMedia(opciones[i]), 10000);
+    } catch (err) {
+      ultimoError = err;
+      if (err && err.name === 'NotAllowedError') break;
+    }
+  }
+  throw ultimoError;
+}
+
+async function iniciar() {
+  if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    mostrar('Este navegador no permite usar la cámara. Abre el link https en Chrome.', 'error');
+    return;
+  }
+  try {
+    stream = await pedirCamara();
+    video.srcObject = stream;
+    video.play().catch(function () {});
+    track = stream.getVideoTracks()[0];
+    const caps = track.getCapabilities ? track.getCapabilities() : {};
+    if (caps.focusMode && caps.focusMode.indexOf('continuous') >= 0) {
+      track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(function () {});
+    }
+    if (caps.zoom) {
+      $('zoom').min = caps.zoom.min;
+      $('zoom').max = caps.zoom.max;
+      $('zoom').step = caps.zoom.step || 0.1;
+      $('zoom').value = caps.zoom.min;
+      $('zoomBox').style.display = 'block';
+    }
+    if (!cicloActivo) { cicloActivo = true; requestAnimationFrame(ciclo); }
+    if (navigator.wakeLock) navigator.wakeLock.request('screen').catch(function () {});
+  } catch (err) {
+    const nombre = err && err.name ? err.name : 'Error';
+    let ayuda = '';
+    if (nombre === 'NotAllowedError') ayuda = ' Permiso de cámara denegado: toca el candado junto a la dirección, Permisos, Cámara, Permitir.';
+    if (nombre === 'NotReadableError') ayuda = ' La cámara está en uso por otra app o pestaña.';
+    if (nombre === 'NotFoundError') ayuda = ' No se encontró ninguna cámara.';
+    mostrar('No se pudo abrir la cámara (' + nombre + ').' + ayuda, 'error');
+  }
+}
+
+$('zoom').addEventListener('input', function () {
+  if (track) track.applyConstraints({ advanced: [{ zoom: Number($('zoom').value) }] }).catch(function () {});
+});
+$('btnCam').addEventListener('click', iniciar);
+
+iniciar();
+cargarProductos();
+</script>
+</body>
+</html>

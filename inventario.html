@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventario</title>
+<link rel="stylesheet" href="estilos.css">
+<script src="comun.js"></script>
+</head>
+<body>
+
+<div id="estado">Cargando...</div>
+
+<div class="caja">
+  <a href="index.html">← Menú</a>
+  <label>Modo</label>
+  <div class="fila">
+    <button id="modoInicial" class="tog on">Inventario inicial</button>
+    <button id="modoAjuste" class="tog">Ajuste</button>
+  </div>
+  <label>Busca el producto</label>
+  <input type="text" id="buscar" placeholder="Escribe parte del nombre o del ID">
+  <label><input type="checkbox" id="soloPendientes"> Mostrar solo productos con stock 0</label>
+  <select id="lista" size="8"></select>
+</div>
+
+<div class="caja" id="panel" style="display:none">
+  <div id="infoProducto"></div>
+  <hr style="border-color:#333">
+  <label>Conteo físico real (unidades)</label>
+  <input type="number" id="conteo" min="0" step="1" inputmode="numeric" placeholder="Escribe cuántas unidades hay">
+
+  <div id="bloqueMotivo" style="display:none">
+    <label>Motivo del ajuste</label>
+    <select id="motivo">
+      <option value="">Elige el motivo...</option>
+      <option value="Venta no registrada">Venta no registrada</option>
+      <option value="Consumo interno">Consumo interno (sin pago)</option>
+      <option value="Error del sistema">Error del sistema</option>
+      <option value="Producto dañado / vencido">Producto dañado / vencido</option>
+      <option value="Error de conteo">Error de conteo</option>
+      <option value="Otro">Otro</option>
+    </select>
+  </div>
+
+  <label>Observaciones (opcional)</label>
+  <input type="text" id="obs" maxlength="200" placeholder="Ej: Faltaron 3 por error de registro">
+
+  <button class="main" id="btnGuardar">Guardar</button>
+</div>
+
+<script>
+exigirSesion();
+
+let productos = [];
+let elegido = null;
+let modo = 'inicial';
+
+async function cargarDatos() {
+  mostrar('Cargando inventario...', 'aviso');
+  try {
+    const r = await jsonp({ accion: 'inventario' }, 25000);
+    if (r && r.error === 'Token inválido') { borrarToken(); location.href = 'index.html'; return; }
+    if (!r || !r.ok) throw new Error(r && r.error ? r.error : 'respuesta vacía');
+    productos = r.items;
+    pintarLista();
+    mostrar('Elige un producto');
+  } catch (err) {
+    mostrar('No se pudo cargar el inventario: ' + err.message, 'error');
+  }
+}
+
+function pintarLista() {
+  const q = norm($('buscar').value);
+  const soloPend = $('soloPendientes').checked;
+  const sel = $('lista');
+  sel.innerHTML = '';
+  let n = 0;
+  productos.forEach(function (p) {
+    if (soloPend && p.stock_actual !== 0) return;
+    if (q && norm(p.id + ' ' + p.nombre).indexOf(q) < 0) return;
+    n++;
+    sel.appendChild(new Option(p.id + ' · ' + p.nombre + ' (Sistema: ' + p.stock_actual + ')', p.id));
+  });
+  if (!n) sel.appendChild(new Option('(sin resultados)', ''));
+  if (elegido) sel.value = elegido.id;
+}
+
+function pintarPanel() {
+  $('panel').style.display = elegido ? 'block' : 'none';
+  if (!elegido) return;
+  $('infoProducto').innerHTML =
+    '<strong>' + elegido.id + ' · ' + elegido.nombre + '</strong><br>' +
+    '<span style="color:#aaa">Stock del sistema: <b style="color:#ffd54f">' + elegido.stock_actual + '</b> ' +
+    '(Inicial: ' + elegido.stock_inicial + ' + Entradas: ' + elegido.entradas + ' - Ventas: ' + elegido.ventas + ' + Ajustes: ' + elegido.ajustes + ')</span>';
+  $('conteo').value = '';
+  $('obs').value = '';
+  $('motivo').value = '';
+}
+
+function fijarModo(m) {
+  modo = m;
+  $('modoInicial').className = 'tog' + (m === 'inicial' ? ' on' : '');
+  $('modoAjuste').className = 'tog' + (m === 'ajuste' ? ' on' : '');
+  $('bloqueMotivo').style.display = (m === 'ajuste') ? 'block' : 'none';
+}
+
+$('modoInicial').addEventListener('click', function () { fijarModo('inicial'); });
+$('modoAjuste').addEventListener('click', function () { fijarModo('ajuste'); });
+$('lista').addEventListener('change', function () {
+  elegido = productos.find(function (p) { return p.id === $('lista').value; }) || null;
+  pintarPanel();
+});
+$('buscar').addEventListener('input', pintarLista);
+$('soloPendientes').addEventListener('change', pintarLista);
+
+$('btnGuardar').addEventListener('click', async function () {
+  if (!elegido) return;
+  const conteo = Number($('conteo').value);
+  if (isNaN(conteo) || conteo < 0 || Math.floor(conteo) !== conteo) {
+    mostrar('El conteo debe ser un número entero mayor o igual a 0', 'error');
+    return;
+  }
+
+  if (modo === 'ajuste') {
+    if (!$('motivo').value) { mostrar('Elige el motivo del ajuste', 'error'); return; }
+    const dif = conteo - elegido.stock_actual;
+    const costo = Math.abs(dif) * elegido.costo;
+    const precio = Math.abs(dif) * elegido.precio;
+    const signo = dif >= 0 ? '+' : '';
+    const mensaje = 'Vas a ajustar ' + signo + dif + ' unidad(es) de ' + elegido.nombre + '.\n\n' +
+      'Motivo: ' + $('motivo').value + '\n' +
+      'Stock del sistema: ' + elegido.stock_actual + ' → Conteo real: ' + conteo + '\n\n' +
+      'Costo de la pérdida: $' + costo.toLocaleString('es-CO') + '\n' +
+      'Lucro cesante (precio venta): $' + precio.toLocaleString('es-CO') + '\n\n' +
+      '¿Confirmas el ajuste?';
+    if (!confirm(mensaje)) return;
+  }
+
+  const idUsr = prompt('Escribe tu ID de usuario (ej: USR-01):');
+  if (!idUsr) return;
+  const pinUsr = prompt('Escribe tu PIN:');
+  if (!pinUsr) return;
+
+  $('btnGuardar').disabled = true;
+  mostrar('Guardando...', 'aviso');
+
+  try {
+    let r;
+    if (modo === 'inicial') {
+      r = await post({ accion: 'inventario_inicial', id_producto: elegido.id, conteo: conteo, id_usuario: idUsr.trim(), pin: pinUsr.trim() });
+    } else {
+      r = await post({ accion: 'ajuste_inventario', id_producto: elegido.id, conteo_real: conteo, id_usuario: idUsr.trim(), pin: pinUsr.trim(), motivo: $('motivo').value, observaciones: $('obs').value.trim() });
+    }
+
+    if (r.ok) {
+      if (modo === 'inicial') {
+        mostrar('Inventario inicial guardado ✓ ' + elegido.id + ' → ' + r.stock_inicial, 'ok');
+        elegido.stock_inicial = r.stock_inicial;
+        elegido.stock_actual = r.stock_inicial;
+      } else {
+        mostrar('Ajuste guardado ✓ ' + r.producto + ' → ' + r.stock_nuevo + ' (antes: ' + r.stock_anterior + ', dif: ' + r.diferencia + ')', 'ok');
+        elegido.ajustes = elegido.ajustes + r.diferencia;
+        elegido.stock_actual = r.stock_nuevo;
+      }
+      pintarLista();
+      pintarPanel();
+      elegido = null;
+      $('lista').value = '';
+    } else if (r.error === 'Token inválido') {
+      borrarToken(); location.href = 'index.html';
+    } else {
+      mostrar(r.error || 'Error desconocido', 'error');
+    }
+  } catch (err) {
+    mostrar('Sin conexión con el servidor.', 'error');
+  } finally {
+    $('btnGuardar').disabled = false;
+  }
+});
+
+cargarDatos();
+</script>
+</body>
+</html>

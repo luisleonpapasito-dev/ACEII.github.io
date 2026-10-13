@@ -6,48 +6,34 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Fondos */
   --fondo: #F5F7FB;
   --superficie: #FFFFFF;
   --superficie-2: #F0F4FF;
 
-  /* Texto */
   --texto: #1A1C1E;
   --texto-suave: #5A6072;
   --texto-claro: #8A94A6;
 
-  /* Azul principal */
   --azul: #1B4DB1;
   --azul-claro: #4A7DE0;
   --azul-suave: #E3ECFF;
 
-  /* Colores de acento */
   --verde: #2BB673;
-  --verde-suave: #E0F7EC;
   --morado: #7B4DDB;
-  --morado-suave: #EFE7FB;
   --naranja: #F2A100;
-  --naranja-suave: #FFF4DC;
   --rosa: #E91E63;
-  --rosa-suave: #FCE4EC;
   --cyan: #00BCD4;
-  --cyan-suave: #D6F5FA;
 
-  /* Semánticos */
   --exito: #43A047;
   --alerta: #E53935;
   --aviso: #FB8C00;
-  --aviso-suave: #FFF3E0;
 
-  /* Espaciado */
   --radio: 16px;
   --radio-sm: 10px;
-  --radio-xs: 8px;
   --padding: 16px;
   --sombra: 0 2px 8px rgba(27, 77, 177, 0.08);
   --sombra-fuerte: 0 4px 12px rgba(27, 77, 177, 0.12);
 
-  /* Tipografía */
   --fuente: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
@@ -120,31 +106,15 @@ body {
   align-items: center;
   gap: 14px;
 }
-.app-header-icono {
-  width: 52px;
-  height: 52px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.app-header-icono svg {
-  width: 28px;
-  height: 28px;
-  stroke: #fff;
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
 .app-header-logo {
   width: 52px;
   height: 52px;
   object-fit: contain;
   flex-shrink: 0;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px;
 }
 .app-header-texto {
   flex: 1;
@@ -201,6 +171,7 @@ body {
   transition: transform 0.15s, box-shadow 0.15s;
   overflow: hidden;
   min-height: 130px;
+  cursor: pointer;
 }
 .card:active {
   transform: scale(0.97);
@@ -246,7 +217,6 @@ body {
   font-weight: 600;
 }
 
-/* Colores de los íconos */
 .card-icono.azul { background: var(--azul); }
 .card-icono.verde { background: var(--verde); }
 .card-icono.morado { background: var(--morado); }
@@ -254,7 +224,6 @@ body {
 .card-icono.rosa { background: var(--rosa); }
 .card-icono.cyan { background: var(--cyan); }
 
-/* Tarjetas anchas (que ocupan las 2 columnas) */
 .card.ancha {
   grid-column: span 2;
   min-height: auto;
@@ -351,7 +320,7 @@ label {
 }
 
 /* ============================================================
-   Botones toggle (tipo "Egreso/Ingreso", "Unidades/Paquetes")
+   Botones toggle
    ============================================================ */
 .tog {
   flex: 1;
@@ -368,7 +337,7 @@ label {
 }
 
 /* ============================================================
-   Header de pantalla interna (para las sub-páginas)
+   Header de pantalla interna
    ============================================================ */
 .pantalla-header {
   max-width: 480px;
@@ -390,23 +359,20 @@ label {
   font-size: 13px;
 }
 
-/* ============================================================
-   Enlaces
-   ============================================================ */
 a {
   color: var(--azul);
   text-decoration: none;
 }
 
 /* ============================================================
-   Colores semánticos para JS
+   Colores semánticos
    ============================================================ */
 #estado.ok, .estado-ok { background: var(--exito) !important; color: #fff !important; }
 #estado.error, .estado-error { background: var(--alerta) !important; color: #fff !important; }
 #estado.aviso, .estado-aviso { background: var(--aviso) !important; color: #fff !important; }
 
 /* ============================================================
-   Compatibilidad con pantallas viejas (mientras migramos)
+   Compatibilidad pantallas viejas
    ============================================================ */
 a.op {
   display: block;
@@ -422,7 +388,6 @@ a.op {
 }
 a.op.off { background: var(--superficie-2); color: var(--texto-claro); }
 
-/* Layout antiguo */
 .linea {
   display: flex;
   justify-content: space-between;
@@ -440,24 +405,66 @@ a.op.off { background: var(--superficie-2); color: var(--texto-claro); }
   body {
     background: linear-gradient(135deg, #E3ECFF 0%, #F5F7FB 100%);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 0;
   }
 
   .app-header {
-    max-width: 480px;
-    margin: 24px auto 0;
+    width: 100%;
+    max-width: 640px;
     border-radius: 24px;
-    padding: 24px 24px 60px;
+    padding: 24px 28px 68px;
   }
   .app-header::after {
     display: none;
   }
-
-  .grid-menu,
-  .caja {
-    margin-top: 16px;
+  .app-header-logo {
+    width: 60px;
+    height: 60px;
+  }
+  .app-header-titulo {
+    font-size: 26px;
+  }
+  .app-header-sub {
+    font-size: 14px;
   }
 
-  #estado {
-    margin-top: 24px;
+  #estado,
+  .grid-menu,
+  .caja {
+    width: 100%;
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grid-menu {
+    padding: 0;
+    gap: 16px;
+  }
+
+  .card {
+    padding: 18px;
+    min-height: 150px;
+  }
+  .card-icono {
+    width: 50px;
+    height: 50px;
+  }
+  .card-icono svg {
+    width: 26px;
+    height: 26px;
+  }
+  .card-titulo {
+    font-size: 16px;
+  }
+  .card-sub {
+    font-size: 13px;
+  }
+
+  .caja {
+    padding: 24px;
   }
 }

@@ -3,48 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Caja</title>
+<title>Caja del turno · ACEII</title>
 <link rel="stylesheet" href="estilos.css">
 <script src="comun.js"></script>
 <style>
-  #saldoBox { background:#1b8a3a; padding:16px; border-radius:12px; text-align:center; margin:10px 0; }
-  #saldoBox .label { font-size:13px; color:#c8ffd4; }
-  #saldoBox .monto { font-size:32px; font-weight:bold; color:#fff; }
-  .resumen-fila { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #333; font-size:15px; }
-  .resumen-fila.total { font-weight:bold; color:#ffd54f; font-size:17px; border-top:2px solid #555; margin-top:6px; padding-top:8px; }
-  .mov { padding:8px 0; border-bottom:1px solid #333; font-size:14px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
-  .mov .hora { color:#aaa; font-size:12px; }
-  .mov .cat { color:#7cfc9a; font-weight:bold; }
-  .mov .monto-ing { color:#7cfc9a; font-weight:bold; }
-  .mov .monto-egr { color:#ff6b6b; font-weight:bold; }
-  .fila-botones { display:flex; gap:8px; margin:8px 0; }
-  .fila-botones button { flex:1; }
-  .fila-botones button.on { background:#1b8a3a; border:2px solid #7cfc9a; }
+  #saldoBox {
+    background: linear-gradient(135deg, #1B4DB1 0%, #4A7DE0 100%);
+    color: #fff;
+    padding: 22px 18px;
+    border-radius: var(--radio);
+    text-align: center;
+    margin: 4px 0 16px;
+    box-shadow: var(--sombra-fuerte);
+  }
+  #saldoBox .label {
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 500;
+  }
+  #saldoBox .monto {
+    font-size: 34px;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 4px;
+    letter-spacing: -0.5px;
+  }
+
+  .resumen-fila {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #E8ECF4;
+    font-size: 14px;
+  }
+  .resumen-fila:last-child {
+    border-bottom: none;
+  }
+  .resumen-fila span:first-child {
+    color: var(--texto-suave);
+  }
+  .resumen-fila span:last-child {
+    font-weight: 600;
+    color: var(--texto);
+  }
+  .resumen-fila.total {
+    border-top: 2px solid var(--azul-suave);
+    border-bottom: none;
+    margin-top: 8px;
+    padding-top: 12px;
+    font-size: 16px;
+  }
+  .resumen-fila.total span:last-child {
+    color: var(--azul);
+    font-weight: 700;
+  }
+
+  .mov {
+    padding: 12px 0;
+    border-bottom: 1px solid #E8ECF4;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .mov:last-child { border-bottom: none; }
+  .mov .cat {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--texto);
+  }
+  .mov .hora {
+    font-size: 12px;
+    color: var(--texto-claro);
+    margin-top: 2px;
+  }
+  .mov .desc {
+    font-size: 12px;
+    color: var(--texto-suave);
+    margin-top: 2px;
+  }
+  .mov .monto-ing { color: var(--exito); font-weight: 700; font-size: 15px; }
+  .mov .monto-egr { color: var(--alerta); font-weight: 700; font-size: 15px; }
+
+  .tipo-fila {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .tipo-fila button {
+    flex: 1;
+    margin: 0;
+    border: 2px solid transparent;
+    background: var(--superficie-2);
+    color: var(--texto-suave);
+    font-weight: 600;
+  }
+  .tipo-fila button.on {
+    background: var(--azul);
+    color: #fff;
+    border-color: var(--azul-claro);
+  }
+
+  .bloque-otro {
+    display: none;
+    margin-top: 6px;
+  }
+  .bloque-otro.visible { display: block; }
+
+  h4.titulo-seccion {
+    margin: 0 0 12px 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--texto);
+    letter-spacing: 0.2px;
+  }
+
+  .btn-peligro {
+    background: var(--alerta);
+    color: #fff;
+    font-size: 16px;
+    padding: 16px;
+    width: 100%;
+    border-radius: var(--radio-sm);
+  }
+  .btn-peligro:active { background: #C62828; }
 </style>
 </head>
 <body>
 
+<!-- Header -->
+<header class="app-header">
+  <div class="app-header-contenido">
+    <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
+    <div class="app-header-texto">
+      <div class="app-header-titulo">Caja del turno</div>
+      <div class="app-header-sub">
+        <a href="index.html" style="color:rgba(255,255,255,0.9); text-decoration:underline;">← Volver al menú</a>
+      </div>
+    </div>
+  </div>
+</header>
+
 <div id="estado">Cargando...</div>
 
-<div class="caja">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-    <a href="index.html">← Menú</a>
-    <span id="usuarioTurno" style="color:#7cfc9a; font-weight:bold; font-size:13px;"></span>
-  </div>
-</div>
+<div id="pantallaTurno" style="display:none;">
 
-<div id="pantallaTurno" style="display:none">
-
-  <div class="caja">
-    <div id="turnoInfo2" style="font-size:13px; color:#aaa; margin-bottom:8px;"></div>
+  <!-- Saldo esperado -->
+  <div class="caja" style="padding-bottom: 8px;">
+    <div id="turnoInfo2" style="font-size:12px; color:var(--texto-claro); margin-bottom:10px; text-align:center;"></div>
     <div id="saldoBox">
       <div class="label">Saldo esperado en caja (efectivo)</div>
       <div class="monto" id="saldoEsperado">$0</div>
     </div>
   </div>
 
+  <!-- Resumen -->
   <div class="caja">
-    <h4>Resumen del turno</h4>
+    <h4 class="titulo-seccion">Resumen del turno</h4>
     <div class="resumen-fila"><span>Base inicial</span><span id="rBase">$0</span></div>
     <div class="resumen-fila"><span>Ventas en efectivo</span><span id="rVentEf">$0</span></div>
     <div class="resumen-fila"><span>Ventas en transferencia</span><span id="rVentTr">$0</span></div>
@@ -55,9 +170,10 @@
     <div class="resumen-fila total"><span>Saldo esperado</span><span id="rSaldo">$0</span></div>
   </div>
 
+  <!-- Registrar movimiento -->
   <div class="caja">
-    <h4>Registrar movimiento manual</h4>
-    <div class="fila-botones">
+    <h4 class="titulo-seccion">Registrar movimiento manual</h4>
+    <div class="tipo-fila">
       <button id="tipoEgreso" class="on">Egreso (sale)</button>
       <button id="tipoIngreso">Ingreso (entra)</button>
     </div>
@@ -68,7 +184,7 @@
       <option value="Aporte">Aporte (meter plata)</option>
       <option value="Otro">Otro...</option>
     </select>
-    <div id="bloqueOtro" style="display:none;">
+    <div id="bloqueOtro" class="bloque-otro">
       <label>Descripción (obligatoria)</label>
       <input type="text" id="descripcionOtro" maxlength="200" placeholder="Ej: Encomienda, papelería...">
     </div>
@@ -76,17 +192,20 @@
     <input type="number" id="montoMov" min="1" step="100" inputmode="numeric" placeholder="Ej: 5000">
     <label>Observación (opcional)</label>
     <input type="text" id="obsMov" maxlength="200">
-    <button class="main" id="btnMov" style="width:100%;">Registrar movimiento</button>
+    <button class="main" id="btnMov" style="width:100%; margin-top:10px;">Registrar movimiento</button>
   </div>
 
+  <!-- Movimientos -->
   <div class="caja">
-    <h4>Movimientos del turno</h4>
-    <div id="listaMovs">(sin movimientos)</div>
+    <h4 class="titulo-seccion">Movimientos del turno</h4>
+    <div id="listaMovs" style="font-size:14px; color:var(--texto-suave);">(sin movimientos)</div>
   </div>
 
+  <!-- Cerrar turno -->
   <div class="caja">
-    <button class="main" id="btnCerrar" style="width:100%; background:#c62828; padding:16px; font-size:18px;">🔒 Cerrar turno</button>
+    <button class="btn-peligro" id="btnCerrar">🔒 Cerrar turno</button>
   </div>
+
 </div>
 
 <script>
@@ -104,14 +223,12 @@ function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
   if (!u) { location.href = 'index.html'; return; }
   turno = getTurnoActual();
   if (!turno) {
-    // No hay turno en localStorage: consultar al servidor
     try {
       const r = await jsonp({ accion: 'mi_turno', id_usuario: u.id }, 20000);
       if (r && r.ok && r.turno) {
         turno = r.turno;
         guardarTurnoActual(turno);
       } else {
-        // No tiene turno: volver al menú para que abra
         alert('No tienes turno de caja abierto. Abre uno primero.');
         location.href = 'index.html';
         return;
@@ -152,9 +269,10 @@ function pintarMovimientos() {
     const d = document.createElement('div');
     d.className = 'mov';
     const izq = document.createElement('div');
-    izq.innerHTML = '<div class="cat">' + m.categoria + '</div>' +
+    izq.innerHTML =
+      '<div class="cat">' + m.categoria + '</div>' +
       '<div class="hora">' + m.fecha_hora + ' · ' + m.responsable + '</div>' +
-      (m.descripcion ? '<div style="color:#ccc;font-size:12px;">' + m.descripcion + '</div>' : '');
+      (m.descripcion ? '<div class="desc">' + m.descripcion + '</div>' : '');
     const der = document.createElement('div');
     const signo = m.tipo === 'Ingreso' ? '+' : '-';
     const clase = m.tipo === 'Ingreso' ? 'monto-ing' : 'monto-egr';
@@ -188,7 +306,7 @@ function calcularResumen() {
   $('rApo').textContent = '+' + fmt(apo);
   $('rSaldo').textContent = fmt(saldo);
   $('saldoEsperado').textContent = fmt(saldo);
-  $('turnoInfo2').textContent = 'Turno ' + turno.id + ' · Base inicial: ' + fmt(base);
+  $('turnoInfo2').textContent = 'Turno ' + turno.id + ' · Base: ' + fmt(base);
 }
 
 $('tipoEgreso').addEventListener('click', function () {
@@ -203,7 +321,7 @@ $('tipoIngreso').addEventListener('click', function () {
 });
 $('categoriaMov').addEventListener('change', function () {
   const esOtro = $('categoriaMov').value === 'Otro';
-  $('bloqueOtro').style.display = esOtro ? 'block' : 'none';
+  $('bloqueOtro').className = esOtro ? 'bloque-otro visible' : 'bloque-otro';
 });
 
 $('btnMov').addEventListener('click', async function () {

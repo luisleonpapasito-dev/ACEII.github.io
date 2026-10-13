@@ -181,7 +181,11 @@ $('btnGuardar').addEventListener('click', async function () {
   }
 });
 
-cargarDatos();
+(async function () {
+  const ok = await exigirTurnoCajaAbierto();
+  if (!ok) return;
+  cargarDatos();
+})();
 </script>
 </body>
 </html>

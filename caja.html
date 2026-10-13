@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caja</title>
+<link rel="stylesheet" href="estilos.css">
+<script src="comun.js"></script>
+<style>
+  #saldoBox { background:#1b8a3a; padding:16px; border-radius:12px; text-align:center; margin:10px 0; }
+  #saldoBox .label { font-size:13px; color:#c8ffd4; }
+  #saldoBox .monto { font-size:32px; font-weight:bold; color:#fff; }
+  .resumen-fila { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #333; font-size:15px; }
+  .resumen-fila.total { font-weight:bold; color:#ffd54f; font-size:17px; border-top:2px solid #555; margin-top:6px; padding-top:8px; }
+  .mov { padding:8px 0; border-bottom:1px solid #333; font-size:14px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .mov .hora { color:#aaa; font-size:12px; }
+  .mov .cat { color:#7cfc9a; font-weight:bold; }
+  .mov .monto-ing { color:#7cfc9a; font-weight:bold; }
+  .mov .monto-egr { color:#ff6b6b; font-weight:bold; }
+  .fila-botones { display:flex; gap:8px; margin:8px 0; }
+  .fila-botones button { flex:1; }
+  .fila-botones button.on { background:#1b8a3a; border:2px solid #7cfc9a; }
+</style>
+</head>
+<body>
+
+<div id="estado">Cargando...</div>
+
+<div class="caja">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+    <a href="index.html">← Menú</a>
+    <span id="usuarioTurno" style="color:#7cfc9a; font-weight:bold; font-size:13px;"></span>
+  </div>
+</div>
+
+<!-- PANTALLA 1: Abrir turno -->
+<div id="pantallaAbrir" class="caja" style="display:none">
+  <h3>💰 Abrir turno de caja</h3>
+  <div id="avisoBaseSugerida" style="color:#ffd54f; font-size:14px; margin:8px 0;"></div>
+  <label>Efectivo que hay físicamente en la caja (base inicial)</label>
+  <input type="number" id="baseInicial" min="0" step="100" inputmode="numeric" placeholder="Ej: 50000">
+  <label>Observaciones (opcional)</label>
+  <input type="text" id="obsAbrir" maxlength="200">
+  <button class="main" id="btnAbrir" style="width:100%; padding:16px; font-size:18px;">Abrir turno</button>
+</div>
+
+<!-- PANTALLA 2: Turno abierto -->
+<div id="pantallaTurno" style="display:none">
+
+  <div class="caja">
+    <div id="turnoInfo2" style="font-size:13px; color:#aaa; margin-bottom:8px;"></div>
+    <div id="saldoBox">
+      <div class="label">Saldo esperado en caja (efectivo)</div>
+      <div class="monto" id="saldoEsperado">$0</div>
+    </div>
+  </div>
+
+  <div class="caja">
+    <h4>Resumen del turno</h4>
+    <div class="resumen-fila"><span>Base inicial</span><span id="rBase">$0</span></div>
+    <div class="resumen-fila"><span>Ventas en efectivo</span><span id="rVentEf">$0</span></div>
+    <div class="resumen-fila"><span>Ventas en transferencia</span><span id="rVentTr">$0</span></div>
+    <div class="resumen-fila"><span>Devoluciones en efectivo</span><span id="rDev">-$0</span></div>
+    <div class="resumen-fila"><span>Retiros</span><span id="rRet">-$0</span></div>
+    <div class="resumen-fila"><span>Gastos</span><span id="rGas">-$0</span></div>
+    <div class="resumen-fila"><span>Aportes</span><span id="rApo">+$0</span></div>
+    <div class="resumen-fila total"><span>Saldo esperado</span><span id="rSaldo">$0</span></div>
+  </div>
+
+  <div class="caja">
+    <h4>Registrar movimiento manual</h4>
+    <div class="fila-botones">
+      <button id="tipoEgreso" class="on">Egreso (sale)</button>
+      <button id="tipoIngreso">Ingreso (entra)</button>
+    </div>
+    <label>Categoría</label>
+    <select id="categoriaMov">
+      <option value="Retiro">Retiro (llevar plata)</option>
+      <option value="Gasto">Gasto (compras, aseo, etc.)</option>
+      <option value="Aporte">Aporte (meter plata)</option>
+      <option value="Otro">Otro...</option>
+    </select>
+    <div id="bloqueOtro" style="display:none;">
+      <label>Descripción (obligatoria)</label>
+      <input type="text" id="descripcionOtro" maxlength="200" placeholder="Ej: Encomienda, papelería...">
+    </div>
+    <label>Monto</label>
+    <input type="number" id="montoMov" min="1" step="100" inputmode="numeric" placeholder="Ej: 5000">
+    <label>Observación (opcional)</label>
+    <input type="text" id="obsMov" maxlength="200">
+    <button class="main" id="btnMov" style="width:100%;">Registrar movimiento</button>
+  </div>
+
+  <div class="caja">
+    <h4>Movimientos del turno</h4>
+    <div id="listaMovs">(sin movimientos)</div>
+  </div>
+
+  <div class="caja">
+    <button class="main" id="btnCerrar" style="width:100%; background:#c62828; padding:16px; font-size:18px;">🔒 Cerrar turno</button>
+  </div>
+</div>
+
+<script>
+exigirSesion();
+pintarUsuarioTurno();
+
+let turno = null;
+let tipoMov = 'Egreso';
+let movimientos = [];
+
+// ---------- Utilidades ----------
+function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
+
+// ---------- Arranque ----------
+(async function () {
+  const u = getUsuarioTurno();
+  if (!u) { location.href = 'index.html'; return; }
+  await verificarMiTurno();
+})();
+
+async function verificarMiTurno() {
+  mostrar('Buscando turno...', 'aviso');
+  try {
+    const u = getUsuarioTurno();
+    const r = await jsonp({ accion: 'mi_turno', id_usuario: u.id }, 20000);
+    if (r && r.ok && r.turno) {
+      turno = r.turno;
+      guardarTurnoActual(turno);
+      await abrirPantallaTurno();
+    } else {
+      await abrirPantallaAbrir();
+    }
+  } catch (err) {
+    mostrar('Error: ' + err.message, 'error');
+  }
+}
+
+async function abrirPantallaAbrir() {
+  $('pantallaAbrir').style.display = 'block';
+  $('pantallaTurno').style.display = 'none';
+  mostrar('Abre el turno para empezar');
+  try {
+    const r = await jsonp({ accion: 'base_sugerida' }, 20000);
+    if (r && r.ok) {
+      const sugerida = Number(r.base_sugerida || 0);
+      $('baseInicial').value = sugerida;
+      if (r.ultimo_cierre) {
+        $('avisoBaseSugerida').innerHTML = 'Último cierre: ' + r.ultimo_cierre + ' con ' + fmt(sugerida) + ' en caja.<br>Verifica el efectivo real antes de guardar.';
+      } else {
+        $('avisoBaseSugerida').textContent = 'No hay turnos anteriores. Cuenta el efectivo e ingrésalo.';
+      }
+    }
+  } catch (e) {}
+}
+
+async function abrirPantallaTurno() {
+  $('pantallaAbrir').style.display = 'none';
+  $('pantallaTurno').style.display = 'block';
+  await cargarMovimientos();
+  mostrar('Turno abierto', 'ok');
+}
+
+// ---------- Abrir turno ----------
+$('btnAbrir').addEventListener('click', async function () {
+  const base = Number($('baseInicial').value);
+  if (isNaN(base) || base < 0) { mostrar('Base inválida', 'error'); return; }
+  const u = getUsuarioTurno();
+  $('btnAbrir').disabled = true;
+  mostrar('Abriendo turno...', 'aviso');
+  try {
+    // Comparar con la sugerida
+    let sugerida = 0;
+    try {
+      const s = await jsonp({ accion: 'base_sugerida' }, 15000);
+      if (s && s.ok) sugerida = Number(s.base_sugerida || 0);
+    } catch (e) {}
+    let obs = $('obsAbrir').value.trim();
+    if (base < sugerida) {
+      const dif = sugerida - base;
+      if (!confirm('La base es menor a la sugerida (' + fmt(sugerida) + '). Faltan ' + fmt(dif) + '.\n\n¿Estás seguro de abrir con ' + fmt(base) + '?')) {
+        $('btnAbrir').disabled = false;
+        mostrar('Cancelado', 'aviso');
+        return;
+      }
+      obs = (obs ? obs + ' | ' : '') + 'Diferencia apertura: -' + dif;
+    } else if (base > sugerida) {
+      const dif = base - sugerida;
+      obs = (obs ? obs + ' | ' : '') + 'Diferencia apertura: +' + dif;
+    }
+    const r = await post({
+      accion: 'abrir_turno',
+      id_usuario: u.id,
+      base_inicial: base,
+      base_sugerida: sugerida,
+      observaciones: obs
+    });
+    if (r.ok) {
+      turno = { id: r.id_turno, base: base };
+      guardarTurnoActual(turno);
+      mostrar('Turno abierto ✓', 'ok');
+      await abrirPantallaTurno();
+    } else {
+      mostrar(r.error || 'Error desconocido', 'error');
+    }
+  } catch (err) {
+    mostrar('Sin conexión: ' + err.message, 'error');
+  } finally {
+    $('btnAbrir').disabled = false;
+  }
+});
+
+// ---------- Cargar movimientos ----------
+async function cargarMovimientos() {
+  if (!turno) return;
+  mostrar('Cargando movimientos...', 'aviso');
+  try {
+    const r = await jsonp({ accion: 'movimientos_turno', id_turno: turno.id }, 25000);
+    if (!r || !r.ok) throw new Error(r && r.error ? r.error : 'Error');
+    movimientos = r.items;
+    pintarMovimientos();
+    calcularResumen();
+    mostrar('Turno abierto', 'ok');
+  } catch (err) {
+    mostrar('Error al cargar movimientos: ' + err.message, 'error');
+  }
+}
+
+function pintarMovimientos() {
+  const cont = $('listaMovs');
+  if (!movimientos.length) {
+    cont.textContent = '(sin movimientos)';
+    return;
+  }
+  cont.innerHTML = '';
+  movimientos.slice().reverse().forEach(function (m) {
+    const d = document.createElement('div');
+    d.className = 'mov';
+    const izq = document.createElement('div');
+    izq.innerHTML = '<div class="cat">' + m.categoria + '</div>' +
+      '<div class="hora">' + m.fecha_hora + ' · ' + m.responsable + '</div>' +
+      (m.descripcion ? '<div style="color:#ccc;font-size:12px;">' + m.descripcion + '</div>' : '');
+    const der = document.createElement('div');
+    const signo = m.tipo === 'Ingreso' ? '+' : '-';
+    const clase = m.tipo === 'Ingreso' ? 'monto-ing' : 'monto-egr';
+    der.className = clase;
+    der.textContent = signo + fmt(m.monto);
+    d.appendChild(izq);
+    d.appendChild(der);
+    cont.appendChild(d);
+  });
+}
+
+function calcularResumen() {
+  let ventEf = 0, ventTr = 0, dev = 0, ret = 0, gas = 0, apo = 0;
+  movimientos.forEach(function (m) {
+    if (m.categoria === 'Venta efectivo') ventEf += m.monto;
+    else if (m.categoria === 'Venta transferencia') ventTr += m.monto;
+    else if (m.categoria === 'Devolución efectivo') dev += m.monto;
+    else if (m.categoria === 'Retiro') ret += m.monto;
+    else if (m.categoria === 'Gasto') gas += m.monto;
+    else if (m.categoria === 'Aporte') apo += m.monto;
+  });
+  const base = Number(turno.base || 0);
+  const saldo = base + ventEf + apo - dev - ret - gas;
+
+  $('rBase').textContent = fmt(base);
+  $('rVentEf').textContent = fmt(ventEf);
+  $('rVentTr').textContent = fmt(ventTr);
+  $('rDev').textContent = '-' + fmt(dev);
+  $('rRet').textContent = '-' + fmt(ret);
+  $('rGas').textContent = '-' + fmt(gas);
+  $('rApo').textContent = '+' + fmt(apo);
+  $('rSaldo').textContent = fmt(saldo);
+  $('saldoEsperado').textContent = fmt(saldo);
+  $('turnoInfo2').textContent = 'Turno ' + turno.id + ' · Base inicial: ' + fmt(base);
+}
+
+// ---------- Movimiento manual ----------
+$('tipoEgreso').addEventListener('click', function () {
+  tipoMov = 'Egreso';
+  $('tipoEgreso').className = 'on';
+  $('tipoIngreso').className = '';
+});
+$('tipoIngreso').addEventListener('click', function () {
+  tipoMov = 'Ingreso';
+  $('tipoIngreso').className = 'on';
+  $('tipoEgreso').className = '';
+});
+$('categoriaMov').addEventListener('change', function () {
+  const esOtro = $('categoriaMov').value === 'Otro';
+  $('bloqueOtro').style.display = esOtro ? 'block' : 'none';
+});
+
+$('btnMov').addEventListener('click', async function () {
+  const cat = $('categoriaMov').value;
+  const monto = Number($('montoMov').value);
+  const desc = $('descripcionOtro').value.trim();
+  const obs = $('obsMov').value.trim();
+  if (!monto || monto <= 0) { mostrar('Monto inválido', 'error'); return; }
+  if (cat === 'Otro' && !desc) { mostrar('Describe el movimiento', 'error'); return; }
+  const u = getUsuarioTurno();
+  $('btnMov').disabled = true;
+  mostrar('Registrando...', 'aviso');
+  try {
+    const r = await post({
+      accion: 'movimiento_caja',
+      id_usuario: u.id,
+      id_turno: turno.id,
+      tipo: tipoMov,
+      categoria: cat,
+      monto: monto,
+      descripcion: cat === 'Otro' ? desc : obs
+    });
+    if (r.ok) {
+      mostrar('Movimiento registrado ✓', 'ok');
+      $('montoMov').value = '';
+      $('obsMov').value = '';
+      $('descripcionOtro').value = '';
+      await cargarMovimientos();
+    } else {
+      mostrar(r.error || 'Error desconocido', 'error');
+    }
+  } catch (err) {
+    mostrar('Sin conexión: ' + err.message, 'error');
+  } finally {
+    $('btnMov').disabled = false;
+  }
+});
+
+// ---------- Cerrar turno ----------
+$('btnCerrar').addEventListener('click', async function () {
+  if (!turno) return;
+  const u = getUsuarioTurno();
+  const saldoEsperadoTexto = $('saldoEsperado').textContent;
+  const saldoRealStr = prompt('Cuenta el efectivo físico real en la caja.\n\nSaldo esperado: ' + saldoEsperadoTexto + '\n\nEscribe el efectivo contado:');
+  if (saldoRealStr === null) return;
+  const saldoReal = Number(saldoRealStr);
+  if (isNaN(saldoReal) || saldoReal < 0) { mostrar('Valor inválido', 'error'); return; }
+  const obs = prompt('Observaciones del cierre (opcional):') || '';
+  $('btnCerrar').disabled = true;
+  mostrar('Cerrando turno...', 'aviso');
+  try {
+    const r = await post({
+      accion: 'cerrar_turno',
+      id_usuario: u.id,
+      id_turno: turno.id,
+      saldo_real: saldoReal,
+      observaciones: obs
+    });
+    if (r.ok) {
+      let msj = 'Turno cerrado ✓\nEsperado: ' + fmt(r.saldo_esperado) + '\nReal: ' + fmt(r.saldo_real);
+      if (r.diferencia !== 0) {
+        msj += '\nDIFERENCIA: ' + (r.diferencia > 0 ? '+' : '') + fmt(r.diferencia);
+      } else {
+        msj += '\n¡Cuadró perfecto!';
+      }
+      alert(msj);
+      borrarTurnoActual();
+      location.href = 'index.html';
+    } else {
+      mostrar(r.error || 'Error desconocido', 'error');
+    }
+  } catch (err) {
+    mostrar('Sin conexión: ' + err.message, 'error');
+  } finally {
+    $('btnCerrar').disabled = false;
+  }
+});
+</script>
+</body>
+</html>

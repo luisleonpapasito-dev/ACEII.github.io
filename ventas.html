@@ -366,6 +366,7 @@ $('btnCobrar').addEventListener('click', async function () {
       accion: 'venta',
       id_venta: idVenta,
       id_usuario: usuarioActual.id,
+      id_turno: (getTurnoActual() ? getTurnoActual().id : ''),
       medio_pago: medioPago,
       observaciones: $('obs').value.trim(),
       items: carrito.map(function (it) { return { id_producto: it.id, cantidad: it.cantidad }; })
@@ -618,7 +619,11 @@ $('escAgregar').addEventListener('click', function () {
 });
 
 // ---------- Arranque ----------
-cargarProductos();
+(async function () {
+  const ok = await exigirTurnoCajaAbierto();
+  if (!ok) return;
+  cargarProductos();
+})();
 </script>
 </body>
 </html>

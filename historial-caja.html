@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Historial de Caja</title>
+<link rel="stylesheet" href="estilos.css">
+<script src="comun.js"></script>
+<style>
+  .turno { background:#1e1e1e; border-radius:10px; padding:12px; margin:8px 0; cursor:pointer; }
+  .turno:hover { background:#2a2a2a; }
+  .turno .fila { display:flex; justify-content:space-between; font-size:14px; }
+  .turno .id { color:#ffd54f; font-weight:bold; }
+  .turno .resp { color:#7cfc9a; }
+  .turno .estado-abierto { color:#ffb300; font-weight:bold; }
+  .turno .estado-cerrado { color:#7cfc9a; }
+  .turno .dif-ok { color:#7cfc9a; }
+  .turno .dif-mal { color:#ff6b6b; font-weight:bold; }
+  .detalle { background:#0f0f0f; border-radius:8px; padding:10px; margin-top:8px; font-size:13px; display:none; }
+  .detalle.abierto { display:block; }
+  .detalle .row { display:flex; justify-content:space-between; padding:3px 0; }
+  .filtros { display:flex; gap:8px; margin:8px 0; }
+  .filtros button { flex:1; }
+  .filtros button.on { background:#1b8a3a; border:2px solid #7cfc9a; }
+</style>
+</head>
+<body>
+
+<div id="estado">Cargando...</div>
+
+<div class="caja">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+    <a href="index.html">← Menú</a>
+    <span id="usuarioTurno" style="color:#7cfc9a; font-weight:bold; font-size:13px;"></span>
+  </div>
+  <label>Filtrar por</label>
+  <div class="filtros">
+    <button id="fHoy" class="on">Hoy</button>
+    <button id="fAyer">Ayer</button>
+    <button id="fSemana">7 días</button>
+    <button id="fMes">30 días</button>
+  </div>
+  <button id="btnActualizar" style="width:100%;">🔄 Actualizar</button>
+</div>
+
+<div id="listaTurnos"></div>
+
+<script>
+exigirSesion();
+pintarUsuarioTurno();
+
+let filtro = 'hoy';
+
+function rangoFechas() {
+  const hoy = new Date();
+  const hasta = hoy.toISOString().slice(0, 10) + ' 23:59:59';
+  const d = new Date(hoy);
+  if (filtro === 'hoy') {
+    return { desde: hoy.toISOString().slice(0, 10) + ' 00:00:00', hasta: hasta };
+  }
+  if (filtro === 'ayer') {
+    d.setDate(d.getDate() - 1);
+    const dia = d.toISOString().slice(0, 10);
+    return { desde: dia + ' 00:00:00', hasta: dia + ' 23:59:59' };
+  }
+  if (filtro === 'semana') {
+    d.setDate(d.getDate() - 7);
+    return { desde: d.toISOString().slice(0, 10) + ' 00:00:00', hasta: hasta };
+  }
+  if (filtro === 'mes') {
+    d.setDate(d.getDate() - 30);
+    return { desde: d.toISOString().slice(0, 10) + ' 00:00:00', hasta: hasta };
+  }
+}
+
+function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
+
+async function cargar() {
+  mostrar('Cargando historial...', 'aviso');
+  const rango = rangoFechas();
+  try {
+    const r = await jsonp({ accion: 'historial_turnos', desde: rango.desde, hasta: rango.hasta }, 30000);
+    if (!r || !r.ok) throw new Error(r && r.error ? r.error : 'Error');
+    pintar(r.items);
+    mostrar(r.items.length + ' turno(s) encontrado(s)', 'ok');
+  } catch (err) {
+    mostrar('Error: ' + err.message, 'error');
+  }
+}
+
+function pintar(items) {
+  const cont = $('listaTurnos');
+  cont.innerHTML = '';
+  if (!items.length) {
+    cont.innerHTML = '<div class="caja">(no hay turnos en este rango)</div>';
+    return;
+  }
+  items.forEach(function (t) {
+    const d = document.createElement('div');
+    d.className = 'turno';
+    const dif = Number(t.diferencia || 0);
+    const difClase = dif === 0 ? 'dif-ok' : 'dif-mal';
+    const difTexto = dif === 0 ? 'Cuadró' : (dif > 0 ? '+' + fmt(dif) : fmt(dif));
+    const estadoClase = t.estado === 'Abierto' ? 'estado-abierto' : 'estado-cerrado';
+    d.innerHTML =
+      '<div class="fila"><span class="id">' + t.id_turno + '</span><span class="' + estadoClase + '">' + t.estado + '</span></div>' +
+      '<div class="fila"><span class="resp">' + t.responsable + '</span><span style="color:#aaa;font-size:12px;">' + t.fecha_apertura + '</span></div>' +
+      '<div class="fila"><span>Esperado: ' + fmt(t.saldo_esperado) + '</span><span>Real: ' + fmt(t.saldo_real) + '</span></div>' +
+      '<div class="fila"><span>Diferencia:</span><span class="' + difClase + '">' + difTexto + '</span></div>';
+    d.addEventListener('click', function () {
+      mostrarDetalle(t.id_turno, d);
+    });
+    cont.appendChild(d);
+  });
+}
+
+async function mostrarDetalle(idTurno, nodo) {
+  // Si ya estaba abierto, lo cierra
+  const sig = nodo.nextSibling;
+  if (sig && sig.classList && sig.classList.contains('detalle')) {
+    sig.remove();
+    return;
+  }
+  const d = document.createElement('div');
+  d.className = 'detalle';
+  d.textContent = 'Cargando...';
+  nodo.parentNode.insertBefore(d, nodo.nextSibling);
+  try {
+    const r = await jsonp({ accion: 'movimientos_turno', id_turno: idTurno }, 30000);
+    if (!r || !r.ok) { d.textContent = 'Error al cargar movimientos'; return; }
+    if (!r.items.length) { d.textContent = '(sin movimientos)'; return; }
+    let html = '<strong style="color:#ffd54f;">Movimientos:</strong>';
+    r.items.forEach(function (m) {
+      const signo = m.tipo === 'Ingreso' ? '+' : '-';
+      const clase = m.tipo === 'Ingreso' ? 'monto-ing' : 'monto-egr';
+      html += '<div class="row"><span>' + m.fecha_hora + ' · ' + m.categoria + (m.descripcion ? ' (' + m.descripcion + ')' : '') + '</span><span class="' + clase + '">' + signo + fmt(m.monto) + '</span></div>';
+    });
+    d.innerHTML = html;
+  } catch (err) {
+    d.textContent = 'Error: ' + err.message;
+  }
+}
+
+$('fHoy').addEventListener('click', function () { filtro = 'hoy'; marcarActivo(this); cargar(); });
+$('fAyer').addEventListener('click', function () { filtro = 'ayer'; marcarActivo(this); cargar(); });
+$('fSemana').addEventListener('click', function () { filtro = 'semana'; marcarActivo(this); cargar(); });
+$('fMes').addEventListener('click', function () { filtro = 'mes'; marcarActivo(this); cargar(); });
+$('btnActualizar').addEventListener('click', cargar);
+
+function marcarActivo(btn) {
+  ['fHoy', 'fAyer', 'fSemana', 'fMes'].forEach(function (id) {
+    $(id).className = '';
+  });
+  btn.className = 'on';
+}
+
+cargar();
+</script>
+</body>
+</html>

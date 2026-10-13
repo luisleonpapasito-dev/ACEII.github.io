@@ -340,7 +340,11 @@ function limpiarTodo() {
   $('motivo').value = '';
 }
 
-cargarProductos();
+(async function () {
+  const ok = await exigirTurnoCajaAbierto();
+  if (!ok) return;
+  cargarProductos();
+})();
 </script>
 </body>
 </html>

@@ -30,11 +30,13 @@
     <span id="usuarioTurno" style="color:#7cfc9a; font-weight:bold;"></span>
     <button id="btnCerrarTurno" style="padding:6px 10px; margin:0; font-size:13px;">Cerrar turno</button>
   </div>
-  <a class="op" href="recepcion.html">📥 Recepción de mercancía</a>
-  <a class="op" href="codigos.html">📷 Registrar códigos de barras</a>
-  <a class="op" href="inventario.html">📦 Inventario y ajustes</a>
+  <a class="op" href="caja.html">💰 Caja del turno</a>
   <a class="op" href="ventas.html">🛒 Ventas</a>
+  <a class="op" href="recepcion.html">📥 Recepción de mercancía</a>
+  <a class="op" href="inventario.html">📦 Inventario y ajustes</a>
   <a class="op" href="devoluciones.html">↩️ Devoluciones</a>
+  <a class="op" href="codigos.html">📷 Registrar códigos de barras</a>
+  <a class="op" href="historial-caja.html">📊 Historial de caja</a>
   <button id="btnSalir">Cerrar sesión general</button>
 </div>
 
@@ -114,10 +116,16 @@ $('btnSalir').addEventListener('click', function () {
   if (!confirm('¿Cerrar la sesión general?')) return;
   borrarUsuarioTurno();
   borrarToken();
+  borrarTurnoActual();
   $('clave').value = '';
   pintar();
 });
-$('btnCerrarTurno').addEventListener('click', cerrarTurno);
+$('btnCerrarTurno').addEventListener('click', function () {
+  if (!confirm('¿Cerrar el turno de usuario? Tendrás que identificarte de nuevo.')) return;
+  borrarUsuarioTurno();
+  borrarTurnoActual();
+  pintar();
+});
 
 pintar();
 if (getToken() && !getUsuarioTurno()) cargarUsuarios();

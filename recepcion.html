@@ -320,7 +320,11 @@ $('btnConfirmar').addEventListener('click', function () {
 window.addEventListener('online', procesarCola);
 cola = leerCola();
 pintarPend();
-cargarDatos().then(procesarCola);
+(async function () {
+  const ok = await exigirTurnoCajaAbierto();
+  if (!ok) return;
+  cargarDatos().then(procesarCola);
+})();
 </script>
 </body>
 </html>

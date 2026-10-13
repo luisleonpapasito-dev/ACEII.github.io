@@ -33,13 +33,42 @@ function borrarUsuarioTurno() {
   try { localStorage.removeItem('caf_usuario_turno'); } catch (e) {}
 }
 
+// ---------- Turno de caja ----------
+function getTurnoActual() {
+  try {
+    const t = JSON.parse(localStorage.getItem('caf_turno_caja') || 'null');
+    return t && t.id ? t : null;
+  } catch (e) { return null; }
+}
+function guardarTurnoActual(t) {
+  try { localStorage.setItem('caf_turno_caja', JSON.stringify(t)); } catch (e) {}
+}
+function borrarTurnoActual() {
+  try { localStorage.removeItem('caf_turno_caja'); } catch (e) {}
+}
+
 // Exige token general Y usuario de turno
 function exigirSesion() {
   if (!getToken()) { location.href = 'index.html'; return; }
   if (!getUsuarioTurno()) { location.href = 'index.html'; return; }
 }
 
-// Pinta el nombre del usuario de turno en el encabezado
+// Exige que haya turno de caja abierto
+async function exigirTurnoCajaAbierto() {
+  if (getTurnoActual()) return true;
+  try {
+    const u = getUsuarioTurno();
+    if (!u) return false;
+    const r = await jsonp({ accion: 'mi_turno', id_usuario: u.id }, 15000);
+    if (r && r.ok && r.turno) {
+      guardarTurnoActual(r.turno);
+      return true;
+    }
+  } catch (e) {}
+  location.href = 'caja.html';
+  return false;
+}
+
 function pintarUsuarioTurno() {
   const u = getUsuarioTurno();
   const cont = document.getElementById('usuarioTurno');
@@ -48,8 +77,9 @@ function pintarUsuarioTurno() {
 }
 
 function cerrarTurno() {
-  if (!confirm('¿Cerrar el turno? Tendrás que identificarte de nuevo.')) return;
+  if (!confirm('¿Cerrar el turno de usuario? Tendrás que identificarte de nuevo.')) return;
   borrarUsuarioTurno();
+  borrarTurnoActual();
   location.href = 'index.html';
 }
 

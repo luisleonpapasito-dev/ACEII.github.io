@@ -7,12 +7,18 @@
 <link rel="stylesheet" href="estilos.css">
 <script src="comun.js"></script>
 <style>
-  #resultados { max-height: 240px; overflow-y: auto; }
+  #resultados, #resultadosNuevo { max-height: 240px; overflow-y: auto; }
   .resultado { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; }
   .resultado:hover { background: #2a2a2a; }
   .resultado small { color: #aaa; display: block; }
   .venta-item { padding: 8px; border-bottom: 1px solid #333; cursor: pointer; font-size: 13px; }
   .venta-item:hover { background: #2a2a2a; }
+  .bloque { margin-top: 10px; padding: 10px; background: #2a2a2a; border-radius: 8px; }
+  .resumen { background: #1a1a1a; padding: 10px; border-radius: 8px; margin-top: 10px; }
+  .resumen .linea { display: flex; justify-content: space-between; padding: 3px 0; font-size: 14px; }
+  .resumen .linea.total { font-weight: bold; color: #ffd54f; font-size: 16px; border-top: 1px solid #333; margin-top: 4px; padding-top: 6px; }
+  .diferencia-positiva { color: #ff6b6b; }
+  .diferencia-negativa { color: #7cfc9a; }
 </style>
 </head>
 <body>
@@ -29,14 +35,15 @@
   <input type="text" id="buscar" placeholder="Escribe 2 letras o más..." autocomplete="off">
   <div id="resultados"></div>
 
-  <div id="panelProducto" style="display:none; margin-top:10px; padding:10px; background:#2a2a2a; border-radius:8px;">
+  <div id="panelProducto" class="bloque" style="display:none;">
     <div id="prodNombre" style="font-weight:bold; margin-bottom:6px;"></div>
     <label>Cantidad a devolver</label>
-    <input type="number" id="cantidad" value="1" min="1" step="1">
+    <input type="number" id="cantidadDevuelta" value="1" min="1" step="1">
   </div>
 </div>
 
 <div class="caja" id="panelDatos" style="display:none">
+
   <label>Motivo</label>
   <select id="motivo">
     <option value="">Elige el motivo...</option>
@@ -47,14 +54,33 @@
     <option value="Otro">Otro</option>
   </select>
 
-  <label>Medio de reembolso</label>
-  <select id="medio">
-    <option value="Efectivo">Efectivo</option>
-    <option value="Transferencia">Transferencia</option>
-    <option value="No aplica (cambio)">No aplica (es un cambio)</option>
-  </select>
+  <div id="bloqueCambio" style="display:none;">
+    <label style="margin-top:12px;">¿Qué producto se lleva a cambio?</label>
+    <input type="text" id="buscarNuevo" placeholder="Busca el producto nuevo..." autocomplete="off">
+    <div id="resultadosNuevo"></div>
+    <div id="panelNuevo" class="bloque" style="display:none;">
+      <div id="nuevoNombre" style="font-weight:bold; margin-bottom:6px;"></div>
+      <label>Cantidad nueva</label>
+      <input type="number" id="cantidadNueva" value="1" min="1" step="1">
+    </div>
 
-  <label>¿Vincular a una venta original? (opcional)</label>
+    <label style="margin-top:12px;">Medio de pago (para la venta nueva)</label>
+    <select id="medioPago">
+      <option value="Efectivo">Efectivo</option>
+      <option value="Transferencia">Transferencia</option>
+    </select>
+  </div>
+
+  <div id="bloqueReembolso">
+    <label>Medio de reembolso</label>
+    <select id="medio">
+      <option value="Efectivo">Efectivo</option>
+      <option value="Transferencia">Transferencia</option>
+      <option value="No aplica">No aplica</option>
+    </select>
+  </div>
+
+  <label style="margin-top:12px;">¿Vincular a una venta original? (opcional)</label>
   <button id="btnBuscarVenta" style="width:100%;">Buscar venta reciente</button>
   <div id="listaVentas" style="display:none; max-height:200px; overflow-y:auto; background:#1a1a1a; border-radius:8px; margin-top:6px; padding:4px;"></div>
   <div id="ventaElegida" style="color:#7cfc9a; font-size:13px; margin-top:6px;"></div>
@@ -62,7 +88,9 @@
   <label>Observaciones (opcional)</label>
   <input type="text" id="obs" maxlength="200">
 
-  <button class="main" id="btnGuardar" style="width:100%; margin-top:8px;">Registrar devolución</button>
+  <div id="resumen" class="resumen" style="display:none;"></div>
+
+  <button class="main" id="btnGuardar" style="width:100%; margin-top:8px;">Registrar</button>
 </div>
 
 <script>
@@ -71,6 +99,7 @@ pintarUsuarioTurno();
 
 let productos = [];
 let elegido = null;
+let elegidoNuevo = null;
 let idVentaOriginal = '';
 
 async function cargarProductos() {
@@ -86,12 +115,12 @@ async function cargarProductos() {
   }
 }
 
+// ---------- Buscador del producto a devolver ----------
 function pintarResultados() {
   const q = norm($('buscar').value);
   const cont = $('resultados');
   cont.innerHTML = '';
   $('panelProducto').style.display = 'none';
-  $('panelDatos').style.display = 'none';
   if (q.length < 2) return;
   let n = 0;
   productos.forEach(function (p) {
@@ -104,11 +133,46 @@ function pintarResultados() {
     d.addEventListener('click', function () {
       elegido = p;
       $('prodNombre').textContent = p.nombre + ' — $' + p.precio.toLocaleString('es-CO');
-      $('cantidad').value = 1;
+      $('cantidadDevuelta').value = 1;
       $('panelProducto').style.display = 'block';
       $('panelDatos').style.display = 'block';
       $('resultados').innerHTML = '';
       $('buscar').value = '';
+      actualizarResumen();
+    });
+    cont.appendChild(d);
+  });
+  if (!n) {
+    const d = document.createElement('div');
+    d.className = 'resultado';
+    d.textContent = 'Sin resultados.';
+    cont.appendChild(d);
+  }
+}
+
+// ---------- Buscador del producto nuevo ----------
+function pintarResultadosNuevo() {
+  const q = norm($('buscarNuevo').value);
+  const cont = $('resultadosNuevo');
+  cont.innerHTML = '';
+  $('panelNuevo').style.display = 'none';
+  if (q.length < 2) return;
+  let n = 0;
+  productos.forEach(function (p) {
+    if (n >= 6) return;
+    if (norm(p.id + ' ' + p.nombre).indexOf(q) < 0) return;
+    n++;
+    const d = document.createElement('div');
+    d.className = 'resultado';
+    d.innerHTML = '<b>' + p.nombre + '</b><small>' + p.id + ' · $' + p.precio.toLocaleString('es-CO') + ' · Stock: ' + p.stock + '</small>';
+    d.addEventListener('click', function () {
+      elegidoNuevo = p;
+      $('nuevoNombre').textContent = p.nombre + ' — $' + p.precio.toLocaleString('es-CO');
+      $('cantidadNueva').value = 1;
+      $('panelNuevo').style.display = 'block';
+      $('resultadosNuevo').innerHTML = '';
+      $('buscarNuevo').value = '';
+      actualizarResumen();
     });
     cont.appendChild(d);
   });
@@ -121,7 +185,41 @@ function pintarResultados() {
 }
 
 $('buscar').addEventListener('input', pintarResultados);
+$('buscarNuevo').addEventListener('input', pintarResultadosNuevo);
 
+// ---------- Cambio de modo: si es "Cambio de producto", mostrar bloque ----------
+$('motivo').addEventListener('change', function () {
+  const esCambio = $('motivo').value === 'Cambio de producto';
+  $('bloqueCambio').style.display = esCambio ? 'block' : 'none';
+  $('bloqueReembolso').style.display = esCambio ? 'none' : 'block';
+  actualizarResumen();
+});
+
+// ---------- Resumen ----------
+function actualizarResumen() {
+  if (!elegido || !$('motivo').value) { $('resumen').style.display = 'none'; return; }
+  const cantDev = Number($('cantidadDevuelta').value) || 0;
+  const totalDev = cantDev * elegido.precio;
+  const esCambio = $('motivo').value === 'Cambio de producto';
+  let html = '<div class="linea"><span>Devuelve: ' + cantDev + '× ' + elegido.nombre + '</span><span>$' + totalDev.toLocaleString('es-CO') + '</span></div>';
+  let totalNuevo = 0;
+  if (esCambio && elegidoNuevo) {
+    const cantNue = Number($('cantidadNueva').value) || 0;
+    totalNuevo = cantNue * elegidoNuevo.precio;
+    html += '<div class="linea"><span>Lleva: ' + cantNue + '× ' + elegidoNuevo.nombre + '</span><span>$' + totalNuevo.toLocaleString('es-CO') + '</span></div>';
+    const dif = totalNuevo - totalDev;
+    const clase = dif > 0 ? 'diferencia-positiva' : (dif < 0 ? 'diferencia-negativa' : '');
+    const etiqueta = dif > 0 ? 'Cliente paga:' : (dif < 0 ? 'Se devuelve al cliente:' : 'Sin diferencia');
+    html += '<div class="linea total ' + clase + '"><span>' + etiqueta + '</span><span>$' + Math.abs(dif).toLocaleString('es-CO') + '</span></div>';
+  }
+  $('resumen').innerHTML = html;
+  $('resumen').style.display = 'block';
+}
+
+$('cantidadDevuelta').addEventListener('input', actualizarResumen);
+$('cantidadNueva').addEventListener('input', actualizarResumen);
+
+// ---------- Buscar venta original ----------
 $('btnBuscarVenta').addEventListener('click', async function () {
   mostrar('Buscando ventas recientes...', 'aviso');
   try {
@@ -130,10 +228,7 @@ $('btnBuscarVenta').addEventListener('click', async function () {
     const cont = $('listaVentas');
     cont.innerHTML = '';
     cont.style.display = 'block';
-    if (!r.items.length) {
-      cont.textContent = '(no hay ventas recientes)';
-      return;
-    }
+    if (!r.items.length) { cont.textContent = '(no hay ventas recientes)'; return; }
     r.items.forEach(function (v) {
       const d = document.createElement('div');
       d.className = 'venta-item';
@@ -150,49 +245,100 @@ $('btnBuscarVenta').addEventListener('click', async function () {
   }
 });
 
+// ---------- Guardar ----------
 $('btnGuardar').addEventListener('click', async function () {
   if (!elegido) { mostrar('Elige un producto', 'error'); return; }
-  const cant = Number($('cantidad').value);
-  if (!cant || cant <= 0) { mostrar('Cantidad inválida', 'error'); return; }
+  const cantDev = Number($('cantidadDevuelta').value);
+  if (!cantDev || cantDev <= 0) { mostrar('Cantidad a devolver inválida', 'error'); return; }
   if (!$('motivo').value) { mostrar('Elige el motivo', 'error'); return; }
+
   const u = getUsuarioTurno();
   if (!u) { mostrar('No hay turno iniciado', 'error'); return; }
 
-  $('btnGuardar').disabled = true;
-  mostrar('Registrando devolución...', 'aviso');
-  try {
-    const r = await post({
-      accion: 'devolucion',
-      id_usuario: u.id,
-      id_venta_original: idVentaOriginal,
-      id_producto: elegido.id,
-      cantidad: cant,
-      motivo: $('motivo').value,
-      observaciones: $('obs').value.trim(),
-      medio_reembolso: $('medio').value
-    });
-    if (r.ok) {
-      mostrar('Devolución registrada ✓ ' + r.id_devolucion + ' · ' + r.producto + ' × ' + r.cantidad + ' = $' + r.total.toLocaleString('es-CO'), 'ok');
-      if (navigator.vibrate) navigator.vibrate(200);
-      // Limpiar
-      elegido = null;
-      idVentaOriginal = '';
-      $('ventaElegida').textContent = '';
-      $('listaVentas').style.display = 'none';
-      $('panelProducto').style.display = 'none';
-      $('panelDatos').style.display = 'none';
-      $('obs').value = '';
-    } else if (r.error === 'Token inválido') {
-      borrarToken(); location.href = 'index.html';
-    } else {
-      mostrar(r.error || 'Error desconocido', 'error');
+  const esCambio = $('motivo').value === 'Cambio de producto';
+
+  if (esCambio) {
+    if (!elegidoNuevo) { mostrar('Elige el producto nuevo', 'error'); return; }
+    const cantNue = Number($('cantidadNueva').value);
+    if (!cantNue || cantNue <= 0) { mostrar('Cantidad nueva inválida', 'error'); return; }
+
+    $('btnGuardar').disabled = true;
+    mostrar('Registrando cambio...', 'aviso');
+    try {
+      const r = await post({
+        accion: 'cambio_producto',
+        id_usuario: u.id,
+        id_venta_original: idVentaOriginal,
+        id_producto_devuelto: elegido.id,
+        cantidad_devuelta: cantDev,
+        id_producto_nuevo: elegidoNuevo.id,
+        cantidad_nueva: cantNue,
+        medio_pago: $('medioPago').value,
+        observaciones: $('obs').value.trim()
+      });
+      if (r.ok) {
+        const dif = r.diferencia;
+        let msj = 'Cambio registrado ✓ ' + r.id_devolucion + ' / ' + r.id_venta;
+        if (dif > 0) msj += ' · Cliente paga $' + dif.toLocaleString('es-CO');
+        else if (dif < 0) msj += ' · Devuelve al cliente $' + Math.abs(dif).toLocaleString('es-CO');
+        else msj += ' · Sin diferencia';
+        mostrar(msj, 'ok');
+        if (navigator.vibrate) navigator.vibrate(200);
+        limpiarTodo();
+      } else if (r.error === 'Token inválido') {
+        borrarToken(); location.href = 'index.html';
+      } else {
+        mostrar(r.error || 'Error desconocido', 'error');
+      }
+    } catch (err) {
+      mostrar('Sin conexión. Revisa internet.', 'error');
+    } finally {
+      $('btnGuardar').disabled = false;
     }
-  } catch (err) {
-    mostrar('Sin conexión. Revisa internet.', 'error');
-  } finally {
-    $('btnGuardar').disabled = false;
+  } else {
+    $('btnGuardar').disabled = true;
+    mostrar('Registrando devolución...', 'aviso');
+    try {
+      const r = await post({
+        accion: 'devolucion',
+        id_usuario: u.id,
+        id_venta_original: idVentaOriginal,
+        id_producto: elegido.id,
+        cantidad: cantDev,
+        motivo: $('motivo').value,
+        observaciones: $('obs').value.trim(),
+        medio_reembolso: $('medio').value
+      });
+      if (r.ok) {
+        mostrar('Devolución registrada ✓ ' + r.id_devolucion + ' · ' + r.producto + ' × ' + r.cantidad + ' = $' + r.total.toLocaleString('es-CO'), 'ok');
+        if (navigator.vibrate) navigator.vibrate(200);
+        limpiarTodo();
+      } else if (r.error === 'Token inválido') {
+        borrarToken(); location.href = 'index.html';
+      } else {
+        mostrar(r.error || 'Error desconocido', 'error');
+      }
+    } catch (err) {
+      mostrar('Sin conexión. Revisa internet.', 'error');
+    } finally {
+      $('btnGuardar').disabled = false;
+    }
   }
 });
+
+function limpiarTodo() {
+  elegido = null; elegidoNuevo = null; idVentaOriginal = '';
+  $('ventaElegida').textContent = '';
+  $('listaVentas').style.display = 'none';
+  $('panelProducto').style.display = 'none';
+  $('panelNuevo').style.display = 'none';
+  $('panelDatos').style.display = 'none';
+  $('bloqueCambio').style.display = 'none';
+  $('bloqueReembolso').style.display = 'block';
+  $('resumen').style.display = 'none';
+  $('obs').value = '';
+  $('motivo').value = '';
+}
 
 cargarProductos();
 </script>

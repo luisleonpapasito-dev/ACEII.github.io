@@ -1,22 +1,427 @@
-body { font-family: Arial, sans-serif; margin: 0; padding: 0 12px 24px; background: #111; color: #fff; }
-.caja { max-width: 480px; margin: 8px auto; background: #1e1e1e; border-radius: 10px; padding: 10px; box-sizing: border-box; }
-#estado { max-width: 480px; margin: 8px auto; padding: 12px; border-radius: 12px; background: #333; font-weight: bold; text-align: center; word-break: break-word; position: sticky; top: 0; z-index: 5; box-sizing: border-box; }
-#estado.ok { background: #1b8a3a; }
-#estado.error { background: #c62828; }
-#estado.aviso { background: #e65100; }
-input[type=text], input[type=password], input[type=number], select { width: 100%; padding: 10px; margin: 4px 0; border-radius: 8px; background: #333; color: #fff; border: 1px solid #555; font-size: 16px; box-sizing: border-box; }
-button { padding: 12px 16px; border: none; border-radius: 8px; background: #444; color: #fff; font-size: 15px; margin: 4px 4px 4px 0; }
-button.main { background: #1b8a3a; }
-button:disabled { opacity: 0.4; }
-label { font-size: 13px; color: #bbb; display: block; margin-top: 6px; }
-a { color: #8ab4f8; }
-a.op { display: block; padding: 16px; margin: 8px 0; border-radius: 10px; background: #1b8a3a; color: #fff; text-decoration: none; font-size: 18px; font-weight: bold; text-align: center; }
-a.op.off { background: #333; color: #888; }
-.fila { display: flex; gap: 8px; margin: 6px 0; }
-.tog { flex: 1; margin: 0; background: #333; color: #aaa; border: 3px solid transparent; font-weight: bold; }
-.tog.on { background: #1b8a3a; color: #fff; border-color: #7cfc9a; }
-.linea { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #333; font-size: 14px; }
-.linea button { margin: 0; padding: 6px 10px; }
-#elegido { font-size: 14px; color: #7cfc9a; margin-top: 4px; word-break: break-word; }
-#total { font-size: 18px; color: #ffd54f; font-weight: bold; margin: 8px 0; }
-#pend { color: #ffb300; font-size: 13px; margin-top: 6px; }
+/* ============================================================
+   ACEII · Cafetería — Estilos globales
+   Tema claro, Material Design 3, azul ACI
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Fondos */
+  --fondo: #F5F7FB;
+  --superficie: #FFFFFF;
+  --superficie-2: #F0F4FF;
+
+  /* Texto */
+  --texto: #1A1C1E;
+  --texto-suave: #5A6072;
+  --texto-claro: #8A94A6;
+
+  /* Azul principal */
+  --azul: #1B4DB1;
+  --azul-claro: #4A7DE0;
+  --azul-suave: #E3ECFF;
+
+  /* Colores de acento */
+  --verde: #2BB673;
+  --verde-suave: #E0F7EC;
+  --morado: #7B4DDB;
+  --morado-suave: #EFE7FB;
+  --naranja: #F2A100;
+  --naranja-suave: #FFF4DC;
+  --rosa: #E91E63;
+  --rosa-suave: #FCE4EC;
+  --cyan: #00BCD4;
+  --cyan-suave: #D6F5FA;
+
+  /* Semánticos */
+  --exito: #43A047;
+  --alerta: #E53935;
+  --aviso: #FB8C00;
+  --aviso-suave: #FFF3E0;
+
+  /* Espaciado */
+  --radio: 16px;
+  --radio-sm: 10px;
+  --radio-xs: 8px;
+  --padding: 16px;
+  --sombra: 0 2px 8px rgba(27, 77, 177, 0.08);
+  --sombra-fuerte: 0 4px 12px rgba(27, 77, 177, 0.12);
+
+  /* Tipografía */
+  --fuente: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--fuente);
+  margin: 0;
+  padding: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   Barra de estado
+   ============================================================ */
+#estado {
+  max-width: 480px;
+  margin: 8px auto 0;
+  padding: 12px 16px;
+  border-radius: var(--radio-sm);
+  background: var(--superficie);
+  color: var(--texto-suave);
+  font-weight: 500;
+  font-size: 14px;
+  text-align: center;
+  box-shadow: var(--sombra);
+  word-break: break-word;
+  box-sizing: border-box;
+}
+#estado.ok { background: var(--exito); color: #fff; }
+#estado.error { background: var(--alerta); color: #fff; }
+#estado.aviso { background: var(--aviso); color: #fff; }
+
+/* ============================================================
+   Header con onda azul
+   ============================================================ */
+.app-header {
+  background: linear-gradient(135deg, #1B4DB1 0%, #4A7DE0 100%);
+  color: #fff;
+  padding: 20px 20px 60px;
+  border-radius: 0 0 24px 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--sombra-fuerte);
+}
+.app-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: var(--fondo);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+.app-header-contenido {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.app-header-icono {
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.app-header-icono svg {
+  width: 28px;
+  height: 28px;
+  stroke: #fff;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.app-header-texto {
+  flex: 1;
+}
+.app-header-titulo {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+}
+.app-header-sub {
+  font-size: 13px;
+  font-weight: 400;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   Caja / Card general
+   ============================================================ */
+.caja {
+  max-width: 480px;
+  margin: 12px auto;
+  background: var(--superficie);
+  border-radius: var(--radio);
+  padding: var(--padding);
+  box-sizing: border-box;
+  box-shadow: var(--sombra);
+}
+
+/* ============================================================
+   Grid de tarjetas del menú
+   ============================================================ */
+.grid-menu {
+  max-width: 480px;
+  margin: 16px auto 24px;
+  padding: 0 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.card {
+  background: var(--superficie);
+  border-radius: var(--radio);
+  padding: 14px;
+  box-shadow: var(--sombra);
+  text-decoration: none;
+  color: var(--texto);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  transition: transform 0.15s, box-shadow 0.15s;
+  overflow: hidden;
+  min-height: 130px;
+}
+.card:active {
+  transform: scale(0.97);
+  box-shadow: var(--sombra-fuerte);
+}
+
+.card-icono {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.card-icono svg {
+  width: 22px;
+  height: 22px;
+  stroke: #fff;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.card-titulo {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--texto);
+}
+.card-sub {
+  font-size: 12px;
+  color: var(--texto-suave);
+  line-height: 1.3;
+}
+.card-flecha {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  color: var(--texto-claro);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Colores de los íconos */
+.card-icono.azul { background: var(--azul); }
+.card-icono.verde { background: var(--verde); }
+.card-icono.morado { background: var(--morado); }
+.card-icono.naranja { background: var(--naranja); }
+.card-icono.rosa { background: var(--rosa); }
+.card-icono.cyan { background: var(--cyan); }
+
+/* Tarjetas anchas (que ocupan las 2 columnas) */
+.card.ancha {
+  grid-column: span 2;
+  min-height: auto;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+.card.ancha .card-texto {
+  flex: 1;
+}
+.card.ancha .card-icono {
+  width: 40px;
+  height: 40px;
+}
+
+/* ============================================================
+   Botones
+   ============================================================ */
+button {
+  font-family: var(--fuente);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 16px;
+  border: none;
+  border-radius: var(--radio-sm);
+  background: var(--superficie-2);
+  color: var(--texto);
+  cursor: pointer;
+  margin: 4px 4px 4px 0;
+  transition: background 0.15s, transform 0.1s;
+}
+button:active {
+  transform: scale(0.98);
+}
+button.main {
+  background: var(--azul);
+  color: #fff;
+}
+button.main:active {
+  background: var(--azul-claro);
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   Inputs y selects
+   ============================================================ */
+input[type=text],
+input[type=password],
+input[type=number],
+input[type=range],
+select {
+  font-family: var(--fuente);
+  width: 100%;
+  padding: 12px 14px;
+  margin: 6px 0;
+  border-radius: var(--radio-sm);
+  background: var(--fondo);
+  color: var(--texto);
+  border: 1.5px solid #E1E5EE;
+  font-size: 15px;
+  box-sizing: border-box;
+  transition: border-color 0.15s, background 0.15s;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--azul);
+  background: var(--superficie);
+}
+
+/* ============================================================
+   Etiquetas
+   ============================================================ */
+label {
+  font-size: 13px;
+  color: var(--texto-suave);
+  font-weight: 500;
+  display: block;
+  margin-top: 8px;
+}
+
+/* ============================================================
+   Filas y layout
+   ============================================================ */
+.fila {
+  display: flex;
+  gap: 8px;
+  margin: 6px 0;
+}
+.fila > * {
+  flex: 1;
+}
+
+/* ============================================================
+   Botones toggle (tipo "Egreso/Ingreso", "Unidades/Paquetes")
+   ============================================================ */
+.tog {
+  flex: 1;
+  margin: 0;
+  background: var(--superficie-2);
+  color: var(--texto-suave);
+  border: 2px solid transparent;
+  font-weight: 600;
+}
+.tog.on {
+  background: var(--azul);
+  color: #fff;
+  border-color: var(--azul-claro);
+}
+
+/* ============================================================
+   Header de pantalla interna (para las sub-páginas)
+   ============================================================ */
+.pantalla-header {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pantalla-header a {
+  color: var(--azul);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+}
+.pantalla-header .usuario {
+  color: var(--azul);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* ============================================================
+   Enlaces
+   ============================================================ */
+a {
+  color: var(--azul);
+  text-decoration: none;
+}
+
+/* ============================================================
+   Colores semánticos para JS (mantengo clases viejas por compatibilidad)
+   ============================================================ */
+#estado.ok, .estado-ok { background: var(--exito) !important; color: #fff !important; }
+#estado.error, .estado-error { background: var(--alerta) !important; color: #fff !important; }
+#estado.aviso, .estado-aviso { background: var(--aviso) !important; color: #fff !important; }
+
+/* ============================================================
+   Compatibilidad con pantallas viejas (mientras migramos)
+   ============================================================ */
+a.op {
+  display: block;
+  padding: 14px;
+  margin: 8px 0;
+  border-radius: var(--radio-sm);
+  background: var(--azul);
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+a.op.off { background: var(--superficie-2); color: var(--texto-claro); }
+
+/* Layout antiguo */
+.linea {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid #E8ECF4;
+  font-size: 14px;
+}

@@ -19,7 +19,15 @@
     font-size: 14px;
   }
   .linea:last-child { border-bottom: none; }
-  .linea button {
+  .linea .btn-menos {
+    padding: 4px 10px;
+    margin: 0;
+    background: #E3ECFF;
+    color: var(--azul);
+    font-weight: 700;
+    border-radius: 8px;
+  }
+  .linea .btn-quitar {
     padding: 4px 10px;
     margin: 0;
     background: #FFE5E5;
@@ -45,6 +53,25 @@
     font-size: 13px;
     margin-top: 8px;
     text-align: center;
+  }
+  /* Panel de escaneo */
+  #panelEscaneo .tog-fila {
+    display: flex;
+    gap: 8px;
+    margin: 8px 0;
+  }
+  #panelEscaneo .tog-fila button {
+    flex: 1;
+    margin: 0;
+    background: var(--superficie-2);
+    color: var(--texto-suave);
+    border: 2px solid transparent;
+    font-weight: 600;
+  }
+  #panelEscaneo .tog-fila button.on {
+    background: var(--azul);
+    color: #fff;
+    border-color: var(--azul-claro);
   }
 </style>
 </head>
@@ -113,6 +140,40 @@
   <video id="video" playsinline muted autoplay style="width:100%; height:100%; object-fit:cover;"></video>
   <div id="marco" style="position:absolute; left:5%; top:27.5%; width:90%; height:45%; border:3px solid #00e676; border-radius:10px; box-sizing:border-box; pointer-events:none;"></div>
   <div id="infoCam" style="position:absolute; bottom:20px; left:20px; right:20px; background:rgba(0,0,0,0.7); padding:12px; border-radius:10px; text-align:center; color:#fff; font-size:14px;">Apunta al código de barras</div>
+
+  <div id="panelEscaneo" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:3; padding:20px; box-sizing:border-box; overflow-y:auto;">
+    <div style="max-width:480px; margin:40px auto 0; background:#fff; border-radius:16px; padding:20px;">
+      <div style="color:#5A6072; font-size:12px; margin-bottom:4px;">Código detectado</div>
+      <div id="codigoDetectado" style="color:var(--azul); font-size:16px; font-weight:700; margin-bottom:12px; word-break:break-all;"></div>
+
+      <div style="color:#5A6072; font-size:12px; margin-bottom:4px;">Producto</div>
+      <div id="nombreDetectado" style="color:var(--texto); font-size:18px; font-weight:700; margin-bottom:16px;"></div>
+
+      <label>Modo</label>
+      <div class="tog-fila">
+        <button id="escUnd" class="on">Unidades</button>
+        <button id="escPaq">Paquetes</button>
+      </div>
+
+      <label>Cantidad</label>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+        <button id="escMenos" style="padding:10px 16px; font-size:20px;">−</button>
+        <input type="number" id="escCantidad" value="1" min="1" step="1" style="width:90px; text-align:center; font-size:20px;">
+        <button id="escMas" style="padding:10px 16px; font-size:20px;">+</button>
+      </div>
+
+      <div id="escBloquePaq" style="display:none;">
+        <label>Unidades por paquete (verifícalo)</label>
+        <input type="number" id="escUpp" min="1" step="1" inputmode="numeric">
+        <label id="escLblRecordar" style="display:none;"><input type="checkbox" id="escRecordar" checked> Recordar este tamaño para este producto</label>
+      </div>
+
+      <div id="escTotal" style="font-size:18px; color:var(--azul); font-weight:700; text-align:center; margin:10px 0;">Total: 1 unidad</div>
+
+      <button class="main" id="escAgregar" style="width:100%; padding:14px; font-size:16px; margin-top:8px;">Agregar a la lista</button>
+      <button id="escCancelar" style="width:100%; padding:12px; margin-top:6px;">Cancelar</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -340,14 +401,36 @@ function pintarCarrito() {
       const d = document.createElement('div');
       d.className = 'linea';
       const t = document.createElement('span');
+      t.style.flex = '1';
       t.textContent = it.nombre + ' — ' + (it.unidad === 'Paquetes'
         ? it.cantidad + ' paq × ' + it.upp + ' = ' + (it.cantidad * it.upp) + ' und'
         : it.cantidad + ' und');
-      const b = document.createElement('button');
-      b.textContent = '✕';
-      b.addEventListener('click', function () { carrito.splice(i, 1); pintarCarrito(); guardarBorrador(); });
+
+      const menos = document.createElement('button');
+      menos.className = 'btn-menos';
+      menos.textContent = '−';
+      menos.addEventListener('click', function () {
+        if (it.cantidad > 1) {
+          it.cantidad--;
+        } else {
+          carrito.splice(i, 1);
+        }
+        pintarCarrito();
+        guardarBorrador();
+      });
+
+      const quitar = document.createElement('button');
+      quitar.className = 'btn-quitar';
+      quitar.textContent = '✕';
+      quitar.addEventListener('click', function () {
+        carrito.splice(i, 1);
+        pintarCarrito();
+        guardarBorrador();
+      });
+
       d.appendChild(t);
-      d.appendChild(b);
+      d.appendChild(menos);
+      d.appendChild(quitar);
       cont.appendChild(d);
     });
   }
@@ -395,6 +478,9 @@ let ultimoIntento = 0;
 let numFrame = 0;
 let detector = null;
 let pausaLectura = false;
+let productoEscaneado = null;
+let modoUnidadEsc = 'Unidades';
+
 const canvasCam = document.createElement('canvas');
 const ctxCam = canvasCam.getContext('2d', { willReadFrequently: true });
 const INTERVALO_MS = 40;
@@ -414,9 +500,11 @@ $('btnCam').addEventListener('click', async function () {
 
 $('btnCerrarCam').addEventListener('click', function () {
   $('modalCam').style.display = 'none';
+  $('panelEscaneo').style.display = 'none';
   detenerCamara();
   cicloActivo = false;
   pausaLectura = false;
+  productoEscaneado = null;
 });
 
 function decodificarZxing() {
@@ -489,36 +577,97 @@ function procesarCodigoEscaneado(texto) {
     return;
   }
 
+  pausaLectura = true;
+  productoEscaneado = p;
+  if (navigator.vibrate) navigator.vibrate(80);
+
+  $('codigoDetectado').textContent = code;
+  $('nombreDetectado').textContent = p.nombre;
+  $('escCantidad').value = 1;
+  $('escUpp').value = p.upp > 0 ? p.upp : '';
+  $('escRecordar').checked = true;
+  fijarModoEsc('Unidades');
+  $('panelEscaneo').style.display = 'block';
+  $('marco').style.borderColor = '#40c4ff';
+}
+
+function fijarModoEsc(m) {
+  modoUnidadEsc = m;
+  $('escUnd').className = 'tog-fila-button ' + (m === 'Unidades' ? 'on' : '');
+  $('escUnd').className = (m === 'Unidades' ? 'on' : '');
+  $('escPaq').className = (m === 'Paquetes' ? 'on' : '');
+  $('escBloquePaq').style.display = (m === 'Paquetes') ? 'block' : 'none';
+  recalcularEsc();
+}
+
+function recalcularEsc() {
+  const c = Number($('escCantidad').value) || 0;
+  const esPaq = modoUnidadEsc === 'Paquetes';
+  const u = esPaq ? (Number($('escUpp').value) || 0) : 1;
+  const total = c * u;
+  $('escTotal').textContent = total > 0
+    ? 'Total: ' + total + ' unidad' + (total !== 1 ? 'es' : '')
+    : 'Total: —';
+  const mostrarRecordar = esPaq && productoEscaneado && u > 0 && u !== productoEscaneado.upp;
+  $('escLblRecordar').style.display = mostrarRecordar ? 'block' : 'none';
+}
+
+$('escUnd').addEventListener('click', function () { fijarModoEsc('Unidades'); });
+$('escPaq').addEventListener('click', function () { fijarModoEsc('Paquetes'); });
+$('escCantidad').addEventListener('input', recalcularEsc);
+$('escUpp').addEventListener('input', recalcularEsc);
+
+// ---------- Panel de confirmación de escaneo ----------
+$('escMenos').addEventListener('click', function () {
+  let v = Number($('escCantidad').value) || 1;
+  if (v > 1) { $('escCantidad').value = v - 1; recalcularEsc(); }
+});
+$('escMas').addEventListener('click', function () {
+  let v = Number($('escCantidad').value) || 1;
+  $('escCantidad').value = v + 1;
+  recalcularEsc();
+});
+$('escCancelar').addEventListener('click', function () {
+  $('panelEscaneo').style.display = 'none';
+  $('marco').style.borderColor = '#00e676';
+  productoEscaneado = null;
+  setTimeout(function () { pausaLectura = false; }, 800);
+});
+$('escAgregar').addEventListener('click', function () {
+  if (!productoEscaneado) return;
+  const c = Number($('escCantidad').value) || 0;
+  const esPaq = modoUnidadEsc === 'Paquetes';
+  const u = esPaq ? (Number($('escUpp').value) || 0) : 1;
+  if (c <= 0) { alert('Cantidad inválida'); return; }
+  if (esPaq && u <= 0) { alert('Escribe cuántas unidades trae cada paquete'); return; }
+  const p = productoEscaneado;
+
   const existente = carrito.find(function (it) {
-    return it.id === p.id && it.unidad === 'Unidades';
+    return it.id === p.id && it.unidad === modoUnidadEsc;
   });
 
   if (existente) {
-    existente.cantidad++;
+    existente.cantidad += c;
+    if (esPaq) existente.upp = u;
   } else {
     carrito.push({
       id: p.id,
       nombre: p.nombre,
-      cantidad: 1,
-      unidad: 'Unidades',
-      upp: 1,
-      recordar: false
+      cantidad: c,
+      unidad: modoUnidadEsc,
+      upp: u,
+      recordar: esPaq && u !== p.upp && $('escRecordar').checked
     });
   }
 
-  if (navigator.vibrate) navigator.vibrate(80);
-  $('marco').style.borderColor = '#40c4ff';
-  $('infoCam').textContent = '✓ ' + p.nombre + ' agregado (' + (existente ? existente.cantidad : 1) + ')';
+  if (navigator.vibrate) navigator.vibrate(120);
   pintarCarrito();
   guardarBorrador();
-
-  pausaLectura = true;
-  setTimeout(function () {
-    pausaLectura = false;
-    $('marco').style.borderColor = '#00e676';
-    $('infoCam').textContent = 'Apunta al código de barras';
-  }, 800);
-}
+  $('panelEscaneo').style.display = 'none';
+  $('marco').style.borderColor = '#00e676';
+  productoEscaneado = null;
+  setTimeout(function () { pausaLectura = false; }, 800);
+});
 
 async function iniciarCamara() {
   if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }

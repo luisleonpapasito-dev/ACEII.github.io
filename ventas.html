@@ -93,6 +93,27 @@
     <input type="range" id="zoom" style="width:100%">
   </div>
   <button id="btnReiniciarCam">Reiniciar cámara</button>
+
+  <div id="panelEscaneo" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:3; padding:20px; box-sizing:border-box; overflow-y:auto;">
+    <div style="max-width:480px; margin:40px auto 0; background:#1e1e1e; border-radius:12px; padding:20px;">
+      <div style="color:#aaa; font-size:12px; margin-bottom:4px;">Código detectado</div>
+      <div id="codigoDetectado" style="color:#ffd54f; font-size:16px; font-weight:bold; margin-bottom:12px; word-break:break-all;"></div>
+
+      <div style="color:#aaa; font-size:12px; margin-bottom:4px;">Producto</div>
+      <div id="nombreDetectado" style="color:#7cfc9a; font-size:18px; font-weight:bold; margin-bottom:16px;"></div>
+
+      <label>Cantidad</label>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+        <button id="escMenos" style="padding:10px 16px; font-size:20px;">−</button>
+        <input type="number" id="escCantidad" value="1" min="1" step="1" style="width:90px; text-align:center; font-size:20px;">
+        <button id="escMas" style="padding:10px 16px; font-size:20px;">+</button>
+        <span id="escStock" style="color:#aaa; font-size:12px;"></span>
+      </div>
+
+      <button class="main" id="escAgregar" style="width:100%; padding:14px; font-size:16px; margin-top:8px;">Agregar al carrito</button>
+      <button id="escCancelar" style="width:100%; padding:12px; margin-top:6px;">Cancelar</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -111,12 +132,13 @@ let ultimoIntento = 0;
 let numFrame = 0;
 let detector = null;
 let productoPendiente = null;
+let pausaLectura = false;
+let productoEscaneado = null;
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d', { willReadFrequently: true });
 const INTERVALO_MS = 40;
 const FORMATOS = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'];
 
-// Inicializar BarcodeDetector si existe
 if ('BarcodeDetector' in window) {
   BarcodeDetector.getSupportedFormats().then(function (f) {
     const ok = FORMATOS.filter(function (x) { return f.indexOf(x) >= 0; });
@@ -225,26 +247,6 @@ $('btnAgregarCantidad').addEventListener('click', function () {
 $('buscar').addEventListener('input', pintarResultados);
 
 // ---------- Carrito ----------
-function agregarAlCarrito(idProducto, cantidad) {
-  const p = productos.find(function (x) { return x.id === idProducto; });
-  if (!p) return;
-  if (p.stock <= 0) { mostrar('Sin stock de ' + p.nombre, 'error'); return; }
-  const cant = cantidad || 1;
-  const existente = carrito.find(function (x) { return x.id === idProducto; });
-  const yaEnCarrito = existente ? existente.cantidad : 0;
-  if (yaEnCarrito + cant > p.stock) {
-    mostrar('No hay suficiente stock de ' + p.nombre, 'error');
-    return;
-  }
-  if (existente) {
-    existente.cantidad += cant;
-  } else {
-    carrito.push({ id: p.id, nombre: p.nombre, precio: p.precio, cantidad: cant, expandido: false, stock: p.stock });
-  }
-  if (navigator.vibrate) navigator.vibrate(60);
-  pintarCarrito();
-}
-
 function pintarCarrito() {
   const c = $('carrito');
   if (!carrito.length) {
@@ -399,10 +401,16 @@ $('btnCerrarCam').addEventListener('click', function () {
   $('modalCam').classList.remove('abierto');
   detenerCamara();
   cicloActivo = false;
+  pausaLectura = false;
+  productoEscaneado = null;
+  $('panelEscaneo').style.display = 'none';
 });
 $('btnReiniciarCam').addEventListener('click', async function () {
   detenerCamara();
   cicloActivo = false;
+  pausaLectura = false;
+  productoEscaneado = null;
+  $('panelEscaneo').style.display = 'none';
   await iniciarCamara();
 });
 
@@ -471,19 +479,31 @@ async function procesarFrame() {
     } else {
       texto = decodificarZxing();
     }
-    if (texto) {
+
+    if (texto && !pausaLectura) {
       const code = String(texto).trim();
       const p = productos.find(function (x) { return x.codigo === code; });
       if (p) {
-        agregarAlCarrito(p.id, 1);
+        pausaLectura = true;
+        productoEscaneado = p;
+        if (navigator.vibrate) navigator.vibrate(80);
+        $('codigoDetectado').textContent = code;
+        $('nombreDetectado').textContent = p.nombre;
+        const enCarrito = carrito.find(function (x) { return x.id === p.id; });
+        const yaEnCarrito = enCarrito ? enCarrito.cantidad : 0;
+        const maxPosible = p.stock - yaEnCarrito;
+        $('escCantidad').value = 1;
+        $('escCantidad').max = maxPosible;
+        $('escStock').textContent = 'Disponible: ' + maxPosible;
+        $('panelEscaneo').style.display = 'block';
         $('marco').className = 'marco ok';
-        $('infoCam').textContent = '✓ ' + p.nombre + ' agregado';
-        setTimeout(function () {
-          $('marco').className = 'marco';
-          $('infoCam').textContent = 'Apunta al código de barras';
-        }, 800);
       } else {
         $('infoCam').textContent = 'Código no reconocido: ' + code;
+        pausaLectura = true;
+        setTimeout(function () {
+          pausaLectura = false;
+          $('infoCam').textContent = 'Apunta al código de barras';
+        }, 1500);
       }
     }
   } catch (e) {}
@@ -555,6 +575,46 @@ $('zoom').addEventListener('input', function () {
     const track = stream.getVideoTracks()[0];
     if (track) track.applyConstraints({ advanced: [{ zoom: Number($('zoom').value) }] }).catch(function () {});
   }
+});
+
+// ---------- Panel de escaneo ----------
+$('escMenos').addEventListener('click', function () {
+  let v = Number($('escCantidad').value) || 1;
+  if (v > 1) $('escCantidad').value = v - 1;
+});
+$('escMas').addEventListener('click', function () {
+  let v = Number($('escCantidad').value) || 1;
+  const max = Number($('escCantidad').max) || 999;
+  if (v < max) $('escCantidad').value = v + 1;
+});
+$('escCancelar').addEventListener('click', function () {
+  $('panelEscaneo').style.display = 'none';
+  $('marco').className = 'marco';
+  productoEscaneado = null;
+  setTimeout(function () { pausaLectura = false; }, 800);
+});
+$('escAgregar').addEventListener('click', function () {
+  if (!productoEscaneado) return;
+  const cant = Number($('escCantidad').value) || 0;
+  if (cant <= 0) { mostrar('Cantidad inválida', 'error'); return; }
+  const p = productoEscaneado;
+  const enCarrito = carrito.find(function (x) { return x.id === p.id; });
+  const yaEnCarrito = enCarrito ? enCarrito.cantidad : 0;
+  if (yaEnCarrito + cant > p.stock) {
+    mostrar('Solo hay ' + (p.stock - yaEnCarrito) + ' disponibles', 'error');
+    return;
+  }
+  if (enCarrito) {
+    enCarrito.cantidad += cant;
+  } else {
+    carrito.push({ id: p.id, nombre: p.nombre, precio: p.precio, cantidad: cant, expandido: false, stock: p.stock });
+  }
+  if (navigator.vibrate) navigator.vibrate(120);
+  pintarCarrito();
+  $('panelEscaneo').style.display = 'none';
+  $('marco').className = 'marco';
+  productoEscaneado = null;
+  setTimeout(function () { pausaLectura = false; }, 800);
 });
 
 // ---------- Arranque ----------

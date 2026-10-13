@@ -3,71 +3,293 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ventas</title>
+<title>Ventas · ACEII</title>
 <link rel="stylesheet" href="estilos.css">
 <script src="comun.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
 <style>
-  #total { font-size: 26px; color: #ffd54f; font-weight: bold; margin: 12px 0; text-align: center; }
-  .item-carrito { border-bottom: 1px solid #333; padding: 8px 0; }
-  .item-fila { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .item-fila button { padding: 4px 10px; margin: 0; font-size: 14px; }
-  .item-fila .flecha { padding: 4px 8px; }
-  .item-detalle { display: none; padding: 6px 0 0 12px; }
+  #total {
+    font-size: 28px;
+    color: var(--azul);
+    font-weight: 700;
+    margin: 12px 0;
+    text-align: center;
+    letter-spacing: -0.5px;
+  }
+
+  #resultados { max-height: 260px; overflow-y: auto; margin-top: 8px; }
+  .resultado {
+    padding: 12px;
+    border-bottom: 1px solid #E8ECF4;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .resultado:last-child { border-bottom: none; }
+  .resultado:hover { background: var(--superficie-2); }
+  .resultado.agotado { opacity: 0.5; cursor: not-allowed; }
+  .resultado b { font-size: 15px; color: var(--texto); }
+  .resultado small { color: var(--texto-suave); display: block; font-size: 12px; margin-top: 2px; }
+
+  .item-carrito {
+    border-bottom: 1px solid #E8ECF4;
+    padding: 10px 0;
+  }
+  .item-carrito:last-child { border-bottom: none; }
+  .item-fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .item-fila button {
+    padding: 6px 12px;
+    margin: 0;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+  .item-fila .flecha {
+    padding: 6px 10px;
+    background: var(--azul-suave);
+    color: var(--azul);
+    font-weight: 700;
+    min-width: 36px;
+  }
+  .item-detalle { display: none; padding: 8px 0 0 12px; }
   .item-detalle.abierto { display: block; }
-  .unidad { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 14px; color: #ccc; }
-  .unidad button { padding: 2px 8px; margin: 0; font-size: 13px; }
-  #resultados { max-height: 260px; overflow-y: auto; }
-  .resultado { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; }
-  .resultado:hover { background: #2a2a2a; }
-  .resultado.agotado { opacity: 0.4; cursor: not-allowed; }
-  .resultado small { color: #aaa; display: block; }
-  #modalCam { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; }
+  .unidad {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 14px;
+    color: var(--texto-suave);
+  }
+  .unidad button {
+    padding: 4px 10px;
+    margin: 0;
+    font-size: 13px;
+    background: var(--superficie-2);
+    border-radius: 8px;
+  }
+
+  /* Panel de escaneo */
+  #modalCam {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 100;
+  }
   #modalCam.abierto { display: block; }
-  #modalCam video { width: 100%; height: 100%; object-fit: cover; }
-  #modalCam .cerrar { position: absolute; top: 12px; right: 12px; padding: 10px 14px; background: #c62828; color: #fff; border: none; border-radius: 8px; font-weight: bold; z-index: 2; }
-  #modalCam .marco { position: absolute; left: 5%; top: 27.5%; width: 90%; height: 45%; border: 3px solid #00e676; border-radius: 8px; box-sizing: border-box; pointer-events: none; }
+  #modalCam video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  #modalCam .cerrar {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 10px 14px;
+    background: var(--alerta);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    z-index: 2;
+  }
+  #modalCam .marco {
+    position: absolute;
+    left: 5%;
+    top: 27.5%;
+    width: 90%;
+    height: 45%;
+    border: 3px solid #00e676;
+    border-radius: 10px;
+    box-sizing: border-box;
+    pointer-events: none;
+  }
   #modalCam .marco.ok { border-color: #40c4ff; }
-  #modalCam .info { position: absolute; bottom: 20px; left: 20px; right: 20px; background: rgba(0,0,0,0.7); padding: 12px; border-radius: 8px; text-align: center; color: #fff; font-size: 14px; }
-  #modalCam #zoomBox { position: absolute; bottom: 80px; left: 20px; right: 20px; background: rgba(0,0,0,0.6); padding: 8px; border-radius: 8px; display: none; }
+  #modalCam .info {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    color: #fff;
+    font-size: 14px;
+  }
+  #modalCam #zoomBox {
+    position: absolute;
+    bottom: 80px;
+    left: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px;
+    border-radius: 10px;
+    display: none;
+  }
   #modalCam #zoomBox label { color: #fff; font-size: 12px; display: block; margin-bottom: 4px; }
-  #modalCam #btnReiniciarCam { position: absolute; bottom: 20px; left: 20px; padding: 10px 14px; background: #333; color: #fff; border: none; border-radius: 8px; font-weight: bold; }
-  .pago-fila { display: flex; gap: 8px; margin: 8px 0; }
-  .pago-fila button { flex: 1; }
-  .pago-fila button.on { background: #1b8a3a; border: 2px solid #7cfc9a; }
+  #modalCam #btnReiniciarCam {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  /* Panel de escaneo (confirmación) */
+  #panelEscaneo {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 3;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+  #panelEscaneo .caja-conf {
+    max-width: 480px;
+    margin: 40px auto 0;
+    background: #fff;
+    border-radius: var(--radio);
+    padding: 20px;
+  }
+  #panelEscaneo .label-chico {
+    color: var(--texto-suave);
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  #panelEscaneo #codigoDetectado {
+    color: var(--azul);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    word-break: break-all;
+  }
+  #panelEscaneo #nombreDetectado {
+    color: var(--texto);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  /* Botones de pago */
+  .pago-fila {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .pago-fila button {
+    flex: 1;
+    margin: 0;
+    background: var(--superficie-2);
+    color: var(--texto-suave);
+    border: 2px solid transparent;
+    font-weight: 600;
+  }
+  .pago-fila button.on {
+    background: var(--azul);
+    color: #fff;
+    border-color: var(--azul-claro);
+  }
+
+  /* Botón COBRAR */
+  #btnCobrar {
+    width: 100%;
+    padding: 18px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: var(--radio-sm);
+    letter-spacing: 0.5px;
+  }
+
+  /* Panel de cantidad */
+  #panelCantidad {
+    margin-top: 10px;
+    padding: 14px;
+    background: var(--superficie-2);
+    border-radius: var(--radio-sm);
+    display: none;
+  }
+  #panelCantidad .acciones {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  #panelCantidad .acciones button {
+    padding: 10px 16px;
+    font-size: 18px;
+    font-weight: 700;
+    background: #fff;
+    color: var(--azul);
+    border-radius: 10px;
+  }
+  #panelCantidad input {
+    width: 80px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    background: #fff;
+  }
 </style>
 </head>
 <body>
 
+<!-- Header -->
+<header class="app-header">
+  <div class="app-header-contenido">
+    <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
+    <div class="app-header-texto">
+      <div class="app-header-titulo">Ventas</div>
+      <div class="app-header-sub">
+        <a href="index.html" style="color:rgba(255,255,255,0.9); text-decoration:underline;">← Volver al menú</a>
+      </div>
+    </div>
+  </div>
+</header>
+
 <div id="estado">Cargando...</div>
 
+<!-- Búsqueda -->
 <div class="caja">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-    <a href="index.html">← Menú</a>
-    <span id="usuarioTurno" style="color:#7cfc9a; font-weight:bold; font-size:13px;"></span>
-  </div>
-
   <label>Buscar producto</label>
   <input type="text" id="buscar" placeholder="Escribe 2 letras o más..." autocomplete="off">
-  <button class="main" id="btnCam" style="width:100%; margin-top:6px;">📷 Escanear con cámara</button>
+  <button class="main" id="btnCam" style="width:100%; margin-top:8px;">📷 Escanear con cámara</button>
   <div id="resultados"></div>
 
-  <div id="panelCantidad" style="display:none; margin-top:10px; padding:10px; background:#2a2a2a; border-radius:8px;">
-    <div id="panelNombre" style="font-weight:bold; margin-bottom:8px;"></div>
-    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-      <button id="cantMenos" style="padding:8px 14px; font-size:18px;">−</button>
-      <input type="number" id="cantidadVenta" value="1" min="1" step="1" style="width:80px; text-align:center; font-size:18px;">
-      <button id="cantMas" style="padding:8px 14px; font-size:18px;">+</button>
-      <span id="cantStock" style="color:#aaa; font-size:12px;"></span>
+  <div id="panelCantidad">
+    <div id="panelNombre" style="font-weight:700; margin-bottom:10px; color:var(--texto);"></div>
+    <div class="acciones">
+      <button id="cantMenos">−</button>
+      <input type="number" id="cantidadVenta" value="1" min="1" step="1">
+      <button id="cantMas">+</button>
+      <span id="cantStock" style="color:var(--texto-suave); font-size:12px;"></span>
     </div>
     <button class="main" id="btnAgregarCantidad" style="width:100%;">Agregar al carrito</button>
-    <button id="btnCancelarCantidad" style="width:100%; margin-top:4px;">Cancelar</button>
+    <button id="btnCancelarCantidad" style="width:100%; margin-top:6px;">Cancelar</button>
   </div>
 </div>
 
+<!-- Carrito -->
 <div class="caja">
-  <label>Carrito</label>
-  <div id="carrito">(vacío)</div>
+  <h4 style="margin:0 0 12px; font-size:15px; font-weight:700;">Carrito</h4>
+  <div id="carrito" style="color:var(--texto-suave); font-size:14px;">(vacío)</div>
   <div id="total">Total: $0</div>
 
   <label>Medio de pago</label>
@@ -79,10 +301,11 @@
   <label>Observaciones (opcional)</label>
   <input type="text" id="obs" maxlength="200">
 
-  <button class="main" id="btnCobrar" disabled style="width:100%; padding:16px; font-size:18px;">COBRAR</button>
+  <button class="main" id="btnCobrar" disabled>COBRAR</button>
   <button id="btnVaciar" style="width:100%; margin-top:6px;">Vaciar carrito</button>
 </div>
 
+<!-- Modal de cámara -->
 <div id="modalCam">
   <button class="cerrar" id="btnCerrarCam">Cerrar</button>
   <video id="video" playsinline muted autoplay></video>
@@ -94,20 +317,21 @@
   </div>
   <button id="btnReiniciarCam">Reiniciar cámara</button>
 
-  <div id="panelEscaneo" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:3; padding:20px; box-sizing:border-box; overflow-y:auto;">
-    <div style="max-width:480px; margin:40px auto 0; background:#1e1e1e; border-radius:12px; padding:20px;">
-      <div style="color:#aaa; font-size:12px; margin-bottom:4px;">Código detectado</div>
-      <div id="codigoDetectado" style="color:#ffd54f; font-size:16px; font-weight:bold; margin-bottom:12px; word-break:break-all;"></div>
+  <!-- Panel de confirmación -->
+  <div id="panelEscaneo">
+    <div class="caja-conf">
+      <div class="label-chico">Código detectado</div>
+      <div id="codigoDetectado"></div>
 
-      <div style="color:#aaa; font-size:12px; margin-bottom:4px;">Producto</div>
-      <div id="nombreDetectado" style="color:#7cfc9a; font-size:18px; font-weight:bold; margin-bottom:16px;"></div>
+      <div class="label-chico">Producto</div>
+      <div id="nombreDetectado"></div>
 
       <label>Cantidad</label>
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
         <button id="escMenos" style="padding:10px 16px; font-size:20px;">−</button>
         <input type="number" id="escCantidad" value="1" min="1" step="1" style="width:90px; text-align:center; font-size:20px;">
         <button id="escMas" style="padding:10px 16px; font-size:20px;">+</button>
-        <span id="escStock" style="color:#aaa; font-size:12px;"></span>
+        <span id="escStock" style="color:var(--texto-suave); font-size:12px;"></span>
       </div>
 
       <button class="main" id="escAgregar" style="width:100%; padding:14px; font-size:16px; margin-top:8px;">Agregar al carrito</button>
@@ -146,7 +370,12 @@ if ('BarcodeDetector' in window) {
   }).catch(function () {});
 }
 
-// ---------- Cargar productos ----------
+(async function () {
+  const ok = await exigirTurnoCajaAbierto();
+  if (!ok) return;
+  cargarProductos();
+})();
+
 async function cargarProductos() {
   mostrar('Cargando productos...', 'aviso');
   try {
@@ -160,7 +389,7 @@ async function cargarProductos() {
   }
 }
 
-// ---------- Buscador autocompletado ----------
+// ---------- Buscador ----------
 function pintarResultados() {
   const q = norm($('buscar').value);
   const cont = $('resultados');
@@ -179,7 +408,7 @@ function pintarResultados() {
     d.innerHTML = '<b>' + p.nombre + '</b><small>' + p.id + ' · $' + p.precio.toLocaleString('es-CO') +
       ' · Stock: ' + p.stock + (cantEnCarrito ? ' · En carrito: ' + cantEnCarrito : '') + '</small>';
     if (p.stock <= 0) {
-      d.innerHTML += '<small style="color:#ff6b6b;">Sin stock</small>';
+      d.innerHTML += '<small style="color:var(--alerta); font-weight:600;">Sin stock</small>';
     } else {
       d.addEventListener('click', function () { mostrarPanelCantidad(p); });
     }
@@ -188,6 +417,7 @@ function pintarResultados() {
   if (!n) {
     const d = document.createElement('div');
     d.className = 'resultado';
+    d.style.color = 'var(--texto-suave)';
     d.textContent = 'Sin resultados. Prueba con otra palabra.';
     cont.appendChild(d);
   }
@@ -251,11 +481,13 @@ function pintarCarrito() {
   const c = $('carrito');
   if (!carrito.length) {
     c.textContent = '(vacío)';
+    c.style.color = 'var(--texto-suave)';
     $('total').textContent = 'Total: $0';
     $('btnCobrar').disabled = true;
     return;
   }
   c.innerHTML = '';
+  c.style.color = 'var(--texto)';
   let total = 0;
   carrito.forEach(function (it, i) {
     total += it.precio * it.cantidad;
@@ -275,10 +507,12 @@ function pintarCarrito() {
 
     const info = document.createElement('span');
     info.style.flex = '1';
-    info.innerHTML = '<b>' + it.cantidad + '×</b> ' + it.nombre + '<br><small style="color:#aaa;">$' + (it.precio * it.cantidad).toLocaleString('es-CO') + '</small>';
+    info.innerHTML = '<b>' + it.cantidad + '×</b> ' + it.nombre + '<br><small style="color:var(--texto-suave);">$' + (it.precio * it.cantidad).toLocaleString('es-CO') + '</small>';
 
     const quitar = document.createElement('button');
     quitar.textContent = '✕';
+    quitar.style.background = '#FFE5E5';
+    quitar.style.color = 'var(--alerta)';
     quitar.addEventListener('click', function () {
       carrito.splice(i, 1);
       pintarCarrito();
@@ -393,7 +627,7 @@ $('btnCobrar').addEventListener('click', async function () {
   }
 });
 
-// ---------- Cámara en modal ----------
+// ---------- Cámara ----------
 $('btnCam').addEventListener('click', async function () {
   $('modalCam').classList.add('abierto');
   await iniciarCamara();
@@ -617,13 +851,6 @@ $('escAgregar').addEventListener('click', function () {
   productoEscaneado = null;
   setTimeout(function () { pausaLectura = false; }, 800);
 });
-
-// ---------- Arranque ----------
-(async function () {
-  const ok = await exigirTurnoCajaAbierto();
-  if (!ok) return;
-  cargarProductos();
-})();
 </script>
 </body>
 </html>

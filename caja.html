@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Caja del turno · ACEII</title>
+<title>Caja · ACEII</title>
 <link rel="stylesheet" href="estilos.css">
 <script src="comun.js"></script>
 <style>
@@ -131,7 +131,6 @@
 </head>
 <body>
 
-<!-- Header -->
 <header class="app-header">
   <div class="app-header-contenido">
     <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
@@ -148,7 +147,6 @@
 
 <div id="pantallaTurno" style="display:none;">
 
-  <!-- Saldo esperado -->
   <div class="caja" style="padding-bottom: 8px;">
     <div id="turnoInfo2" style="font-size:12px; color:var(--texto-claro); margin-bottom:10px; text-align:center;"></div>
     <div id="saldoBox">
@@ -157,7 +155,6 @@
     </div>
   </div>
 
-  <!-- Resumen -->
   <div class="caja">
     <h4 class="titulo-seccion">Resumen del turno</h4>
     <div class="resumen-fila"><span>Base inicial</span><span id="rBase">$0</span></div>
@@ -170,7 +167,6 @@
     <div class="resumen-fila total"><span>Saldo esperado</span><span id="rSaldo">$0</span></div>
   </div>
 
-  <!-- Registrar movimiento -->
   <div class="caja">
     <h4 class="titulo-seccion">Registrar movimiento manual</h4>
     <div class="tipo-fila">
@@ -195,17 +191,51 @@
     <button class="main" id="btnMov" style="width:100%; margin-top:10px;">Registrar movimiento</button>
   </div>
 
-  <!-- Movimientos -->
   <div class="caja">
     <h4 class="titulo-seccion">Movimientos del turno</h4>
     <div id="listaMovs" style="font-size:14px; color:var(--texto-suave);">(sin movimientos)</div>
   </div>
 
-  <!-- Cerrar turno -->
   <div class="caja">
-    <button class="main" id="btnCerrar" style="font-size:16px; padding:16px; width:100%;">🔒 Cerrar turno</button>
+    <button class="main" id="btnCerrar" style="width:100%; font-size:16px; padding:16px;">🔒 Cerrar turno</button>
   </div>
 
+</div>
+
+<!-- Pantalla de resumen al cerrar turno -->
+<div id="pantallaResumen" class="caja" style="display:none;">
+  <div id="resumenIcono" style="font-size:64px; text-align:center; margin:10px 0;">✅</div>
+  <div id="resumenTitulo" style="font-size:22px; font-weight:700; text-align:center; color:var(--texto); margin-bottom:6px;">¡Cuadró perfecto!</div>
+  <div id="resumenSubtitulo" style="font-size:14px; text-align:center; color:var(--texto-suave); margin-bottom:20px;"></div>
+
+  <div class="resumen-fila">
+    <span>Saldo esperado</span>
+    <span id="rCierreEsperado">$0</span>
+  </div>
+  <div class="resumen-fila">
+    <span>Saldo real contado</span>
+    <span id="rCierreReal">$0</span>
+  </div>
+  <div class="resumen-fila total" id="rCierreDifFila">
+    <span>Diferencia</span>
+    <span id="rCierreDiferencia">$0</span>
+  </div>
+
+  <h4 class="titulo-seccion" style="margin-top:24px;">Detalle del turno</h4>
+  <div class="resumen-fila"><span>Base inicial</span><span id="rCierreBase">$0</span></div>
+  <div class="resumen-fila"><span>Ventas en efectivo</span><span id="rCierreVentEf">$0</span></div>
+  <div class="resumen-fila"><span>Ventas en transferencia</span><span id="rCierreVentTr">$0</span></div>
+  <div class="resumen-fila"><span>Devoluciones en efectivo</span><span id="rCierreDev">-$0</span></div>
+  <div class="resumen-fila"><span>Retiros</span><span id="rCierreRet">-$0</span></div>
+  <div class="resumen-fila"><span>Gastos</span><span id="rCierreGas">-$0</span></div>
+  <div class="resumen-fila"><span>Aportes</span><span id="rCierreApo">+$0</span></div>
+
+  <div id="rCierreObsBox" style="display:none; margin-top:16px;">
+    <div style="font-size:12px; color:var(--texto-suave); margin-bottom:4px;">Observaciones</div>
+    <div id="rCierreObs" style="font-size:13px; color:var(--texto); background:var(--superficie-2); padding:10px; border-radius:8px;"></div>
+  </div>
+
+  <button class="main" id="btnVolverMenu" style="width:100%; margin-top:20px; padding:16px; font-size:16px;">✅ Listo, volver al menú</button>
 </div>
 
 <script>
@@ -380,24 +410,76 @@ $('btnCerrar').addEventListener('click', async function () {
       observaciones: obs
     });
     if (r.ok) {
-      let msj = 'Turno cerrado ✓\nEsperado: ' + fmt(r.saldo_esperado) + '\nReal: ' + fmt(r.saldo_real);
-      if (r.diferencia !== 0) {
-        msj += '\nDIFERENCIA: ' + (r.diferencia > 0 ? '+' : '') + fmt(r.diferencia);
-      } else {
-        msj += '\n¡Cuadró perfecto!';
-      }
-      alert(msj);
-      borrarTurnoActual();
-      borrarUsuarioTurno();
-      location.href = 'index.html';
+      mostrarResumenCierre(r, obs);
     } else {
       mostrar(r.error || 'Error desconocido', 'error');
+      $('btnCerrar').disabled = false;
     }
   } catch (err) {
     mostrar('Sin conexión: ' + err.message, 'error');
-  } finally {
     $('btnCerrar').disabled = false;
   }
+});
+
+// ---------- Mostrar resumen del cierre ----------
+function mostrarResumenCierre(r, observaciones) {
+  $('pantallaTurno').style.display = 'none';
+  $('pantallaResumen').style.display = 'block';
+  window.scrollTo(0, 0);
+
+  const dif = Number(r.diferencia || 0);
+  if (dif === 0) {
+    $('resumenIcono').textContent = '✅';
+    $('resumenTitulo').textContent = '¡Cuadró perfecto!';
+    $('resumenTitulo').style.color = 'var(--exito)';
+    $('resumenSubtitulo').textContent = 'El efectivo contado coincide exactamente con lo esperado.';
+  } else if (dif > 0) {
+    $('resumenIcono').textContent = '⚠️';
+    $('resumenTitulo').textContent = 'Sobra dinero en caja';
+    $('resumenTitulo').style.color = 'var(--naranja)';
+    $('resumenSubtitulo').textContent = 'Hay $' + dif.toLocaleString('es-CO') + ' más de lo esperado.';
+  } else {
+    $('resumenIcono').textContent = '⚠️';
+    $('resumenTitulo').textContent = 'Falta dinero en caja';
+    $('resumenTitulo').style.color = 'var(--alerta)';
+    $('resumenSubtitulo').textContent = 'Hay $' + Math.abs(dif).toLocaleString('es-CO') + ' menos de lo esperado.';
+  }
+
+  $('rCierreEsperado').textContent = fmt(r.saldo_esperado);
+  $('rCierreReal').textContent = fmt(r.saldo_real);
+
+  const difSpan = $('rCierreDiferencia');
+  if (dif === 0) {
+    difSpan.textContent = '$0';
+    difSpan.style.color = 'var(--exito)';
+  } else if (dif > 0) {
+    difSpan.textContent = '+$' + dif.toLocaleString('es-CO');
+    difSpan.style.color = 'var(--naranja)';
+  } else {
+    difSpan.textContent = '-$' + Math.abs(dif).toLocaleString('es-CO');
+    difSpan.style.color = 'var(--alerta)';
+  }
+
+  $('rCierreBase').textContent = fmt(r.base_inicial !== undefined ? r.base_inicial : (turno.base || 0));
+  $('rCierreVentEf').textContent = fmt(r.ventas_efectivo);
+  $('rCierreVentTr').textContent = fmt(r.ventas_transferencia);
+  $('rCierreDev').textContent = '-' + fmt(r.devoluciones);
+  $('rCierreRet').textContent = '-' + fmt(r.retiros);
+  $('rCierreGas').textContent = '-' + fmt(r.gastos);
+  $('rCierreApo').textContent = '+' + fmt(r.aportes);
+
+  if (observaciones && observaciones.trim()) {
+    $('rCierreObsBox').style.display = 'block';
+    $('rCierreObs').textContent = observaciones;
+  } else {
+    $('rCierreObsBox').style.display = 'none';
+  }
+}
+
+$('btnVolverMenu').addEventListener('click', function () {
+  borrarTurnoActual();
+  borrarUsuarioTurno();
+  location.href = 'index.html';
 });
 </script>
 </body>

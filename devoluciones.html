@@ -54,6 +54,16 @@
     <option value="Otro">Otro</option>
   </select>
 
+  <!-- Bloque devolución simple -->
+  <div id="bloqueSimple">
+    <label>Medio de reembolso</label>
+    <select id="medioSimple">
+      <option value="Efectivo">Efectivo</option>
+      <option value="Transferencia">Transferencia</option>
+    </select>
+  </div>
+
+  <!-- Bloque cambio: producto nuevo -->
   <div id="bloqueCambio" style="display:none;">
     <label style="margin-top:12px;">¿Qué producto se lleva a cambio?</label>
     <input type="text" id="buscarNuevo" placeholder="Busca el producto nuevo..." autocomplete="off">
@@ -64,19 +74,16 @@
       <input type="number" id="cantidadNueva" value="1" min="1" step="1">
     </div>
 
-    <label style="margin-top:12px;">Medio de pago (para la venta nueva)</label>
-    <select id="medioPago">
+    <label style="margin-top:12px;">¿Cómo pagó el producto que devuelve?</label>
+    <select id="medioDevolucion">
       <option value="Efectivo">Efectivo</option>
       <option value="Transferencia">Transferencia</option>
     </select>
-  </div>
 
-  <div id="bloqueReembolso">
-    <label>Medio de reembolso</label>
-    <select id="medio">
+    <label style="margin-top:12px;">¿Cómo paga el producto nuevo?</label>
+    <select id="medioPagoNuevo">
       <option value="Efectivo">Efectivo</option>
       <option value="Transferencia">Transferencia</option>
-      <option value="No aplica">No aplica</option>
     </select>
   </div>
 
@@ -102,6 +109,12 @@ let elegido = null;
 let elegidoNuevo = null;
 let idVentaOriginal = '';
 
+(async function () {
+  const ok = await exigirTurnoCajaAbierto();
+  if (!ok) return;
+  cargarProductos();
+})();
+
 async function cargarProductos() {
   mostrar('Cargando productos...', 'aviso');
   try {
@@ -115,7 +128,6 @@ async function cargarProductos() {
   }
 }
 
-// ---------- Buscador del producto a devolver ----------
 function pintarResultados() {
   const q = norm($('buscar').value);
   const cont = $('resultados');
@@ -150,7 +162,6 @@ function pintarResultados() {
   }
 }
 
-// ---------- Buscador del producto nuevo ----------
 function pintarResultadosNuevo() {
   const q = norm($('buscarNuevo').value);
   const cont = $('resultadosNuevo');
@@ -187,15 +198,13 @@ function pintarResultadosNuevo() {
 $('buscar').addEventListener('input', pintarResultados);
 $('buscarNuevo').addEventListener('input', pintarResultadosNuevo);
 
-// ---------- Cambio de modo: si es "Cambio de producto", mostrar bloque ----------
 $('motivo').addEventListener('change', function () {
   const esCambio = $('motivo').value === 'Cambio de producto';
   $('bloqueCambio').style.display = esCambio ? 'block' : 'none';
-  $('bloqueReembolso').style.display = esCambio ? 'none' : 'block';
+  $('bloqueSimple').style.display = esCambio ? 'none' : 'block';
   actualizarResumen();
 });
 
-// ---------- Resumen ----------
 function actualizarResumen() {
   if (!elegido || !$('motivo').value) { $('resumen').style.display = 'none'; return; }
   const cantDev = Number($('cantidadDevuelta').value) || 0;
@@ -219,7 +228,6 @@ function actualizarResumen() {
 $('cantidadDevuelta').addEventListener('input', actualizarResumen);
 $('cantidadNueva').addEventListener('input', actualizarResumen);
 
-// ---------- Buscar venta original ----------
 $('btnBuscarVenta').addEventListener('click', async function () {
   mostrar('Buscando ventas recientes...', 'aviso');
   try {
@@ -245,7 +253,6 @@ $('btnBuscarVenta').addEventListener('click', async function () {
   }
 });
 
-// ---------- Guardar ----------
 $('btnGuardar').addEventListener('click', async function () {
   if (!elegido) { mostrar('Elige un producto', 'error'); return; }
   const cantDev = Number($('cantidadDevuelta').value);
@@ -253,7 +260,9 @@ $('btnGuardar').addEventListener('click', async function () {
   if (!$('motivo').value) { mostrar('Elige el motivo', 'error'); return; }
 
   const u = getUsuarioTurno();
-  if (!u) { mostrar('No hay turno iniciado', 'error'); return; }
+  const t = getTurnoActual();
+  if (!u) { mostrar('No hay turno de usuario', 'error'); return; }
+  if (!t) { mostrar('No hay turno de caja abierto', 'error'); return; }
 
   const esCambio = $('motivo').value === 'Cambio de producto';
 
@@ -268,12 +277,14 @@ $('btnGuardar').addEventListener('click', async function () {
       const r = await post({
         accion: 'cambio_producto',
         id_usuario: u.id,
+        id_turno: t.id,
         id_venta_original: idVentaOriginal,
         id_producto_devuelto: elegido.id,
         cantidad_devuelta: cantDev,
         id_producto_nuevo: elegidoNuevo.id,
         cantidad_nueva: cantNue,
-        medio_pago: $('medioPago').value,
+        medio_devolucion: $('medioDevolucion').value,
+        medio_pago_nuevo: $('medioPagoNuevo').value,
         observaciones: $('obs').value.trim()
       });
       if (r.ok) {
@@ -302,12 +313,13 @@ $('btnGuardar').addEventListener('click', async function () {
       const r = await post({
         accion: 'devolucion',
         id_usuario: u.id,
+        id_turno: t.id,
         id_venta_original: idVentaOriginal,
         id_producto: elegido.id,
         cantidad: cantDev,
         motivo: $('motivo').value,
         observaciones: $('obs').value.trim(),
-        medio_reembolso: $('medio').value
+        medio_reembolso: $('medioSimple').value
       });
       if (r.ok) {
         mostrar('Devolución registrada ✓ ' + r.id_devolucion + ' · ' + r.producto + ' × ' + r.cantidad + ' = $' + r.total.toLocaleString('es-CO'), 'ok');
@@ -334,17 +346,11 @@ function limpiarTodo() {
   $('panelNuevo').style.display = 'none';
   $('panelDatos').style.display = 'none';
   $('bloqueCambio').style.display = 'none';
-  $('bloqueReembolso').style.display = 'block';
+  $('bloqueSimple').style.display = 'block';
   $('resumen').style.display = 'none';
   $('obs').value = '';
   $('motivo').value = '';
 }
-
-(async function () {
-  const ok = await exigirTurnoCajaAbierto();
-  if (!ok) return;
-  cargarProductos();
-})();
 </script>
 </body>
 </html>

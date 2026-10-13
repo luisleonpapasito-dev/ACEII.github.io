@@ -17,7 +17,7 @@
     letter-spacing: -0.5px;
   }
 
-   #resultados { max-height: 340px; overflow-y: auto; margin-top: 8px; }
+  #resultados { max-height: 340px; overflow-y: auto; margin-top: 8px; }
 
   .resultado {
     padding: 14px 12px;
@@ -86,7 +86,6 @@
     margin-top: 10px;
     width: 100%;
   }
- 
 
   .item-carrito {
     border-bottom: 1px solid #E8ECF4;
@@ -130,7 +129,6 @@
     border-radius: 8px;
   }
 
-  /* Panel de escaneo */
   #modalCam {
     display: none;
     position: fixed;
@@ -206,7 +204,6 @@
     font-weight: 600;
   }
 
-  /* Panel de escaneo (confirmación) */
   #panelEscaneo {
     display: none;
     position: absolute;
@@ -246,7 +243,6 @@
     margin-bottom: 16px;
   }
 
-  /* Botones de pago */
   .pago-fila {
     display: flex;
     gap: 8px;
@@ -266,7 +262,6 @@
     border-color: var(--azul-claro);
   }
 
-  /* Botón COBRAR */
   #btnCobrar {
     width: 100%;
     padding: 18px;
@@ -276,7 +271,6 @@
     letter-spacing: 0.5px;
   }
 
-  /* Panel de cantidad */
   #panelCantidad {
     margin-top: 10px;
     padding: 14px;
@@ -309,14 +303,13 @@
 </head>
 <body>
 
-<!-- Header -->
 <header class="app-header">
   <div class="app-header-contenido">
     <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
     <div class="app-header-texto">
       <div class="app-header-titulo">Ventas</div>
       <div class="app-header-sub">
-        <a href="index.html" style="color:rgba(255,255,255,0.9); text-decoration:underline;">← Volver al menú</a>
+        <a href="#" id="linkMenu" style="color:rgba(255,255,255,0.9); text-decoration:underline;">← Volver al menú</a>
       </div>
     </div>
   </div>
@@ -324,7 +317,6 @@
 
 <div id="estado">Cargando...</div>
 
-<!-- Búsqueda -->
 <div class="caja">
   <label>Buscar producto</label>
   <input type="text" id="buscar" placeholder="Escribe 2 letras o más..." autocomplete="off">
@@ -344,7 +336,6 @@
   </div>
 </div>
 
-<!-- Carrito -->
 <div class="caja">
   <h4 style="margin:0 0 12px; font-size:15px; font-weight:700;">Carrito</h4>
   <div id="carrito" style="color:var(--texto-suave); font-size:14px;">(vacío)</div>
@@ -363,7 +354,6 @@
   <button id="btnVaciar" style="width:100%; margin-top:6px;">Vaciar carrito</button>
 </div>
 
-<!-- Modal de cámara -->
 <div id="modalCam">
   <button class="cerrar" id="btnCerrarCam">Cerrar</button>
   <video id="video" playsinline muted autoplay></video>
@@ -375,7 +365,6 @@
   </div>
   <button id="btnReiniciarCam">Reiniciar cámara</button>
 
-  <!-- Panel de confirmación -->
   <div id="panelEscaneo">
     <div class="caja-conf">
       <div class="label-chico">Código detectado</div>
@@ -467,7 +456,6 @@ function pintarResultados() {
     const d = document.createElement('div');
     d.className = 'resultado' + (p.stock <= 0 ? ' agotado' : '');
 
-    // Clase del stock
     let stockClase = 'stock-ok';
     if (p.stock <= 0) stockClase = 'stock-cero';
     else if (p.stock <= 5) stockClase = 'stock-bajo';
@@ -504,7 +492,6 @@ function pintarResultados() {
       'Prueba con otra palabra o escanea el código.<br>' +
       '<button class="main" id="btnCamDesdeSinResultados">📷 Escanear con cámara</button>';
     cont.appendChild(d);
-    // Enlazar el botón recién creado
     const btn = document.getElementById('btnCamDesdeSinResultados');
     if (btn) {
       btn.addEventListener('click', function () {
@@ -904,7 +891,6 @@ $('zoom').addEventListener('input', function () {
   }
 });
 
-// ---------- Panel de escaneo ----------
 $('escMenos').addEventListener('click', function () {
   let v = Number($('escCantidad').value) || 1;
   if (v > 1) $('escCantidad').value = v - 1;
@@ -942,6 +928,27 @@ $('escAgregar').addEventListener('click', function () {
   $('marco').className = 'marco';
   productoEscaneado = null;
   setTimeout(function () { pausaLectura = false; }, 800);
+});
+
+// ---------- Confirmar salida si hay carrito ----------
+function hayCarrito() {
+  return carrito && carrito.length > 0;
+}
+
+$('linkMenu').addEventListener('click', function (e) {
+  e.preventDefault();
+  if (hayCarrito()) {
+    if (!confirm('⚠️ Tienes productos en el carrito sin cobrar.\n\nSi sales, se perderán.\n\n¿Seguro quieres salir?')) return;
+  }
+  location.href = 'index.html';
+});
+
+window.addEventListener('beforeunload', function (e) {
+  if (hayCarrito()) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  }
 });
 </script>
 </body>

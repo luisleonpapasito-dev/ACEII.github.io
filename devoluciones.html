@@ -17,6 +17,15 @@
   .resultado:hover { background: var(--superficie-2); }
   .resultado b { font-size: 15px; color: var(--texto); }
   .resultado small { color: var(--texto-suave); display: block; font-size: 12px; margin-top: 2px; }
+  .resultado .inactivo {
+    background: #FFE5E5;
+    color: var(--alerta);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-left: 4px;
+  }
   .venta-item {
     padding: 10px;
     border-bottom: 1px solid #E8ECF4;
@@ -156,7 +165,8 @@ let idVentaOriginal = '';
 async function cargarProductos() {
   mostrar('Cargando productos...', 'aviso');
   try {
-    const r = await jsonp({ accion: 'productos_venta' }, 25000);
+    // Usar productos_admin para incluir también los inactivos
+    const r = await jsonp({ accion: 'productos_admin' }, 25000);
     if (r && r.error === 'Token inválido') { borrarToken(); location.href = 'index.html'; return; }
     if (!r || !r.ok) throw new Error(r && r.error ? r.error : 'respuesta vacía');
     productos = r.items;
@@ -179,7 +189,8 @@ function pintarResultados() {
     n++;
     const d = document.createElement('div');
     d.className = 'resultado';
-    d.innerHTML = '<b>' + p.nombre + '</b><small>' + p.id + ' · $' + p.precio.toLocaleString('es-CO') + '</small>';
+    const etiquetaInactivo = (p.activo === 'No') ? ' <span class="inactivo">INACTIVO</span>' : '';
+    d.innerHTML = '<b>' + p.nombre + '</b>' + etiquetaInactivo + '<small>' + p.id + ' · $' + p.precio.toLocaleString('es-CO') + '</small>';
     d.addEventListener('click', function () {
       elegido = p;
       $('prodNombre').textContent = p.nombre + ' — $' + p.precio.toLocaleString('es-CO');
@@ -210,6 +221,8 @@ function pintarResultadosNuevo() {
   let n = 0;
   productos.forEach(function (p) {
     if (n >= 6) return;
+    // Para el producto NUEVO sí filtramos inactivos (no tiene sentido cambiar a algo inactivo)
+    if (p.activo === 'No') return;
     if (norm(p.id + ' ' + p.nombre).indexOf(q) < 0) return;
     n++;
     const d = document.createElement('div');

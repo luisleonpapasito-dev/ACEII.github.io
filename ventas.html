@@ -17,18 +17,76 @@
     letter-spacing: -0.5px;
   }
 
-  #resultados { max-height: 260px; overflow-y: auto; margin-top: 8px; }
+   #resultados { max-height: 340px; overflow-y: auto; margin-top: 8px; }
+
   .resultado {
-    padding: 12px;
+    padding: 14px 12px;
     border-bottom: 1px solid #E8ECF4;
     cursor: pointer;
     transition: background 0.15s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
   }
   .resultado:last-child { border-bottom: none; }
   .resultado:hover { background: var(--superficie-2); }
   .resultado.agotado { opacity: 0.5; cursor: not-allowed; }
-  .resultado b { font-size: 15px; color: var(--texto); }
-  .resultado small { color: var(--texto-suave); display: block; font-size: 12px; margin-top: 2px; }
+
+  .resultado .info { flex: 1; min-width: 0; }
+  .resultado .nombre {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--texto);
+    display: block;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .resultado .meta {
+    font-size: 12px;
+    color: var(--texto-suave);
+    display: block;
+  }
+  .resultado .meta .precio {
+    color: var(--azul);
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .resultado .stock {
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 10px;
+    margin-left: 4px;
+  }
+  .resultado .stock.stock-ok { background: #E0F7EC; color: var(--exito); }
+  .resultado .stock.stock-bajo { background: #FFF4DC; color: var(--naranja); }
+  .resultado .stock.stock-cero { background: #FFE5E5; color: var(--alerta); }
+
+  .resultado .en-carrito {
+    background: var(--azul);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 4px;
+  }
+
+  .sin-resultados {
+    padding: 20px 12px;
+    text-align: center;
+    color: var(--texto-suave);
+    font-size: 14px;
+  }
+  .sin-resultados button {
+    margin-top: 10px;
+    width: 100%;
+  }
+ 
 
   .item-carrito {
     border-bottom: 1px solid #E8ECF4;
@@ -396,30 +454,64 @@ function pintarResultados() {
   cont.innerHTML = '';
   $('panelCantidad').style.display = 'none';
   if (q.length < 2) return;
+
   let n = 0;
+  const coincidencias = [];
   productos.forEach(function (p) {
-    if (n >= 6) return;
     if (norm(p.id + ' ' + p.nombre).indexOf(q) < 0) return;
+    coincidencias.push(p);
+  });
+
+  coincidencias.slice(0, 8).forEach(function (p) {
     n++;
     const d = document.createElement('div');
     d.className = 'resultado' + (p.stock <= 0 ? ' agotado' : '');
+
+    // Clase del stock
+    let stockClase = 'stock-ok';
+    if (p.stock <= 0) stockClase = 'stock-cero';
+    else if (p.stock <= 5) stockClase = 'stock-bajo';
+
     const enCarrito = carrito.find(function (x) { return x.id === p.id; });
     const cantEnCarrito = enCarrito ? enCarrito.cantidad : 0;
-    d.innerHTML = '<b>' + p.nombre + '</b><small>' + p.id + ' · $' + p.precio.toLocaleString('es-CO') +
-      ' · Stock: ' + p.stock + (cantEnCarrito ? ' · En carrito: ' + cantEnCarrito : '') + '</small>';
-    if (p.stock <= 0) {
-      d.innerHTML += '<small style="color:var(--alerta); font-weight:600;">Sin stock</small>';
-    } else {
+
+    d.innerHTML =
+      '<div class="info">' +
+        '<span class="nombre">' + p.nombre + '</span>' +
+        '<span class="meta">' +
+          '<span class="precio">$' + p.precio.toLocaleString('es-CO') + '</span>' +
+          ' · ' + p.id +
+        '</span>' +
+      '</div>' +
+      '<div style="text-align:right;">' +
+        '<span class="stock ' + stockClase + '">' +
+          (p.stock <= 0 ? 'Agotado' : p.stock + ' disp.') +
+        '</span>' +
+        (cantEnCarrito ? '<br><span class="en-carrito">' + cantEnCarrito + ' en carrito</span>' : '') +
+      '</div>';
+
+    if (p.stock > 0) {
       d.addEventListener('click', function () { mostrarPanelCantidad(p); });
     }
     cont.appendChild(d);
   });
+
   if (!n) {
     const d = document.createElement('div');
-    d.className = 'resultado';
-    d.style.color = 'var(--texto-suave)';
-    d.textContent = 'Sin resultados. Prueba con otra palabra.';
+    d.className = 'sin-resultados';
+    d.innerHTML =
+      'No encontramos "' + $('buscar').value + '".<br>' +
+      'Prueba con otra palabra o escanea el código.<br>' +
+      '<button class="main" id="btnCamDesdeSinResultados">📷 Escanear con cámara</button>';
     cont.appendChild(d);
+    // Enlazar el botón recién creado
+    const btn = document.getElementById('btnCamDesdeSinResultados');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        $('modalCam').classList.add('abierto');
+        iniciarCamara();
+      });
+    }
   }
 }
 

@@ -9,7 +9,6 @@
 </head>
 <body>
 
-<!-- Header con logo -->
 <header class="app-header">
   <div class="app-header-contenido">
     <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
@@ -22,14 +21,12 @@
 
 <div id="estado">ACEII</div>
 
-<!-- Paso 1: clave general -->
 <div class="caja" id="login" style="display:none;">
   <label>Clave del sistema</label>
   <input type="password" id="clave" placeholder="Escribe la clave">
   <button class="main" id="btnEntrar" style="width:100%;">Entrar</button>
 </div>
 
-<!-- Paso 2: usuario + PIN -->
 <div class="caja" id="turno" style="display:none;">
   <label>¿Quién inicia el turno?</label>
   <select id="usuarioTurno"></select>
@@ -38,7 +35,6 @@
   <button class="main" id="btnTurno" style="width:100%;">Entrar</button>
 </div>
 
-<!-- Paso 3: abrir turno de caja -->
 <div class="caja" id="abrirTurno" style="display:none;">
   <h3 style="margin-top:0;">Abrir turno de caja</h3>
   <div id="avisoBaseSugerida" style="color:#5A6072; font-size:14px; margin:8px 0; background:#F0F4FF; padding:10px; border-radius:10px;"></div>
@@ -50,7 +46,6 @@
   <button id="btnCancelarApertura" style="width:100%; margin-top:6px;">Cancelar (cerrar sesión)</button>
 </div>
 
-<!-- Paso 4: menú principal -->
 <main class="grid-menu" id="menu" style="display:none;">
 
   <a class="card" href="caja.html">
@@ -95,6 +90,15 @@
     </div>
     <div class="card-titulo">Devoluciones</div>
     <div class="card-sub">Gestiona las devoluciones</div>
+    <div class="card-flecha">›</div>
+  </a>
+
+  <a class="card" href="productos.html">
+    <div class="card-icono morado">
+      <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.5"/></svg>
+    </div>
+    <div class="card-titulo">Productos</div>
+    <div class="card-sub">Administra el catálogo</div>
     <div class="card-flecha">›</div>
   </a>
 

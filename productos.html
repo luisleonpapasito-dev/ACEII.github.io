@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Productos · ACEII</title>
+<link rel="stylesheet" href="estilos.css">
+<script src="comun.js"></script>
+<style>
+  #listaProductos {
+    max-height: 420px;
+    overflow-y: auto;
+    margin-top: 8px;
+  }
+  .prod-item {
+    padding: 12px;
+    border-bottom: 1px solid #E8ECF4;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .prod-item:hover { background: var(--superficie-2); }
+  .prod-item:last-child { border-bottom: none; }
+  .prod-item.inactivo { opacity: 0.55; }
+  .prod-item .fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .prod-item .nombre {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--texto);
+  }
+  .prod-item .meta {
+    font-size: 12px;
+    color: var(--texto-suave);
+    margin-top: 2px;
+  }
+  .prod-item .precio {
+    color: var(--azul);
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .prod-item .badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 4px;
+  }
+  .badge-activo { background: #E0F7EC; color: var(--exito); }
+  .badge-inactivo { background: #FFE5E5; color: var(--alerta); }
+  .badge-modo { background: var(--azul-suave); color: var(--azul); }
+
+  .form-grupo {
+    margin-top: 12px;
+  }
+  .form-grupo label {
+    font-weight: 600;
+    color: var(--texto);
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  .form-grupo input,
+  .form-grupo select,
+  .form-grupo textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 4px;
+    box-sizing: border-box;
+  }
+  .aviso-id {
+    background: var(--azul-suave);
+    color: var(--azul);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin: 10px 0;
+    text-align: center;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-header-contenido">
+    <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
+    <div class="app-header-texto">
+      <div class="app-header-titulo">Productos</div>
+      <div class="app-header-sub">
+        <a href="index.html" style="color:rgba(255,255,255,0.9); text-decoration:underline;">← Volver al menú</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div id="estado">Cargando...</div>
+
+<!-- Buscador y filtros -->
+<div class="caja">
+  <div style="display:flex; gap:8px; margin-bottom:8px;">
+    <button class="main" id="btnNuevo" style="flex:1;">➕ Nuevo producto</button>
+    <button id="btnRecargar" style="flex:0 0 auto;">🔄</button>
+  </div>
+  <input type="text" id="buscar" placeholder="Buscar por nombre, ID o código..." autocomplete="off">
+  <label><input type="checkbox" id="soloActivos" checked> Mostrar solo activos</label>
+  <div id="listaProductos"></div>
+</div>
+
+<!-- Formulario (crear / editar) -->
+<div class="caja" id="formPanel" style="display:none;">
+  <div id="formTitulo" style="font-weight:700; font-size:16px; margin-bottom:8px;">Nuevo producto</div>
+
+  <div class="aviso-id" id="avisoId" style="display:none;"></div>
+
+  <div class="form-grupo">
+    <label>Categoría *</label>
+    <select id="fCategoria"></select>
+
+    <label>Nombre del producto *</label>
+    <input type="text" id="fNombre" maxlength="100" placeholder="Ej: Coca-Cola 1 litro">
+
+    <label>Modo de registro *</label>
+    <select id="fModo"></select>
+
+    <label>Proveedor</label>
+    <select id="fProveedor"></select>
+
+    <label>Precio de venta *</label>
+    <input type="number" id="fPrecio" min="0" step="50" inputmode="numeric" placeholder="Ej: 4000">
+
+    <label>Costo unitario (opcional)</label>
+    <input type="number" id="fCosto" min="0" step="50" inputmode="numeric" placeholder="Ej: 1850">
+
+    <label>Unidades por paquete (opcional)</label>
+    <input type="number" id="fUpp" min="0" step="1" inputmode="numeric" placeholder="Ej: 24">
+
+    <label>Código de barras (opcional)</label>
+    <input type="text" id="fCodigo" maxlength="30" placeholder="Escanéalo o escríbelo">
+
+    <label>Nota (opcional)</label>
+    <textarea id="fNota" maxlength="200" rows="2" placeholder="Observaciones internas"></textarea>
+
+    <div style="display:flex; gap:8px; margin-top:14px;">
+      <button class="main" id="btnGuardar" style="flex:1;">Guardar</button>
+      <button id="btnCancelarForm" style="flex:0 0 auto;">Cancelar</button>
+    </div>
+    <div id="btnEliminarBox" style="display:none; margin-top:8px;">
+      <button id="btnEliminar" style="width:100%; background:#FFE5E5; color:var(--alerta); font-weight:700;">🗑️ Eliminar producto</button>
+    </div>
+  </div>
+</div>
+
+<script>
+exigirSesion();
+pintarUsuarioTurno();
+
+let productos = [];
+let categorias = [];
+let proveedores = [];
+let modos = [];
+let modoForm = 'crear'; // 'crear' o 'editar'
+let productoEditando = null;
+
+(async function () {
+  await cargarTodo();
+})();
+
+async function cargarTodo() {
+  mostrar('Cargando datos...', 'aviso');
+  try {
+    const [rProd, rCat, rProv, rModos] = await Promise.all([
+      jsonp({ accion: 'productos_admin' }, 25000),
+      jsonp({ accion: 'categorias' }, 15000),
+      jsonp({ accion: 'proveedores' }, 15000),
+      jsonp({ accion: 'modos_registro' }, 15000)
+    ]);
+    if (rProd && rProd.error === 'Token inválido') { borrarToken(); location.href = 'index.html'; return; }
+    if (!rProd || !rProd.ok) throw new Error('Error al cargar productos');
+    productos = rProd.items;
+    categorias = (rCat && rCat.ok) ? rCat.items : [];
+    proveedores = (rProv && rProv.ok) ? rProv.items : [];
+    modos = (rModos && rModos.ok) ? rModos.items : [];
+
+    llenarSelectsForm();
+    pintarLista();
+    mostrar(productos.length + ' productos cargados');
+  } catch (err) {
+    mostrar('Error al cargar: ' + err.message, 'error');
+  }
+}
+
+function llenarSelectsForm() {
+  const selCat = $('fCategoria');
+  selCat.innerHTML = '<option value="">Elige la categoría...</option>';
+  categorias.forEach(function (c) {
+    selCat.appendChild(new Option(c, c));
+  });
+
+  const selModo = $('fModo');
+  selModo.innerHTML = '<option value="">Elige el modo...</option>';
+  modos.forEach(function (m) {
+    selModo.appendChild(new Option(m, m));
+  });
+
+  const selProv = $('fProveedor');
+  selProv.innerHTML = '<option value="">(Sin proveedor)</option>';
+  proveedores.forEach(function (p) {
+    selProv.appendChild(new Option(p, p));
+  });
+}
+
+function pintarLista() {
+  const q = norm($('buscar').value);
+  const soloActivos = $('soloActivos').checked;
+  const cont = $('listaProductos');
+  cont.innerHTML = '';
+
+  let items = productos.slice();
+  if (soloActivos) items = items.filter(function (p) { return p.activo !== 'No'; });
+  if (q) {
+    items = items.filter(function (p) {
+      return norm(p.id + ' ' + p.nombre + ' ' + p.codigo + ' ' + p.categoria).indexOf(q) >= 0;
+    });
+  }
+
+  items.sort(function (a, b) { return a.nombre.localeCompare(b.nombre); });
+
+  if (!items.length) {
+    cont.innerHTML = '<div style="padding:20px; text-align:center; color:var(--texto-suave);">No se encontraron productos.</div>';
+    return;
+  }
+
+  items.forEach(function (p) {
+    const d = document.createElement('div');
+    d.className = 'prod-item' + (p.activo === 'No' ? ' inactivo' : '');
+    d.innerHTML =
+      '<div class="fila">' +
+        '<span class="nombre">' + p.nombre + '</span>' +
+        '<span class="precio">$' + p.precio.toLocaleString('es-CO') + '</span>' +
+      '</div>' +
+      '<div class="meta">' +
+        p.id + ' · ' + p.categoria +
+        ' <span class="badge badge-modo">' + p.modo + '</span>' +
+        ' <span class="badge ' + (p.activo === 'No' ? 'badge-inactivo' : 'badge-activo') + '">' +
+          (p.activo === 'No' ? 'INACTIVO' : 'Activo') +
+        '</span>' +
+      '</div>' +
+      '<div class="meta">' + (p.proveedor ? p.proveedor : '(sin proveedor)') + (p.codigo ? ' · ' + p.codigo : '') + '</div>';
+    d.addEventListener('click', function () { abrirEditar(p); });
+    cont.appendChild(d);
+  });
+}
+
+$('buscar').addEventListener('input', pintarLista);
+$('soloActivos').addEventListener('change', pintarLista);
+$('btnRecargar').addEventListener('click', cargarTodo);
+
+// ---------- Formulario: Nuevo producto ----------
+$('btnNuevo').addEventListener('click', async function () {
+  modoForm = 'crear';
+  productoEditando = null;
+  $('formTitulo').textContent = 'Nuevo producto';
+  $('fCategoria').value = '';
+  $('fNombre').value = '';
+  $('fModo').value = '';
+  $('fProveedor').value = '';
+  $('fPrecio').value = '';
+  $('fCosto').value = '';
+  $('fUpp').value = '';
+  $('fCodigo').value = '';
+  $('fNota').value = '';
+  $('avisoId').style.display = 'none';
+  $('btnEliminarBox').style.display = 'none';
+  $('formPanel').style.display = 'block';
+  $('formPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  mostrar('Completa los datos del nuevo producto');
+});
+
+// ---------- Formulario: Editar ----------
+function abrirEditar(p) {
+  modoForm = 'editar';
+  productoEditando = p;
+  $('formTitulo').textContent = 'Editar: ' + p.nombre;
+  $('avisoId').style.display = 'block';
+  $('avisoId').textContent = 'ID: ' + p.id + ' (no editable)';
+  $('fCategoria').value = p.categoria;
+  $('fNombre').value = p.nombre;
+  $('fModo').value = p.modo;
+  $('fProveedor').value = p.proveedor || '';
+  $('fPrecio').value = p.precio;
+  $('fCosto').value = p.costo;
+  $('fUpp').value = p.upp > 0 ? p.upp : '';
+  $('fCodigo').value = p.codigo || '';
+  $('fNota').value = p.nota || '';
+  $('btnEliminarBox').style.display = 'block';
+  $('formPanel').style.display = 'block';
+  $('formPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  mostrar('Edita los datos y guarda');
+}
+
+// ---------- Auto-generar ID al elegir categoría en modo "crear" ----------
+$('fCategoria').addEventListener('change', async function () {
+  if (modoForm !== 'crear') return;
+  const cat = $('fCategoria').value;
+  if (!cat) { $('avisoId').style.display = 'none'; return; }
+  try {
+    const r = await jsonp({ accion: 'proximo_id', categoria: cat }, 15000);
+    if (r && r.ok) {
+      $('avisoId').style.display = 'block';
+      $('avisoId').textContent = 'ID que se asignará: ' + r.id;
+    }
+  } catch (e) {}
+});
+
+// ---------- Guardar ----------
+$('btnGuardar').addEventListener('click', async function () {
+  const cat = $('fCategoria').value;
+  const nombre = $('fNombre').value.trim();
+  const modoReg = $('fModo').value;
+  const proveedor = $('fProveedor').value.trim();
+  const precio = Number($('fPrecio').value);
+  const costo = Number($('fCosto').value || 0);
+  const upp = Number($('fUpp').value || 0);
+  const codigo = $('fCodigo').value.trim();
+  const nota = $('fNota').value.trim();
+
+  if (!cat) { mostrar('Elige una categoría', 'error'); return; }
+  if (!nombre) { mostrar('Escribe el nombre del producto', 'error'); return; }
+  if (!modoReg) { mostrar('Elige el modo de registro', 'error'); return; }
+  if (isNaN(precio) || precio < 0) { mostrar('Precio inválido', 'error'); return; }
+
+  const u = getUsuarioTurno();
+  if (!u) { mostrar('No hay turno de usuario', 'error'); return; }
+
+  $('btnGuardar').disabled = true;
+  mostrar('Guardando...', 'aviso');
+
+  try {
+    let r;
+    if (modoForm === 'crear') {
+      // Pedir el ID al servidor
+      const rid = await jsonp({ accion: 'proximo_id', categoria: cat }, 15000);
+      if (!rid || !rid.ok) throw new Error('No se pudo generar el ID');
+      r = await post({
+        accion: 'crear_producto',
+        id_usuario: u.id,
+        id_producto: rid.id,
+        nombre: nombre,
+        categoria: cat,
+        modo: modoReg,
+        proveedor: proveedor,
+        precio: precio,
+        costo: costo,
+        upp: upp,
+        codigo: codigo,
+        nota: nota
+      });
+    } else {
+      r = await post({
+        accion: 'editar_producto',
+        id_usuario: u.id,
+        id_producto: productoEditando.id,
+        nombre: nombre,
+        categoria: cat,
+        modo: modoReg,
+        proveedor: proveedor,
+        precio: precio,
+        costo: costo,
+        upp: upp,
+        codigo: codigo,
+        nota: nota
+      });
+    }
+
+    if (r.ok) {
+      mostrar(modoForm === 'crear' ? 'Producto creado ✓ ' + r.id_producto : 'Producto actualizado ✓', 'ok');
+      if (navigator.vibrate) navigator.vibrate(200);
+      $('formPanel').style.display = 'none';
+      await cargarTodo();
+    } else if (r.error === 'Token inválido') {
+      borrarToken(); location.href = 'index.html';
+    } else {
+      mostrar(r.error || 'Error desconocido', 'error');
+    }
+  } catch (err) {
+    mostrar('Error: ' + err.message, 'error');
+  } finally {
+    $('btnGuardar').disabled = false;
+  }
+});
+
+$('btnCancelarForm').addEventListener('click', function () {
+  $('formPanel').style.display = 'none';
+  productoEditando = null;
+  mostrar('Cancelado', 'aviso');
+});
+
+// ---------- Eliminar ----------
+$('btnEliminar').addEventListener('click', async function () {
+  if (!productoEditando) return;
+  if (!confirm('¿Eliminar el producto "' + productoEditando.nombre + '"?\n\nSolo se puede eliminar si nunca ha tenido movimientos. Si ya tiene ventas, recepciones o ajustes, mejor desactívalo.')) return;
+
+  const u = getUsuarioTurno();
+  $('btnEliminar').disabled = true;
+  mostrar('Eliminando...', 'aviso');
+  try {
+    const r = await post({
+      accion: 'eliminar_producto',
+      id_usuario: u.id,
+      id_producto: productoEditando.id
+    });
+    if (r.ok) {
+      mostrar('Producto eliminado ✓', 'ok');
+      $('formPanel').style.display = 'none';
+      productoEditando = null;
+      await cargarTodo();
+    } else {
+      mostrar(r.error || 'Error desconocido', 'error');
+    }
+  } catch (err) {
+    mostrar('Error: ' + err.message, 'error');
+  } finally {
+    $('btnEliminar').disabled = false;
+  }
+});
+
+// ---------- Desactivar / Reactivar (doble click en el badge) ----------
+document.addEventListener('dblclick', async function (e) {
+  if (!e.target.classList.contains('badge-activo') && !e.target.classList.contains('badge-inactivo')) return;
+  // Encontrar el producto por el nombre
+  const itemPadre = e.target.closest('.prod-item');
+  if (!itemPadre) return;
+  const nombre = itemPadre.querySelector('.nombre').textContent;
+  const p = productos.find(function (x) { return x.nombre === nombre; });
+  if (!p) return;
+  const nuevoEstado = (p.activo === 'No') ? 'Sí' : 'No';
+  if (!confirm('¿' + (nuevoEstado === 'No' ? 'Desactivar' : 'Reactivar') + ' "' + p.nombre + '"?')) return;
+  const u = getUsuarioTurno();
+  try {
+    const r = await post({
+      accion: 'activar_producto',
+      id_usuario: u.id,
+      id_producto: p.id,
+      activo: nuevoEstado
+    });
+    if (r.ok) {
+      mostrar('Producto ' + (nuevoEstado === 'No' ? 'desactivado' : 'reactivado') + ' ✓', 'ok');
+      await cargarTodo();
+    }
+  } catch (err) {
+    mostrar('Error: ' + err.message, 'error');
+  }
+});
+</script>
+</body>
+</html>

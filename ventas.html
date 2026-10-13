@@ -29,6 +29,9 @@
   #modalCam .marco { position: absolute; left: 5%; top: 27.5%; width: 90%; height: 45%; border: 3px solid #00e676; border-radius: 8px; box-sizing: border-box; pointer-events: none; }
   #modalCam .marco.ok { border-color: #40c4ff; }
   #modalCam .info { position: absolute; bottom: 20px; left: 20px; right: 20px; background: rgba(0,0,0,0.7); padding: 12px; border-radius: 8px; text-align: center; color: #fff; font-size: 14px; }
+  #modalCam #zoomBox { position: absolute; bottom: 80px; left: 20px; right: 20px; background: rgba(0,0,0,0.6); padding: 8px; border-radius: 8px; display: none; }
+  #modalCam #zoomBox label { color: #fff; font-size: 12px; display: block; margin-bottom: 4px; }
+  #modalCam #btnReiniciarCam { position: absolute; bottom: 20px; left: 20px; padding: 10px 14px; background: #333; color: #fff; border: none; border-radius: 8px; font-weight: bold; }
   .pago-fila { display: flex; gap: 8px; margin: 8px 0; }
   .pago-fila button { flex: 1; }
   .pago-fila button.on { background: #1b8a3a; border: 2px solid #7cfc9a; }
@@ -85,6 +88,11 @@
   <video id="video" playsinline muted autoplay></video>
   <div class="marco" id="marco"></div>
   <div class="info" id="infoCam">Apunta al código de barras</div>
+  <div id="zoomBox">
+    <label>Zoom</label>
+    <input type="range" id="zoom" style="width:100%">
+  </div>
+  <button id="btnReiniciarCam">Reiniciar cámara</button>
 </div>
 
 <script>
@@ -100,10 +108,21 @@ let stream = null;
 let cicloActivo = false;
 let ocupado = false;
 let ultimoIntento = 0;
+let numFrame = 0;
+let detector = null;
+let productoPendiente = null;
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d', { willReadFrequently: true });
 const INTERVALO_MS = 40;
-let productoPendiente = null;
+const FORMATOS = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'];
+
+// Inicializar BarcodeDetector si existe
+if ('BarcodeDetector' in window) {
+  BarcodeDetector.getSupportedFormats().then(function (f) {
+    const ok = FORMATOS.filter(function (x) { return f.indexOf(x) >= 0; });
+    if (ok.length) detector = new BarcodeDetector({ formats: ok });
+  }).catch(function () {});
+}
 
 // ---------- Cargar productos ----------
 async function cargarProductos() {
@@ -379,7 +398,35 @@ $('btnCam').addEventListener('click', async function () {
 $('btnCerrarCam').addEventListener('click', function () {
   $('modalCam').classList.remove('abierto');
   detenerCamara();
+  cicloActivo = false;
 });
+$('btnReiniciarCam').addEventListener('click', async function () {
+  detenerCamara();
+  cicloActivo = false;
+  await iniciarCamara();
+});
+
+function conTiempo(promesa, ms) {
+  return new Promise(function (resolve, reject) {
+    let terminado = false;
+    const t = setTimeout(function () {
+      if (terminado) return;
+      terminado = true;
+      reject(new Error('La cámara no respondió'));
+    }, ms);
+    promesa.then(function (v) {
+      if (terminado) { v.getTracks().forEach(function (tr) { tr.stop(); }); return; }
+      terminado = true;
+      clearTimeout(t);
+      resolve(v);
+    }, function (e) {
+      if (terminado) return;
+      terminado = true;
+      clearTimeout(t);
+      reject(e);
+    });
+  });
+}
 
 function decodificarZxing() {
   if (typeof ZXing === 'undefined') return null;
@@ -410,8 +457,20 @@ async function procesarFrame() {
     const sx = Math.floor((vw - cw) / 2), sy = Math.floor((vh - ch) / 2);
     const w = Math.min(cw, 960), h = Math.round(ch * w / cw);
     if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    numFrame++;
+    ctx.filter = (numFrame % 2 === 0) ? 'grayscale(1) contrast(1.5)' : 'none';
     ctx.drawImage(video, sx, sy, cw, ch, 0, 0, w, h);
-    const texto = decodificarZxing();
+    ctx.filter = 'none';
+
+    let texto = null;
+    if (detector) {
+      try {
+        const r = await detector.detect(canvas);
+        if (r.length) texto = r[0].rawValue;
+      } catch (e) { detector = null; }
+    } else {
+      texto = decodificarZxing();
+    }
     if (texto) {
       const code = String(texto).trim();
       const p = productos.find(function (x) { return x.codigo === code; });
@@ -442,23 +501,61 @@ function ciclo(ts) {
 
 async function iniciarCamara() {
   if (stream) return;
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } },
-      audio: false
-    });
-    $('video').srcObject = stream;
-    $('video').play().catch(function () {});
-    if (!cicloActivo) { cicloActivo = true; requestAnimationFrame(ciclo); }
-  } catch (err) {
-    mostrar('No se pudo abrir la cámara: ' + (err.name || 'Error'), 'error');
-    $('modalCam').classList.remove('abierto');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    mostrar('Este navegador no permite usar la cámara. Abre el link https en Chrome.', 'error');
+    return;
   }
+  const opciones = [
+    { video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false },
+    { video: { facingMode: { ideal: 'environment' } }, audio: false },
+    { video: true, audio: false }
+  ];
+  let ultimoError = null;
+  for (let i = 0; i < opciones.length; i++) {
+    try {
+      stream = await conTiempo(navigator.mediaDevices.getUserMedia(opciones[i]), 10000);
+      break;
+    } catch (err) {
+      ultimoError = err;
+      if (err && err.name === 'NotAllowedError') break;
+    }
+  }
+  if (!stream) {
+    mostrar('No se pudo abrir la cámara: ' + (ultimoError && ultimoError.name ? ultimoError.name : 'Error'), 'error');
+    $('modalCam').classList.remove('abierto');
+    return;
+  }
+  const video = $('video');
+  video.srcObject = stream;
+  video.play().catch(function () {});
+  const track = stream.getVideoTracks()[0];
+  const caps = track.getCapabilities ? track.getCapabilities() : {};
+  if (caps.focusMode && caps.focusMode.indexOf('continuous') >= 0) {
+    track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(function () {});
+  }
+  if (caps.zoom) {
+    $('zoom').min = caps.zoom.min;
+    $('zoom').max = caps.zoom.max;
+    $('zoom').step = caps.zoom.step || 0.1;
+    $('zoom').value = caps.zoom.min;
+    $('zoomBox').style.display = 'block';
+  } else {
+    $('zoomBox').style.display = 'none';
+  }
+  if (!cicloActivo) { cicloActivo = true; requestAnimationFrame(ciclo); }
+  if (navigator.wakeLock) navigator.wakeLock.request('screen').catch(function () {});
 }
 
 function detenerCamara() {
   if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
 }
+
+$('zoom').addEventListener('input', function () {
+  if (stream) {
+    const track = stream.getVideoTracks()[0];
+    if (track) track.applyConstraints({ advanced: [{ zoom: Number($('zoom').value) }] }).catch(function () {});
+  }
+});
 
 // ---------- Arranque ----------
 cargarProductos();

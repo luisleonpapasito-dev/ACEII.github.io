@@ -16,11 +16,10 @@
   .turno .estado-cerrado { color:#7cfc9a; }
   .turno .dif-ok { color:#7cfc9a; }
   .turno .dif-mal { color:#ff6b6b; font-weight:bold; }
-  .detalle { background:#0f0f0f; border-radius:8px; padding:10px; margin-top:8px; font-size:13px; display:none; }
-  .detalle.abierto { display:block; }
+  .detalle { background:#0f0f0f; border-radius:8px; padding:10px; margin:8px 0; font-size:13px; }
   .detalle .row { display:flex; justify-content:space-between; padding:3px 0; }
-  .filtros { display:flex; gap:8px; margin:8px 0; }
-  .filtros button { flex:1; }
+  .filtros { display:flex; gap:8px; margin:8px 0; flex-wrap:wrap; }
+  .filtros button { flex:1; min-width:70px; }
   .filtros button.on { background:#1b8a3a; border:2px solid #7cfc9a; }
 </style>
 </head>
@@ -39,6 +38,7 @@
     <button id="fAyer">Ayer</button>
     <button id="fSemana">7 días</button>
     <button id="fMes">30 días</button>
+    <button id="fTodo">Todo</button>
   </div>
   <button id="btnActualizar" style="width:100%;">🔄 Actualizar</button>
 </div>
@@ -51,26 +51,48 @@ pintarUsuarioTurno();
 
 let filtro = 'hoy';
 
+// Formatea fecha local como YYYY-MM-DD HH:mm:ss
+function fmtFecha(d) {
+  const y = d.getFullYear();
+  const m = ('0' + (d.getMonth() + 1)).slice(-2);
+  const dia = ('0' + d.getDate()).slice(-2);
+  const h = ('0' + d.getHours()).slice(-2);
+  const min = ('0' + d.getMinutes()).slice(-2);
+  const s = ('0' + d.getSeconds()).slice(-2);
+  return y + '-' + m + '-' + dia + ' ' + h + ':' + min + ':' + s;
+}
+function fmtFechaCorta(d) {
+  const y = d.getFullYear();
+  const m = ('0' + (d.getMonth() + 1)).slice(-2);
+  const dia = ('0' + d.getDate()).slice(-2);
+  return y + '-' + m + '-' + dia;
+}
+
 function rangoFechas() {
   const hoy = new Date();
-  const hasta = hoy.toISOString().slice(0, 10) + ' 23:59:59';
-  const d = new Date(hoy);
+  const hasta = fmtFechaCorta(hoy) + ' 23:59:59';
+
   if (filtro === 'hoy') {
-    return { desde: hoy.toISOString().slice(0, 10) + ' 00:00:00', hasta: hasta };
+    return { desde: fmtFechaCorta(hoy) + ' 00:00:00', hasta: hasta };
   }
   if (filtro === 'ayer') {
-    d.setDate(d.getDate() - 1);
-    const dia = d.toISOString().slice(0, 10);
+    const ayer = new Date(hoy);
+    ayer.setDate(ayer.getDate() - 1);
+    const dia = fmtFechaCorta(ayer);
     return { desde: dia + ' 00:00:00', hasta: dia + ' 23:59:59' };
   }
   if (filtro === 'semana') {
-    d.setDate(d.getDate() - 7);
-    return { desde: d.toISOString().slice(0, 10) + ' 00:00:00', hasta: hasta };
+    const hace7 = new Date(hoy);
+    hace7.setDate(hace7.getDate() - 6);
+    return { desde: fmtFechaCorta(hace7) + ' 00:00:00', hasta: hasta };
   }
   if (filtro === 'mes') {
-    d.setDate(d.getDate() - 30);
-    return { desde: d.toISOString().slice(0, 10) + ' 00:00:00', hasta: hasta };
+    const hace30 = new Date(hoy);
+    hace30.setDate(hace30.getDate() - 29);
+    return { desde: fmtFechaCorta(hace30) + ' 00:00:00', hasta: hasta };
   }
+  // 'todo'
+  return { desde: '', hasta: '' };
 }
 
 function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
@@ -100,7 +122,7 @@ function pintar(items) {
     d.className = 'turno';
     const dif = Number(t.diferencia || 0);
     const difClase = dif === 0 ? 'dif-ok' : 'dif-mal';
-    const difTexto = dif === 0 ? 'Cuadró' : (dif > 0 ? '+' + fmt(dif) : fmt(dif));
+    const difTexto = dif === 0 ? 'Cuadró ✓' : (dif > 0 ? '+' + fmt(dif) : fmt(dif));
     const estadoClase = t.estado === 'Abierto' ? 'estado-abierto' : 'estado-cerrado';
     d.innerHTML =
       '<div class="fila"><span class="id">' + t.id_turno + '</span><span class="' + estadoClase + '">' + t.estado + '</span></div>' +
@@ -121,19 +143,22 @@ async function mostrarDetalle(idTurno, nodo) {
     sig.remove();
     return;
   }
+  // Cerrar cualquier otro detalle abierto
+  document.querySelectorAll('.detalle').forEach(function (d) { d.remove(); });
+
   const d = document.createElement('div');
   d.className = 'detalle';
-  d.textContent = 'Cargando...';
+  d.textContent = 'Cargando movimientos...';
   nodo.parentNode.insertBefore(d, nodo.nextSibling);
   try {
     const r = await jsonp({ accion: 'movimientos_turno', id_turno: idTurno }, 30000);
     if (!r || !r.ok) { d.textContent = 'Error al cargar movimientos'; return; }
     if (!r.items.length) { d.textContent = '(sin movimientos)'; return; }
-    let html = '<strong style="color:#ffd54f;">Movimientos:</strong>';
+    let html = '<strong style="color:#ffd54f;">Movimientos del turno:</strong>';
     r.items.forEach(function (m) {
       const signo = m.tipo === 'Ingreso' ? '+' : '-';
-      const clase = m.tipo === 'Ingreso' ? 'monto-ing' : 'monto-egr';
-      html += '<div class="row"><span>' + m.fecha_hora + ' · ' + m.categoria + (m.descripcion ? ' (' + m.descripcion + ')' : '') + '</span><span class="' + clase + '">' + signo + fmt(m.monto) + '</span></div>';
+      const color = m.tipo === 'Ingreso' ? '#7cfc9a' : '#ff6b6b';
+      html += '<div class="row"><span>' + m.fecha_hora + ' · ' + m.categoria + (m.descripcion ? ' (' + m.descripcion + ')' : '') + '</span><span style="color:' + color + ';font-weight:bold;">' + signo + fmt(m.monto) + '</span></div>';
     });
     d.innerHTML = html;
   } catch (err) {
@@ -141,18 +166,20 @@ async function mostrarDetalle(idTurno, nodo) {
   }
 }
 
+function marcarActivo(btn) {
+  ['fHoy', 'fAyer', 'fSemana', 'fMes', 'fTodo'].forEach(function (id) {
+    const el = $(id);
+    if (el) el.className = '';
+  });
+  btn.className = 'on';
+}
+
 $('fHoy').addEventListener('click', function () { filtro = 'hoy'; marcarActivo(this); cargar(); });
 $('fAyer').addEventListener('click', function () { filtro = 'ayer'; marcarActivo(this); cargar(); });
 $('fSemana').addEventListener('click', function () { filtro = 'semana'; marcarActivo(this); cargar(); });
 $('fMes').addEventListener('click', function () { filtro = 'mes'; marcarActivo(this); cargar(); });
+$('fTodo').addEventListener('click', function () { filtro = 'todo'; marcarActivo(this); cargar(); });
 $('btnActualizar').addEventListener('click', cargar);
-
-function marcarActivo(btn) {
-  ['fHoy', 'fAyer', 'fSemana', 'fMes'].forEach(function (id) {
-    $(id).className = '';
-  });
-  btn.className = 'on';
-}
 
 cargar();
 </script>

@@ -139,6 +139,13 @@ body {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+.app-header-logo {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
 .app-header-texto {
   flex: 1;
 }
@@ -392,7 +399,7 @@ a {
 }
 
 /* ============================================================
-   Colores semánticos para JS (mantengo clases viejas por compatibilidad)
+   Colores semánticos para JS
    ============================================================ */
 #estado.ok, .estado-ok { background: var(--exito) !important; color: #fff !important; }
 #estado.error, .estado-error { background: var(--alerta) !important; color: #fff !important; }
@@ -424,4 +431,33 @@ a.op.off { background: var(--superficie-2); color: var(--texto-claro); }
   padding: 8px 0;
   border-bottom: 1px solid #E8ECF4;
   font-size: 14px;
+}
+
+/* ============================================================
+   Centrado en pantallas grandes (PC)
+   ============================================================ */
+@media (min-width: 700px) {
+  body {
+    background: linear-gradient(135deg, #E3ECFF 0%, #F5F7FB 100%);
+    min-height: 100vh;
+  }
+
+  .app-header {
+    max-width: 480px;
+    margin: 24px auto 0;
+    border-radius: 24px;
+    padding: 24px 24px 60px;
+  }
+  .app-header::after {
+    display: none;
+  }
+
+  .grid-menu,
+  .caja {
+    margin-top: 16px;
+  }
+
+  #estado {
+    margin-top: 24px;
+  }
 }

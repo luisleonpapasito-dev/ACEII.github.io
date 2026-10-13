@@ -6,6 +6,7 @@
 <title>Productos · ACEII</title>
 <link rel="stylesheet" href="estilos.css">
 <script src="comun.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
 <style>
   #listaProductos {
     max-height: 420px;
@@ -82,6 +83,79 @@
     text-align: center;
     font-weight: 700;
   }
+
+  .codigo-fila {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 4px;
+  }
+  .codigo-fila input {
+    flex: 1;
+    margin: 0;
+  }
+  .codigo-fila button {
+    margin: 0;
+    padding: 10px 14px;
+    white-space: nowrap;
+    background: var(--azul);
+    color: #fff;
+    font-weight: 600;
+    border-radius: 8px;
+  }
+
+  /* Modal de cámara */
+  #modalCam {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 100;
+  }
+  #modalCam.abierto { display: block; }
+  #modalCam video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  #modalCam .cerrar {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 10px 14px;
+    background: var(--alerta);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    z-index: 2;
+  }
+  #modalCam .marco {
+    position: absolute;
+    left: 5%;
+    top: 27.5%;
+    width: 90%;
+    height: 45%;
+    border: 3px solid #00e676;
+    border-radius: 10px;
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+  #modalCam .info {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    color: #fff;
+    font-size: 14px;
+  }
 </style>
 </head>
 <body>
@@ -140,7 +214,10 @@
     <input type="number" id="fUpp" min="0" step="1" inputmode="numeric" placeholder="Ej: 24">
 
     <label>Código de barras (opcional)</label>
-    <input type="text" id="fCodigo" maxlength="30" placeholder="Escanéalo o escríbelo">
+    <div class="codigo-fila">
+      <input type="text" id="fCodigo" maxlength="30" placeholder="Escanéalo o escríbelo">
+      <button id="btnEscanearCodigo" type="button">📷</button>
+    </div>
 
     <label>Nota (opcional)</label>
     <textarea id="fNota" maxlength="200" rows="2" placeholder="Observaciones internas"></textarea>
@@ -155,6 +232,14 @@
   </div>
 </div>
 
+<!-- Modal de cámara -->
+<div id="modalCam">
+  <button class="cerrar" id="btnCerrarCam">Cerrar</button>
+  <video id="video" playsinline muted autoplay></video>
+  <div class="marco" id="marco"></div>
+  <div class="info" id="infoCam">Apunta al código de barras</div>
+</div>
+
 <script>
 exigirSesion();
 pintarUsuarioTurno();
@@ -163,7 +248,7 @@ let productos = [];
 let categorias = [];
 let proveedores = [];
 let modos = [];
-let modoForm = 'crear'; // 'crear' o 'editar'
+let modoForm = 'crear';
 let productoEditando = null;
 
 (async function () {
@@ -343,7 +428,6 @@ $('btnGuardar').addEventListener('click', async function () {
   try {
     let r;
     if (modoForm === 'crear') {
-      // Pedir el ID al servidor
       const rid = await jsonp({ accion: 'proximo_id', categoria: cat }, 15000);
       if (!rid || !rid.ok) throw new Error('No se pudo generar el ID');
       r = await post({
@@ -432,7 +516,6 @@ $('btnEliminar').addEventListener('click', async function () {
 // ---------- Desactivar / Reactivar (doble click en el badge) ----------
 document.addEventListener('dblclick', async function (e) {
   if (!e.target.classList.contains('badge-activo') && !e.target.classList.contains('badge-inactivo')) return;
-  // Encontrar el producto por el nombre
   const itemPadre = e.target.closest('.prod-item');
   if (!itemPadre) return;
   const nombre = itemPadre.querySelector('.nombre').textContent;
@@ -456,6 +539,147 @@ document.addEventListener('dblclick', async function (e) {
     mostrar('Error: ' + err.message, 'error');
   }
 });
+
+// =====================================================================
+// ESCÁNER DE CÓDIGO DE BARRAS
+// =====================================================================
+let lectorZxing = null;
+let stream = null;
+let cicloActivo = false;
+let ocupado = false;
+let ultimoIntento = 0;
+let numFrame = 0;
+let detector = null;
+let pausaLectura = false;
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+const INTERVALO_MS = 40;
+const FORMATOS = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'];
+
+if ('BarcodeDetector' in window) {
+  BarcodeDetector.getSupportedFormats().then(function (f) {
+    const ok = FORMATOS.filter(function (x) { return f.indexOf(x) >= 0; });
+    if (ok.length) detector = new BarcodeDetector({ formats: ok });
+  }).catch(function () {});
+}
+
+$('btnEscanearCodigo').addEventListener('click', async function () {
+  $('modalCam').classList.add('abierto');
+  await iniciarCamara();
+});
+
+$('btnCerrarCam').addEventListener('click', function () {
+  $('modalCam').classList.remove('abierto');
+  detenerCamara();
+  cicloActivo = false;
+  pausaLectura = false;
+});
+
+function decodificarZxing() {
+  if (typeof ZXing === 'undefined') return null;
+  try {
+    if (!lectorZxing) {
+      const h = new Map();
+      h.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+        ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
+        ZXing.BarcodeFormat.UPC_A, ZXing.BarcodeFormat.UPC_E,
+        ZXing.BarcodeFormat.CODE_128
+      ]);
+      h.set(ZXing.DecodeHintType.TRY_HARDER, true);
+      lectorZxing = new ZXing.MultiFormatReader();
+      lectorZxing.setHints(h);
+    }
+    const fuente = new ZXing.HTMLCanvasElementLuminanceSource(canvas);
+    return lectorZxing.decode(new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(fuente))).getText();
+  } catch (e) { return null; }
+}
+
+async function procesarFrame() {
+  ocupado = true;
+  try {
+    const video = $('video');
+    const vw = video.videoWidth, vh = video.videoHeight;
+    if (!vw || !vh) { ocupado = false; return; }
+    const cw = Math.floor(vw * 0.9), ch = Math.floor(vh * 0.45);
+    const sx = Math.floor((vw - cw) / 2), sy = Math.floor((vh - ch) / 2);
+    const w = Math.min(cw, 960), h = Math.round(ch * w / cw);
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    numFrame++;
+    ctx.filter = (numFrame % 2 === 0) ? 'grayscale(1) contrast(1.5)' : 'none';
+    ctx.drawImage(video, sx, sy, cw, ch, 0, 0, w, h);
+    ctx.filter = 'none';
+
+    let texto = null;
+    if (detector) {
+      try {
+        const r = await detector.detect(canvas);
+        if (r.length) texto = r[0].rawValue;
+      } catch (e) { detector = null; }
+    } else {
+      texto = decodificarZxing();
+    }
+
+    if (texto && !pausaLectura) {
+      const code = String(texto).trim();
+      if (navigator.vibrate) navigator.vibrate(80);
+      $('fCodigo').value = code;
+      $('infoCam').textContent = '✓ Código detectado: ' + code;
+      $('marco').className = 'marco ok';
+
+      pausaLectura = true;
+      setTimeout(function () {
+        $('modalCam').classList.remove('abierto');
+        detenerCamara();
+        cicloActivo = false;
+        pausaLectura = false;
+        $('marco').className = 'marco';
+        $('infoCam').textContent = 'Apunta al código de barras';
+        mostrar('Código capturado ✓', 'ok');
+      }, 700);
+    }
+  } catch (e) {}
+  ocupado = false;
+}
+
+function ciclo(ts) {
+  requestAnimationFrame(ciclo);
+  if (ocupado || pausaLectura || ts - ultimoIntento < INTERVALO_MS) return;
+  const video = $('video');
+  if (!(video.readyState >= 2 && video.videoWidth)) return;
+  ultimoIntento = ts;
+  procesarFrame();
+}
+
+async function iniciarCamara() {
+  if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert('Este navegador no permite usar la cámara.');
+    $('modalCam').classList.remove('abierto');
+    return;
+  }
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+      audio: false
+    });
+    const video = $('video');
+    video.srcObject = stream;
+    video.play().catch(function () {});
+    const track = stream.getVideoTracks()[0];
+    const caps = track.getCapabilities ? track.getCapabilities() : {};
+    if (caps.focusMode && caps.focusMode.indexOf('continuous') >= 0) {
+      track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(function () {});
+    }
+    if (!cicloActivo) { cicloActivo = true; requestAnimationFrame(ciclo); }
+  } catch (err) {
+    alert('No se pudo abrir la cámara: ' + (err.name || 'Error'));
+    $('modalCam').classList.remove('abierto');
+  }
+}
+
+function detenerCamara() {
+  if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
+}
 </script>
 </body>
 </html>

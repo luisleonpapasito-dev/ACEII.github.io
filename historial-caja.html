@@ -21,6 +21,7 @@
   .filtros { display:flex; gap:8px; margin:8px 0; flex-wrap:wrap; }
   .filtros button { flex:1; min-width:70px; }
   .filtros button.on { background:#1b8a3a; border:2px solid #7cfc9a; }
+  .btn-forzar { background:#c62828; padding:8px 12px; font-size:13px; margin-top:6px; border-radius:6px; color:#fff; border:none; }
 </style>
 </head>
 <body>
@@ -51,16 +52,6 @@ pintarUsuarioTurno();
 
 let filtro = 'hoy';
 
-// Formatea fecha local como YYYY-MM-DD HH:mm:ss
-function fmtFecha(d) {
-  const y = d.getFullYear();
-  const m = ('0' + (d.getMonth() + 1)).slice(-2);
-  const dia = ('0' + d.getDate()).slice(-2);
-  const h = ('0' + d.getHours()).slice(-2);
-  const min = ('0' + d.getMinutes()).slice(-2);
-  const s = ('0' + d.getSeconds()).slice(-2);
-  return y + '-' + m + '-' + dia + ' ' + h + ':' + min + ':' + s;
-}
 function fmtFechaCorta(d) {
   const y = d.getFullYear();
   const m = ('0' + (d.getMonth() + 1)).slice(-2);
@@ -91,7 +82,6 @@ function rangoFechas() {
     hace30.setDate(hace30.getDate() - 29);
     return { desde: fmtFechaCorta(hace30) + ' 00:00:00', hasta: hasta };
   }
-  // 'todo'
   return { desde: '', hasta: '' };
 }
 
@@ -124,11 +114,25 @@ function pintar(items) {
     const difClase = dif === 0 ? 'dif-ok' : 'dif-mal';
     const difTexto = dif === 0 ? 'Cuadró ✓' : (dif > 0 ? '+' + fmt(dif) : fmt(dif));
     const estadoClase = t.estado === 'Abierto' ? 'estado-abierto' : 'estado-cerrado';
-    d.innerHTML =
+    let html =
       '<div class="fila"><span class="id">' + t.id_turno + '</span><span class="' + estadoClase + '">' + t.estado + '</span></div>' +
       '<div class="fila"><span class="resp">' + t.responsable + '</span><span style="color:#aaa;font-size:12px;">' + t.fecha_apertura + '</span></div>' +
       '<div class="fila"><span>Esperado: ' + fmt(t.saldo_esperado) + '</span><span>Real: ' + fmt(t.saldo_real) + '</span></div>' +
       '<div class="fila"><span>Diferencia:</span><span class="' + difClase + '">' + difTexto + '</span></div>';
+    d.innerHTML = html;
+
+    // Si el turno está abierto, agregar botón "Forzar cierre"
+    if (t.estado === 'Abierto') {
+      const btnForzar = document.createElement('button');
+      btnForzar.className = 'btn-forzar';
+      btnForzar.textContent = '🔓 Forzar cierre';
+      btnForzar.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        forzarCierre(t.id_turno, t.responsable);
+      });
+      d.appendChild(btnForzar);
+    }
+
     d.addEventListener('click', function () {
       mostrarDetalle(t.id_turno, d);
     });
@@ -136,14 +140,42 @@ function pintar(items) {
   });
 }
 
+async function forzarCierre(idTurno, responsable) {
+  if (!confirm('⚠️ Vas a forzar el cierre del turno ' + idTurno + ' de ' + responsable + '.\n\nEsta acción NO se puede deshacer. ¿Continuar?')) return;
+  const saldoRealStr = prompt('Escribe el efectivo REAL que hay en caja ahora:');
+  if (saldoRealStr === null) return;
+  const saldoReal = Number(saldoRealStr);
+  if (isNaN(saldoReal) || saldoReal < 0) { alert('Valor inválido'); return; }
+  const u = getUsuarioTurno();
+  const obs = 'CIERRE FORZADO por ' + (u ? u.nombre : '') + '. ' + (prompt('Observación (opcional):') || '');
+  mostrar('Cerrando turno...', 'aviso');
+  try {
+    const r = await post({
+      accion: 'cerrar_turno',
+      id_usuario: u.id,
+      id_turno: idTurno,
+      saldo_real: saldoReal,
+      observaciones: obs
+    });
+    if (r.ok) {
+      let msj = 'Turno cerrado ✓\nEsperado: ' + fmt(r.saldo_esperado) + '\nReal: ' + fmt(r.saldo_real);
+      if (r.diferencia !== 0) msj += '\nDIFERENCIA: ' + (r.diferencia > 0 ? '+' : '') + fmt(r.diferencia);
+      alert(msj);
+      cargar();
+    } else {
+      alert('Error: ' + (r.error || 'desconocido'));
+    }
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+}
+
 async function mostrarDetalle(idTurno, nodo) {
-  // Si ya estaba abierto, lo cierra
   const sig = nodo.nextSibling;
   if (sig && sig.classList && sig.classList.contains('detalle')) {
     sig.remove();
     return;
   }
-  // Cerrar cualquier otro detalle abierto
   document.querySelectorAll('.detalle').forEach(function (d) { d.remove(); });
 
   const d = document.createElement('div');

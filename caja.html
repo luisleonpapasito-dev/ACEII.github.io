@@ -33,16 +33,6 @@
   </div>
 </div>
 
-<div id="pantallaAbrir" class="caja" style="display:none">
-  <h3>💰 Abrir turno de caja</h3>
-  <div id="avisoBaseSugerida" style="color:#ffd54f; font-size:14px; margin:8px 0;"></div>
-  <label>Efectivo que hay físicamente en la caja (base inicial)</label>
-  <input type="number" id="baseInicial" min="0" step="100" inputmode="numeric" placeholder="Ej: 50000">
-  <label>Observaciones (opcional)</label>
-  <input type="text" id="obsAbrir" maxlength="200">
-  <button class="main" id="btnAbrir" style="width:100%; padding:16px; font-size:18px;">Abrir turno</button>
-</div>
-
 <div id="pantallaTurno" style="display:none">
 
   <div class="caja">
@@ -112,98 +102,29 @@ function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
 (async function () {
   const u = getUsuarioTurno();
   if (!u) { location.href = 'index.html'; return; }
-  await verificarMiTurno();
-})();
-
-async function verificarMiTurno() {
-  mostrar('Buscando turno...', 'aviso');
-  try {
-    const u = getUsuarioTurno();
-    const r = await jsonp({ accion: 'mi_turno', id_usuario: u.id }, 20000);
-    if (r && r.ok && r.turno) {
-      turno = r.turno;
-      guardarTurnoActual(turno);
-      await abrirPantallaTurno();
-    } else {
-      await abrirPantallaAbrir();
-    }
-  } catch (err) {
-    mostrar('Error: ' + err.message, 'error');
-  }
-}
-
-async function abrirPantallaAbrir() {
-  $('pantallaAbrir').style.display = 'block';
-  $('pantallaTurno').style.display = 'none';
-  mostrar('Abre el turno para empezar');
-  try {
-    const r = await jsonp({ accion: 'base_sugerida' }, 20000);
-    if (r && r.ok) {
-      const sugerida = Number(r.base_sugerida || 0);
-      $('baseInicial').value = sugerida;
-      if (r.ultimo_cierre) {
-        $('avisoBaseSugerida').innerHTML = 'Último cierre: ' + r.ultimo_cierre + ' con ' + fmt(sugerida) + ' en caja.<br>Verifica el efectivo real antes de guardar.';
-      } else {
-        $('avisoBaseSugerida').textContent = 'No hay turnos anteriores. Cuenta el efectivo e ingrésalo.';
-      }
-    }
-  } catch (e) {}
-}
-
-async function abrirPantallaTurno() {
-  $('pantallaAbrir').style.display = 'none';
-  $('pantallaTurno').style.display = 'block';
-  await cargarMovimientos();
-  mostrar('Turno abierto', 'ok');
-}
-
-$('btnAbrir').addEventListener('click', async function () {
-  const base = Number($('baseInicial').value);
-  if (isNaN(base) || base < 0) { mostrar('Base inválida', 'error'); return; }
-  const u = getUsuarioTurno();
-  $('btnAbrir').disabled = true;
-  mostrar('Abriendo turno...', 'aviso');
-  try {
-    let sugerida = 0;
+  turno = getTurnoActual();
+  if (!turno) {
+    // No hay turno en localStorage: consultar al servidor
     try {
-      const s = await jsonp({ accion: 'base_sugerida' }, 15000);
-      if (s && s.ok) sugerida = Number(s.base_sugerida || 0);
-    } catch (e) {}
-    let obs = $('obsAbrir').value.trim();
-    if (base < sugerida) {
-      const dif = sugerida - base;
-      if (!confirm('La base es menor a la sugerida (' + fmt(sugerida) + '). Faltan ' + fmt(dif) + '.\n\n¿Estás seguro de abrir con ' + fmt(base) + '?')) {
-        $('btnAbrir').disabled = false;
-        mostrar('Cancelado', 'aviso');
+      const r = await jsonp({ accion: 'mi_turno', id_usuario: u.id }, 20000);
+      if (r && r.ok && r.turno) {
+        turno = r.turno;
+        guardarTurnoActual(turno);
+      } else {
+        // No tiene turno: volver al menú para que abra
+        alert('No tienes turno de caja abierto. Abre uno primero.');
+        location.href = 'index.html';
         return;
       }
-      obs = (obs ? obs + ' | ' : '') + 'Diferencia apertura: -' + dif;
-    } else if (base > sugerida) {
-      const dif = base - sugerida;
-      obs = (obs ? obs + ' | ' : '') + 'Diferencia apertura: +' + dif;
+    } catch (e) {
+      alert('Error al verificar turno: ' + e.message);
+      location.href = 'index.html';
+      return;
     }
-    const r = await post({
-      accion: 'abrir_turno',
-      id_usuario: u.id,
-      base_inicial: base,
-      base_sugerida: sugerida,
-      observaciones: obs
-    });
-    if (r.ok) {
-      console.log('ID turno abierto:', r.id_turno);
-      turno = { id: r.id_turno, base: base };
-      guardarTurnoActual(turno);
-      mostrar('Turno abierto ✓', 'ok');
-      await abrirPantallaTurno();
-    } else {
-      mostrar(r.error || 'Error desconocido', 'error');
-    }
-  } catch (err) {
-    mostrar('Sin conexión: ' + err.message, 'error');
-  } finally {
-    $('btnAbrir').disabled = false;
   }
-});
+  $('pantallaTurno').style.display = 'block';
+  await cargarMovimientos();
+})();
 
 async function cargarMovimientos() {
   if (!turno) return;

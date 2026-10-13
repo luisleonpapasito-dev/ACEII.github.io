@@ -3,32 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cafetería</title>
+<title>ACEII - Cafetería</title>
 <link rel="stylesheet" href="estilos.css">
 <script src="comun.js"></script>
 </head>
 <body>
 
-<div id="estado">Cafetería</div>
+<div id="estado">ACEII · Cafetería</div>
 
+<!-- Paso 1: clave general -->
 <div class="caja" id="login" style="display:none">
   <label>Clave del sistema</label>
   <input type="password" id="clave" placeholder="Escribe la clave">
   <button class="main" id="btnEntrar">Entrar</button>
 </div>
 
+<!-- Paso 2: usuario + PIN -->
 <div class="caja" id="turno" style="display:none">
   <label>¿Quién inicia el turno?</label>
   <select id="usuarioTurno"></select>
   <label>PIN</label>
   <input type="password" id="pinTurno" placeholder="Escribe tu PIN" inputmode="numeric">
-  <button class="main" id="btnTurno">Iniciar turno</button>
+  <button class="main" id="btnTurno">Entrar</button>
 </div>
 
+<!-- Paso 3: abrir turno de caja -->
+<div class="caja" id="abrirTurno" style="display:none">
+  <h3>💰 Abrir turno de caja</h3>
+  <div id="avisoBaseSugerida" style="color:#ffd54f; font-size:14px; margin:8px 0;"></div>
+  <label>Efectivo que hay físicamente en la caja</label>
+  <input type="number" id="baseInicial" min="0" step="100" inputmode="numeric" placeholder="Ej: 50000">
+  <label>Observaciones (opcional)</label>
+  <input type="text" id="obsAbrir" maxlength="200">
+  <button class="main" id="btnAbrir" style="width:100%;">Abrir turno</button>
+  <button id="btnCancelarApertura" style="width:100%; margin-top:6px;">Cancelar (cerrar sesión)</button>
+</div>
+
+<!-- Paso 4: menú principal -->
 <div class="caja" id="menu" style="display:none">
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
     <span id="usuarioTurno" style="color:#7cfc9a; font-weight:bold;"></span>
-    <button id="btnCerrarTurno" style="padding:6px 10px; margin:0; font-size:13px;">Cerrar turno</button>
   </div>
   <a class="op" href="caja.html">💰 Caja del turno</a>
   <a class="op" href="ventas.html">🛒 Ventas</a>
@@ -41,15 +55,24 @@
 </div>
 
 <script>
-function pintar() {
+let turnoPendiente = null; // guarda el turno que se abre desde aquí
+
+function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
+
+async function pintar() {
   const hayToken = !!getToken();
-  const hayTurno = !!getUsuarioTurno();
-  $('login').style.display = hayToken ? 'none' : 'block';
-  $('turno').style.display = (hayToken && !hayTurno) ? 'block' : 'none';
-  $('menu').style.display = (hayToken && hayTurno) ? 'block' : 'none';
-  if (hayToken && hayTurno) pintarUsuarioTurno();
+  const hayUsuario = !!getUsuarioTurno();
+  const hayTurno = !!getTurnoActual();
+
+  $('login').style.display = (!hayToken) ? 'block' : 'none';
+  $('turno').style.display = (hayToken && !hayUsuario) ? 'block' : 'none';
+  $('abrirTurno').style.display = 'none'; // solo se activa explícitamente
+  $('menu').style.display = (hayToken && hayUsuario && hayTurno) ? 'block' : 'none';
+
+  if (hayToken && hayUsuario && hayTurno) pintarUsuarioTurno();
 }
 
+// ---------- Paso 1: clave general ----------
 async function entrar() {
   const clave = $('clave').value.trim();
   if (!clave) return;
@@ -58,7 +81,7 @@ async function entrar() {
   try {
     const r = await jsonp({ accion: 'auth' }, 15000);
     if (r && r.ok) {
-      mostrar('Cafetería', '');
+      mostrar('ACEII · Cafetería', '');
       await cargarUsuarios();
     } else {
       borrarToken();
@@ -74,6 +97,7 @@ async function entrar() {
 $('btnEntrar').addEventListener('click', entrar);
 $('clave').addEventListener('keydown', function (e) { if (e.key === 'Enter') entrar(); });
 
+// ---------- Paso 2: usuario + PIN ----------
 async function cargarUsuarios() {
   try {
     const r = await jsonp({ accion: 'usuarios' }, 15000);
@@ -99,8 +123,8 @@ async function iniciarTurno() {
     if (r && r.ok) {
       guardarUsuarioTurno({ id: r.id_usuario, nombre: r.nombre });
       $('pinTurno').value = '';
-      mostrar('Turno iniciado ✓ ' + r.nombre, 'ok');
-      pintar();
+      mostrar('Bienvenido ✓ ' + r.nombre, 'ok');
+      await verificarTurnoCaja(r.id_usuario, r.nombre);
     } else {
       mostrar(r.error || 'PIN incorrecto', 'error');
     }
@@ -112,21 +136,119 @@ async function iniciarTurno() {
 $('btnTurno').addEventListener('click', iniciarTurno);
 $('pinTurno').addEventListener('keydown', function (e) { if (e.key === 'Enter') iniciarTurno(); });
 
-$('btnSalir').addEventListener('click', function () {
-  if (!confirm('¿Cerrar la sesión general?')) return;
+// ---------- Paso 3: verificar si ya tiene turno abierto ----------
+async function verificarTurnoCaja(idUsuario, nombre) {
+  mostrar('Verificando turno...', 'aviso');
+  try {
+    const r = await jsonp({ accion: 'mi_turno', id_usuario: idUsuario }, 20000);
+    if (r && r.ok && r.turno) {
+      // Ya tiene un turno abierto: recuperarlo
+      guardarTurnoActual(r.turno);
+      mostrar('Turno recuperado ✓ Base: ' + fmt(r.turno.base), 'ok');
+      setTimeout(pintar, 800);
+    } else {
+      // No tiene turno abierto: pedir base inicial
+      await pedirBaseInicial(nombre);
+    }
+  } catch (err) {
+    mostrar('Error al verificar turno: ' + err.message, 'error');
+    // De todas formas pedimos abrir turno
+    await pedirBaseInicial(nombre);
+  }
+}
+
+async function pedirBaseInicial(nombre) {
+  $('login').style.display = 'none';
+  $('turno').style.display = 'none';
+  $('abrirTurno').style.display = 'block';
+  $('menu').style.display = 'none';
+  mostrar('Hola ' + nombre + ', abre tu turno');
+  try {
+    const r = await jsonp({ accion: 'base_sugerida' }, 20000);
+    if (r && r.ok) {
+      const sugerida = Number(r.base_sugerida || 0);
+      $('baseInicial').value = sugerida;
+      if (r.ultimo_cierre) {
+        $('avisoBaseSugerida').innerHTML = 'Último cierre: ' + r.ultimo_cierre + ' con ' + fmt(sugerida) + ' en caja.<br>Verifica el efectivo real antes de guardar.';
+      } else {
+        $('avisoBaseSugerida').textContent = 'No hay turnos anteriores. Cuenta el efectivo e ingrésalo.';
+      }
+    }
+  } catch (e) {}
+}
+
+// ---------- Abrir turno ----------
+$('btnAbrir').addEventListener('click', async function () {
+  const base = Number($('baseInicial').value);
+  if (isNaN(base) || base < 0) { mostrar('Base inválida', 'error'); return; }
+  const u = getUsuarioTurno();
+  $('btnAbrir').disabled = true;
+  mostrar('Abriendo turno...', 'aviso');
+  try {
+    let sugerida = 0;
+    try {
+      const s = await jsonp({ accion: 'base_sugerida' }, 15000);
+      if (s && s.ok) sugerida = Number(s.base_sugerida || 0);
+    } catch (e) {}
+    let obs = $('obsAbrir').value.trim();
+    if (base < sugerida) {
+      const dif = sugerida - base;
+      if (!confirm('La base es menor a la sugerida (' + fmt(sugerida) + '). Faltan ' + fmt(dif) + '.\n\n¿Estás seguro de abrir con ' + fmt(base) + '?')) {
+        $('btnAbrir').disabled = false;
+        mostrar('Cancelado', 'aviso');
+        return;
+      }
+      obs = (obs ? obs + ' | ' : '') + 'Diferencia apertura: -' + dif;
+    } else if (base > sugerida) {
+      const dif = base - sugerida;
+      obs = (obs ? obs + ' | ' : '') + 'Diferencia apertura: +' + dif;
+    }
+    const r = await post({
+      accion: 'abrir_turno',
+      id_usuario: u.id,
+      base_inicial: base,
+      base_sugerida: sugerida,
+      observaciones: obs
+    });
+    if (r.ok) {
+      turnoPendiente = { id: r.id_turno, base: base };
+      guardarTurnoActual(turnoPendiente);
+      mostrar('Turno abierto ✓', 'ok');
+      if (navigator.vibrate) navigator.vibrate(200);
+      pintar();
+    } else {
+      mostrar(r.error || 'Error desconocido', 'error');
+    }
+  } catch (err) {
+    mostrar('Sin conexión: ' + err.message, 'error');
+  } finally {
+    $('btnAbrir').disabled = false;
+  }
+});
+
+$('btnCancelarApertura').addEventListener('click', function () {
+  if (!confirm('Si cancelas, se cerrará tu sesión. ¿Continuar?')) return;
   borrarUsuarioTurno();
-  borrarToken();
   borrarTurnoActual();
   $('clave').value = '';
   pintar();
 });
-$('btnCerrarTurno').addEventListener('click', function () {
-  if (!confirm('¿Cerrar el turno de usuario? Tendrás que identificarte de nuevo.')) return;
+
+// ---------- Menú ----------
+$('btnSalir').addEventListener('click', async function () {
+  const t = getTurnoActual();
+  let msj = '¿Cerrar la sesión general?';
+  if (t) {
+    msj = '⚠️ Tienes un turno ABIERTO.\n\nSi cierras sesión, el turno quedará pendiente en Google Sheets. Podrás recuperarlo cuando vuelvas a entrar con tu usuario.\n\n¿Seguro quieres cerrar sesión?';
+  }
+  if (!confirm(msj)) return;
   borrarUsuarioTurno();
   borrarTurnoActual();
+  $('clave').value = '';
   pintar();
 });
 
+// ---------- Arranque ----------
 pintar();
 if (getToken() && !getUsuarioTurno()) cargarUsuarios();
 </script>

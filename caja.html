@@ -33,7 +33,6 @@
   </div>
 </div>
 
-<!-- PANTALLA 1: Abrir turno -->
 <div id="pantallaAbrir" class="caja" style="display:none">
   <h3>💰 Abrir turno de caja</h3>
   <div id="avisoBaseSugerida" style="color:#ffd54f; font-size:14px; margin:8px 0;"></div>
@@ -44,7 +43,6 @@
   <button class="main" id="btnAbrir" style="width:100%; padding:16px; font-size:18px;">Abrir turno</button>
 </div>
 
-<!-- PANTALLA 2: Turno abierto -->
 <div id="pantallaTurno" style="display:none">
 
   <div class="caja">
@@ -109,10 +107,8 @@ let turno = null;
 let tipoMov = 'Egreso';
 let movimientos = [];
 
-// ---------- Utilidades ----------
 function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
 
-// ---------- Arranque ----------
 (async function () {
   const u = getUsuarioTurno();
   if (!u) { location.href = 'index.html'; return; }
@@ -161,7 +157,6 @@ async function abrirPantallaTurno() {
   mostrar('Turno abierto', 'ok');
 }
 
-// ---------- Abrir turno ----------
 $('btnAbrir').addEventListener('click', async function () {
   const base = Number($('baseInicial').value);
   if (isNaN(base) || base < 0) { mostrar('Base inválida', 'error'); return; }
@@ -169,7 +164,6 @@ $('btnAbrir').addEventListener('click', async function () {
   $('btnAbrir').disabled = true;
   mostrar('Abriendo turno...', 'aviso');
   try {
-    // Comparar con la sugerida
     let sugerida = 0;
     try {
       const s = await jsonp({ accion: 'base_sugerida' }, 15000);
@@ -196,6 +190,7 @@ $('btnAbrir').addEventListener('click', async function () {
       observaciones: obs
     });
     if (r.ok) {
+      console.log('ID turno abierto:', r.id_turno);
       turno = { id: r.id_turno, base: base };
       guardarTurnoActual(turno);
       mostrar('Turno abierto ✓', 'ok');
@@ -210,7 +205,6 @@ $('btnAbrir').addEventListener('click', async function () {
   }
 });
 
-// ---------- Cargar movimientos ----------
 async function cargarMovimientos() {
   if (!turno) return;
   mostrar('Cargando movimientos...', 'aviso');
@@ -276,7 +270,6 @@ function calcularResumen() {
   $('turnoInfo2').textContent = 'Turno ' + turno.id + ' · Base inicial: ' + fmt(base);
 }
 
-// ---------- Movimiento manual ----------
 $('tipoEgreso').addEventListener('click', function () {
   tipoMov = 'Egreso';
   $('tipoEgreso').className = 'on';
@@ -328,7 +321,6 @@ $('btnMov').addEventListener('click', async function () {
   }
 });
 
-// ---------- Cerrar turno ----------
 $('btnCerrar').addEventListener('click', async function () {
   if (!turno) return;
   const u = getUsuarioTurno();
@@ -357,6 +349,7 @@ $('btnCerrar').addEventListener('click', async function () {
       }
       alert(msj);
       borrarTurnoActual();
+      borrarUsuarioTurno();
       location.href = 'index.html';
     } else {
       mostrar(r.error || 'Error desconocido', 'error');

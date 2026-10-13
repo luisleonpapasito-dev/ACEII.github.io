@@ -12,7 +12,10 @@
 <div id="estado">Cargando...</div>
 
 <div class="caja">
-  <a href="index.html">← Menú</a>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+    <a href="index.html">← Menú</a>
+    <span id="usuarioTurno" style="color:#7cfc9a; font-weight:bold; font-size:13px;"></span>
+  </div>
   <label>Modo</label>
   <div class="fila">
     <button id="modoInicial" class="tog on">Inventario inicial</button>
@@ -51,6 +54,7 @@
 
 <script>
 exigirSesion();
+pintarUsuarioTurno();
 
 let productos = [];
 let elegido = null;
@@ -137,10 +141,8 @@ $('btnGuardar').addEventListener('click', async function () {
     if (!confirm(mensaje)) return;
   }
 
-  const idUsr = prompt('Escribe tu ID de usuario (ej: USR-01):');
-  if (!idUsr) return;
-  const pinUsr = prompt('Escribe tu PIN:');
-  if (!pinUsr) return;
+  const u = getUsuarioTurno();
+  if (!u) { mostrar('No hay turno iniciado', 'error'); return; }
 
   $('btnGuardar').disabled = true;
   mostrar('Guardando...', 'aviso');
@@ -148,9 +150,9 @@ $('btnGuardar').addEventListener('click', async function () {
   try {
     let r;
     if (modo === 'inicial') {
-      r = await post({ accion: 'inventario_inicial', id_producto: elegido.id, conteo: conteo, id_usuario: idUsr.trim(), pin: pinUsr.trim() });
+      r = await post({ accion: 'inventario_inicial', id_producto: elegido.id, conteo: conteo, id_usuario: u.id });
     } else {
-      r = await post({ accion: 'ajuste_inventario', id_producto: elegido.id, conteo_real: conteo, id_usuario: idUsr.trim(), pin: pinUsr.trim(), motivo: $('motivo').value, observaciones: $('obs').value.trim() });
+      r = await post({ accion: 'ajuste_inventario', id_producto: elegido.id, conteo_real: conteo, id_usuario: u.id, motivo: $('motivo').value, observaciones: $('obs').value.trim() });
     }
 
     if (r.ok) {

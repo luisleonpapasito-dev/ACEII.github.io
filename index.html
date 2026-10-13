@@ -11,26 +11,41 @@
 
 <div id="estado">Cafetería</div>
 
-<div class="caja" id="login">
+<div class="caja" id="login" style="display:none">
   <label>Clave del sistema</label>
   <input type="password" id="clave" placeholder="Escribe la clave">
   <button class="main" id="btnEntrar">Entrar</button>
 </div>
 
+<div class="caja" id="turno" style="display:none">
+  <label>¿Quién inicia el turno?</label>
+  <select id="usuarioTurno"></select>
+  <label>PIN</label>
+  <input type="password" id="pinTurno" placeholder="Escribe tu PIN" inputmode="numeric">
+  <button class="main" id="btnTurno">Iniciar turno</button>
+</div>
+
 <div class="caja" id="menu" style="display:none">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+    <span id="usuarioTurno" style="color:#7cfc9a; font-weight:bold;"></span>
+    <button id="btnCerrarTurno" style="padding:6px 10px; margin:0; font-size:13px;">Cerrar turno</button>
+  </div>
   <a class="op" href="recepcion.html">📥 Recepción de mercancía</a>
   <a class="op" href="codigos.html">📷 Registrar códigos de barras</a>
   <a class="op" href="inventario.html">📦 Inventario y ajustes</a>
   <a class="op" href="ventas.html">🛒 Ventas</a>
-  <a class="op off">🛒 Ventas (próximamente)</a>
-  <button id="btnSalir">Cerrar sesión</button>
+  <a class="op" href="devoluciones.html">↩️ Devoluciones</a>
+  <button id="btnSalir">Cerrar sesión general</button>
 </div>
 
 <script>
 function pintar() {
-  const hay = !!getToken();
-  $('login').style.display = hay ? 'none' : 'block';
-  $('menu').style.display = hay ? 'block' : 'none';
+  const hayToken = !!getToken();
+  const hayTurno = !!getUsuarioTurno();
+  $('login').style.display = hayToken ? 'none' : 'block';
+  $('turno').style.display = (hayToken && !hayTurno) ? 'block' : 'none';
+  $('menu').style.display = (hayToken && hayTurno) ? 'block' : 'none';
+  if (hayToken && hayTurno) pintarUsuarioTurno();
 }
 
 async function entrar() {
@@ -42,6 +57,7 @@ async function entrar() {
     const r = await jsonp({ accion: 'auth' }, 15000);
     if (r && r.ok) {
       mostrar('Cafetería', '');
+      await cargarUsuarios();
     } else {
       borrarToken();
       mostrar('Clave incorrecta', 'error');
@@ -55,8 +71,56 @@ async function entrar() {
 
 $('btnEntrar').addEventListener('click', entrar);
 $('clave').addEventListener('keydown', function (e) { if (e.key === 'Enter') entrar(); });
-$('btnSalir').addEventListener('click', function () { borrarToken(); $('clave').value = ''; pintar(); });
+
+async function cargarUsuarios() {
+  try {
+    const r = await jsonp({ accion: 'usuarios' }, 15000);
+    if (r && r.ok) {
+      const sel = $('usuarioTurno');
+      sel.innerHTML = '';
+      sel.appendChild(new Option('Elige tu nombre...', ''));
+      r.items.forEach(function (u) {
+        sel.appendChild(new Option(u.nombre + ' (' + u.id + ')', u.id));
+      });
+    }
+  } catch (e) {}
+}
+
+async function iniciarTurno() {
+  const idUsr = $('usuarioTurno').value;
+  const pin = $('pinTurno').value.trim();
+  if (!idUsr) { mostrar('Elige tu nombre', 'error'); return; }
+  if (!pin) { mostrar('Escribe tu PIN', 'error'); return; }
+  mostrar('Verificando...', 'aviso');
+  try {
+    const r = await post({ accion: 'login_turno', id_usuario: idUsr, pin: pin });
+    if (r && r.ok) {
+      guardarUsuarioTurno({ id: r.id_usuario, nombre: r.nombre });
+      $('pinTurno').value = '';
+      mostrar('Turno iniciado ✓ ' + r.nombre, 'ok');
+      pintar();
+    } else {
+      mostrar(r.error || 'PIN incorrecto', 'error');
+    }
+  } catch (err) {
+    mostrar('Error de conexión: ' + err.message, 'error');
+  }
+}
+
+$('btnTurno').addEventListener('click', iniciarTurno);
+$('pinTurno').addEventListener('keydown', function (e) { if (e.key === 'Enter') iniciarTurno(); });
+
+$('btnSalir').addEventListener('click', function () {
+  if (!confirm('¿Cerrar la sesión general?')) return;
+  borrarUsuarioTurno();
+  borrarToken();
+  $('clave').value = '';
+  pintar();
+});
+$('btnCerrarTurno').addEventListener('click', cerrarTurno);
+
 pintar();
+if (getToken() && !getUsuarioTurno()) cargarUsuarios();
 </script>
 </body>
 </html>

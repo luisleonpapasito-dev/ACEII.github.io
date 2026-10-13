@@ -36,7 +36,7 @@
     color: var(--azul);
     letter-spacing: -0.5px;
   }
-  .kpi.verde .valor { color: var(--exito); }
+  .kpi.azul-claro .valor { color: #4A7DE0; }
   .kpi.morado .valor { color: var(--morado); }
   .kpi.naranja .valor { color: var(--naranja); }
   .kpi.rosa .valor { color: var(--rosa); }
@@ -160,16 +160,14 @@
   <button class="main" id="btnActualizar" style="width:100%;">🔄 Actualizar</button>
 </div>
 
-<!-- Contenido del dashboard -->
 <div id="contenido" style="display:none;">
 
-  <!-- KPIs -->
   <div class="kpi-grid">
     <div class="kpi">
       <div class="label">💰 Total vendido</div>
       <div class="valor" id="kTotalVendido">$0</div>
     </div>
-    <div class="kpi verde">
+    <div class="kpi azul-claro">
       <div class="label">📦 Unidades vendidas</div>
       <div class="valor" id="kUnidades">0</div>
     </div>
@@ -183,31 +181,26 @@
     </div>
   </div>
 
-  <!-- Gráfico por día -->
   <div class="chart-box">
     <h4>📈 Ventas por día</h4>
     <canvas id="graficoDias"></canvas>
   </div>
 
-  <!-- Gráfico por medio de pago -->
   <div class="chart-box">
     <h4>💳 Medio de pago</h4>
     <canvas id="graficoMedio"></canvas>
   </div>
 
-  <!-- Top productos -->
   <div class="chart-box">
     <h4>🏆 Top 5 productos más vendidos</h4>
     <div id="listaTopProductos"></div>
   </div>
 
-  <!-- Top usuarios -->
   <div class="chart-box">
     <h4>👤 Top 5 usuarios por ventas</h4>
     <div id="listaTopUsuarios"></div>
   </div>
 
-  <!-- Stock bajo -->
   <div class="chart-box">
     <h4>⚠️ Productos con stock bajo</h4>
     <div id="listaStockBajo"></div>
@@ -215,14 +208,12 @@
 
 </div>
 
-<!-- Sin datos -->
 <div id="sinDatos" class="sin-datos" style="display:none;">
   <p>No hay datos en este rango todavía.</p>
   <button class="main" id="btnGenerarDemo" style="width:100%;">🎲 Generar datos de prueba</button>
   <button id="btnBorrarDemo" style="width:100%; margin-top:8px;">🗑️ Borrar datos de prueba</button>
 </div>
 
-<!-- Botones demo (siempre disponibles, al final) -->
 <div class="caja" id="zonaDemo" style="display:none; margin-top:20px;">
   <p style="font-size:12px; color:var(--texto-claro); text-align:center; margin-bottom:8px;">
     Zona de pruebas · Solo para desarrollo
@@ -294,11 +285,19 @@ function pintarKPIs(r) {
 
 function pintarGraficoDias(serie) {
   const ctx = $('graficoDias').getContext('2d');
+
+  // Degradado azul
+  const gradient = ctx.createLinearGradient(0, 0, 0, 220);
+  gradient.addColorStop(0, '#4A7DE0');
+  gradient.addColorStop(1, '#1B4DB1');
+
   const labels = serie.map(function (d) {
     const partes = d.fecha.split('-');
     return partes[2] + '/' + partes[1];
   });
   const data = serie.map(function (d) { return d.total; });
+
+  const pasoEtiqueta = serie.length > 15 ? Math.ceil(serie.length / 10) : 1;
 
   if (chartDias) chartDias.destroy();
   chartDias = new Chart(ctx, {
@@ -308,17 +307,29 @@ function pintarGraficoDias(serie) {
       datasets: [{
         label: 'Ventas',
         data: data,
-        backgroundColor: '#1B4DB1',
-        borderRadius: 6,
-        maxBarThickness: 24
+        backgroundColor: gradient,
+        hoverBackgroundColor: '#4A7DE0',
+        borderRadius: 0,
+        borderSkipped: false,
+        maxBarThickness: 20
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      animation: {
+        duration: 800,
+        easing: 'easeOutQuart'
+      },
       plugins: {
         legend: { display: false },
         tooltip: {
+          backgroundColor: '#1B4DB1',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          padding: 10,
+          cornerRadius: 8,
+          displayColors: false,
           callbacks: {
             label: function (c) { return fmt(c.parsed.y); }
           }
@@ -327,13 +338,30 @@ function pintarGraficoDias(serie) {
       scales: {
         y: {
           beginAtZero: true,
+          grid: {
+            color: '#F0F4FF',
+            drawBorder: false
+          },
           ticks: {
             callback: function (v) { return fmtCorto(v); },
-            font: { size: 10 }
+            font: { size: 10, weight: '500' },
+            color: '#8A94A6',
+            padding: 6
           }
         },
         x: {
-          ticks: { font: { size: 10 } }
+          grid: { display: false },
+          ticks: {
+            font: { size: 10 },
+            color: '#8A94A6',
+            maxRotation: 45,
+            minRotation: 45,
+            autoSkip: true,
+            autoSkipPadding: 20,
+            callback: function (val, index) {
+              return (index % pasoEtiqueta === 0) ? this.getLabelForValue(val) : '';
+            }
+          }
         }
       }
     }
@@ -344,8 +372,8 @@ function pintarGraficoMedio(efectivo, transferencia) {
   const ctx = $('graficoMedio').getContext('2d');
   if (chartMedio) chartMedio.destroy();
 
-  const hayDatos = (efectivo > 0 || transferencia > 0);
-  if (!hayDatos) {
+  const total = efectivo + transferencia;
+  if (total === 0) {
     chartMedio = null;
     return;
   }
@@ -353,29 +381,71 @@ function pintarGraficoMedio(efectivo, transferencia) {
   chartMedio = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: ['💵 Efectivo', '📱 Transferencia'],
+      labels: ['Efectivo', 'Transferencia'],
       datasets: [{
         data: [efectivo, transferencia],
-        backgroundColor: ['#2A9D5C', '#1B4DB1'],
-        borderWidth: 0
+        backgroundColor: ['#4A7DE0', '#1B4DB1'],
+        hoverBackgroundColor: ['#5C8BEE', '#2B5DC1'],
+        borderWidth: 0,
+        spacing: 4
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      cutout: '65%',
+      animation: {
+        animateRotate: true,
+        animateScale: false,
+        duration: 800
+      },
       plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 12 } } },
+        legend: {
+          position: 'bottom',
+          labels: {
+            font: { size: 12, weight: '600' },
+            color: '#5A6072',
+            padding: 12,
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        },
         tooltip: {
+          backgroundColor: '#1B4DB1',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          padding: 10,
+          cornerRadius: 8,
+          displayColors: false,
           callbacks: {
             label: function (c) {
-              const total = c.dataset.data.reduce(function (a, b) { return a + b; }, 0);
-              const pct = total > 0 ? Math.round(c.parsed / total * 100) : 0;
+              const pct = Math.round(c.parsed / total * 100);
               return c.label + ': ' + fmt(c.parsed) + ' (' + pct + '%)';
             }
           }
         }
       }
-    }
+    },
+    plugins: [{
+      id: 'textoCentro',
+      beforeDraw: function (chart) {
+        const ctx2 = chart.ctx;
+        const meta = chart.getDatasetMeta(0);
+        if (!meta.data.length) return;
+        const x = meta.data[0].x;
+        const y = meta.data[0].y;
+        ctx2.save();
+        ctx2.textAlign = 'center';
+        ctx2.textBaseline = 'middle';
+        ctx2.font = '600 11px Inter, sans-serif';
+        ctx2.fillStyle = '#8A94A6';
+        ctx2.fillText('Total', x, y - 10);
+        ctx2.font = '700 16px Inter, sans-serif';
+        ctx2.fillStyle = '#1B4DB1';
+        ctx2.fillText(fmtCorto(total), x, y + 8);
+        ctx2.restore();
+      }
+    }]
   });
 }
 
@@ -424,7 +494,6 @@ function pintarStockBajo(lista) {
   });
 }
 
-// ---------- Filtros ----------
 function marcarRango(btn) {
   ['rHoy', 'r7', 'r30', 'rTodo'].forEach(function (id) { $(id).className = ''; });
   btn.className = 'on';
@@ -435,7 +504,6 @@ $('r30').addEventListener('click', function () { rango = '30'; marcarRango(this)
 $('rTodo').addEventListener('click', function () { rango = 'todo'; marcarRango(this); cargar(); });
 $('btnActualizar').addEventListener('click', cargar);
 
-// ---------- Generar / borrar demo ----------
 async function generarDemo() {
   if (!confirm('Esto va a generar ventas falsas de las últimas 4 semanas.\n\nLas ventas quedarán marcadas con el prefijo VEN-DEMO- y puedes borrarlas después.\n\n¿Continuar?')) return;
   const u = getUsuarioTurno();

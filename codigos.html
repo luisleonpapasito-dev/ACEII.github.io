@@ -3,29 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Códigos de barras</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 0; padding: 0 12px 20px; background: #111; color: #fff; }
-  .caja { max-width: 480px; margin: 8px auto; background: #1e1e1e; border-radius: 10px; padding: 10px; box-sizing: border-box; }
-  #estado { max-width: 480px; margin: 8px auto; padding: 12px; border-radius: 12px; background: #333; font-weight: bold; text-align: center; word-break: break-word; position: sticky; top: 0; z-index: 5; box-sizing: border-box; }
-  #estado.ok { background: #1b8a3a; }
-  #estado.error { background: #c62828; }
-  #estado.aviso { background: #e65100; }
-  input[type=text], select { width: 100%; padding: 10px; margin: 4px 0; border-radius: 8px; background: #333; color: #fff; border: 1px solid #555; font-size: 16px; box-sizing: border-box; }
-  button { padding: 12px 16px; border: none; border-radius: 8px; background: #444; color: #fff; font-size: 15px; margin: 4px 4px 4px 0; }
-  button.main { background: #1b8a3a; }
-  button:disabled { opacity: 0.4; }
-  label { font-size: 13px; color: #bbb; display: block; margin-top: 4px; }
-  #visor { position: relative; width: 100%; max-width: 480px; aspect-ratio: 4 / 3; margin: 0 auto; background: #000; border-radius: 12px; overflow: hidden; }
-  #video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-  #marco { position: absolute; left: 5%; top: 27.5%; width: 90%; height: 45%; border: 3px solid #00e676; border-radius: 8px; box-sizing: border-box; pointer-events: none; }
-  #marco.ok { border-color: #40c4ff; }
-  #codigo { font-size: 22px; font-weight: bold; letter-spacing: 1px; color: #ffd54f; text-align: center; margin: 6px 0; word-break: break-all; }
-  #elegido { font-size: 14px; color: #7cfc9a; margin-top: 4px; word-break: break-word; }
-</style>
+<title>Registrar códigos · ACEII</title>
+<link rel="stylesheet" href="estilos.css">
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
+<style>
+  #visor {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 4 / 3;
+    margin: 0 auto;
+    background: #000;
+    border-radius: var(--radio);
+    overflow: hidden;
+    box-shadow: var(--sombra);
+  }
+  #video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  #marco {
+    position: absolute;
+    left: 5%;
+    top: 27.5%;
+    width: 90%;
+    height: 45%;
+    border: 3px solid #00e676;
+    border-radius: 10px;
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+  #marco.ok { border-color: #40c4ff; }
+  #codigo {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--azul);
+    text-align: center;
+    margin: 10px 0;
+    word-break: break-all;
+  }
+  #elegido {
+    font-size: 13px;
+    color: var(--texto-suave);
+    margin-top: 6px;
+    word-break: break-word;
+  }
+  #lista {
+    max-height: 220px;
+  }
+  #zoomBox label {
+    margin-top: 6px;
+  }
+</style>
 </head>
 <body>
+
+<header class="app-header">
+  <div class="app-header-contenido">
+    <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
+    <div class="app-header-texto">
+      <div class="app-header-titulo">Registrar códigos</div>
+      <div class="app-header-sub">
+        <a href="index.html" style="color:rgba(255,255,255,0.9); text-decoration:underline;">← Volver al menú</a>
+      </div>
+    </div>
+  </div>
+</header>
 
 <div id="estado">Iniciando...</div>
 
@@ -47,10 +95,10 @@
   <label>Escanea el código de barras de la UNIDAD (no el de la caja)</label>
   <div id="codigo">—</div>
   <input type="text" id="manual" placeholder="O escribe el código a mano" inputmode="numeric">
-  <button id="btnManual">Usar este código</button>
-  <button class="main" id="btnGuardar" disabled>Guardar</button>
-  <button id="btnReescanear">Reescanear</button>
-  <button id="btnCam">Reiniciar cámara</button>
+  <button class="main" id="btnManual" style="width:100%;">Usar este código</button>
+  <button class="main" id="btnGuardar" disabled style="width:100%; margin-top:6px;">Guardar</button>
+  <button id="btnReescanear" style="width:100%; margin-top:6px;">Reescanear</button>
+  <button id="btnCam" style="width:100%; margin-top:6px;">Reiniciar cámara</button>
   <div id="zoomBox" style="display:none">
     <label>Zoom</label>
     <input type="range" id="zoom" style="width:100%">
@@ -104,7 +152,7 @@ function jsonp(params, limiteMs) {
     }, limiteMs || 15000);
     window[nombre] = function (r) { if (!fin) { limpiar(); resolve(r); } };
     s.onerror = function () {
-      if (!fin) { limpiar(); reject(new Error('No se pudo conectar con el servidor (revisa internet y que la implementación sea "Cualquier persona")')); }
+      if (!fin) { limpiar(); reject(new Error('No se pudo conectar con el servidor')); }
     };
     let q = '?callback=' + nombre + '&token=' + encodeURIComponent(token || '');
     Object.keys(params).forEach(function (k) { q += '&' + k + '=' + encodeURIComponent(params[k]); });
@@ -315,7 +363,6 @@ async function procesarFrame() {
   try {
     const vw = video.videoWidth;
     const vh = video.videoHeight;
-    // Recorte rectangular (ancho): los códigos de barras son horizontales
     const cw = Math.floor(vw * 0.9);
     const ch = Math.floor(vh * 0.45);
     const sx = Math.floor((vw - cw) / 2);
@@ -358,7 +405,7 @@ function conTiempo(promesa, ms) {
     const t = setTimeout(function () {
       if (terminado) return;
       terminado = true;
-      reject(new Error('La cámara no respondió. Revisa el permiso o cierra otras apps que la usen.'));
+      reject(new Error('La cámara no respondió.'));
     }, ms);
     promesa.then(function (v) {
       if (terminado) { v.getTracks().forEach(function (tr) { tr.stop(); }); return; }

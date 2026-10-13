@@ -3,36 +3,111 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Historial de Caja</title>
+<title>Historial de Caja · ACEII</title>
 <link rel="stylesheet" href="estilos.css">
 <script src="comun.js"></script>
 <style>
-  .turno { background:#1e1e1e; border-radius:10px; padding:12px; margin:8px 0; cursor:pointer; }
-  .turno:hover { background:#2a2a2a; }
-  .turno .fila { display:flex; justify-content:space-between; font-size:14px; }
-  .turno .id { color:#ffd54f; font-weight:bold; }
-  .turno .resp { color:#7cfc9a; }
-  .turno .estado-abierto { color:#ffb300; font-weight:bold; }
-  .turno .estado-cerrado { color:#7cfc9a; }
-  .turno .dif-ok { color:#7cfc9a; }
-  .turno .dif-mal { color:#ff6b6b; font-weight:bold; }
-  .detalle { background:#0f0f0f; border-radius:8px; padding:10px; margin:8px 0; font-size:13px; }
-  .detalle .row { display:flex; justify-content:space-between; padding:3px 0; }
-  .filtros { display:flex; gap:8px; margin:8px 0; flex-wrap:wrap; }
-  .filtros button { flex:1; min-width:70px; }
-  .filtros button.on { background:#1b8a3a; border:2px solid #7cfc9a; }
-  .btn-forzar { background:#c62828; padding:8px 12px; font-size:13px; margin-top:6px; border-radius:6px; color:#fff; border:none; }
+  .turno {
+    background: var(--superficie);
+    border-radius: var(--radio);
+    padding: 14px;
+    margin: 10px auto;
+    max-width: 480px;
+    box-shadow: var(--sombra);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .turno:active { transform: scale(0.98); }
+  .turno .fila {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    padding: 3px 0;
+  }
+  .turno .id {
+    color: var(--azul);
+    font-weight: 700;
+    font-size: 13px;
+    word-break: break-all;
+  }
+  .turno .resp { color: var(--texto); font-weight: 600; }
+  .turno .estado-abierto { color: var(--aviso); font-weight: 700; }
+  .turno .estado-cerrado { color: var(--exito); font-weight: 700; }
+  .turno .dif-ok { color: var(--exito); font-weight: 700; }
+  .turno .dif-mal { color: var(--alerta); font-weight: 700; }
+  .turno .fecha { color: var(--texto-claro); font-size: 12px; }
+  .turno .saldo { color: var(--texto-suave); font-size: 13px; }
+
+  .detalle {
+    background: var(--superficie);
+    border-radius: var(--radio-sm);
+    padding: 12px;
+    margin: -6px auto 10px;
+    max-width: 480px;
+    font-size: 13px;
+    box-shadow: var(--sombra);
+    border-left: 3px solid var(--azul);
+  }
+  .detalle .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid #F0F4FF;
+  }
+  .detalle .row:last-child { border-bottom: none; }
+
+  .filtros {
+    display: flex;
+    gap: 6px;
+    margin: 8px 0;
+    flex-wrap: wrap;
+  }
+  .filtros button {
+    flex: 1;
+    min-width: 60px;
+    padding: 8px;
+    font-size: 13px;
+    margin: 0;
+    background: var(--superficie-2);
+    color: var(--texto-suave);
+    border: 2px solid transparent;
+    font-weight: 600;
+  }
+  .filtros button.on {
+    background: var(--azul);
+    color: #fff;
+    border-color: var(--azul-claro);
+  }
+
+  .btn-forzar {
+    background: var(--alerta);
+    padding: 8px 12px;
+    font-size: 13px;
+    margin-top: 8px;
+    border-radius: 8px;
+    color: #fff;
+    border: none;
+    font-weight: 600;
+  }
 </style>
 </head>
 <body>
 
+<header class="app-header">
+  <div class="app-header-contenido">
+    <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
+    <div class="app-header-texto">
+      <div class="app-header-titulo">Historial de caja</div>
+      <div class="app-header-sub">
+        <a href="index.html" style="color:rgba(255,255,255,0.9); text-decoration:underline;">← Volver al menú</a>
+      </div>
+    </div>
+  </div>
+</header>
+
 <div id="estado">Cargando...</div>
 
 <div class="caja">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-    <a href="index.html">← Menú</a>
-    <span id="usuarioTurno" style="color:#7cfc9a; font-weight:bold; font-size:13px;"></span>
-  </div>
   <label>Filtrar por</label>
   <div class="filtros">
     <button id="fHoy" class="on">Hoy</button>
@@ -41,7 +116,7 @@
     <button id="fMes">30 días</button>
     <button id="fTodo">Todo</button>
   </div>
-  <button id="btnActualizar" style="width:100%;">🔄 Actualizar</button>
+  <button class="main" id="btnActualizar" style="width:100%;">Actualizar</button>
 </div>
 
 <div id="listaTurnos"></div>
@@ -104,7 +179,7 @@ function pintar(items) {
   const cont = $('listaTurnos');
   cont.innerHTML = '';
   if (!items.length) {
-    cont.innerHTML = '<div class="caja">(no hay turnos en este rango)</div>';
+    cont.innerHTML = '<div class="caja" style="text-align:center; color:var(--texto-suave);">(no hay turnos en este rango)</div>';
     return;
   }
   items.forEach(function (t) {
@@ -114,18 +189,16 @@ function pintar(items) {
     const difClase = dif === 0 ? 'dif-ok' : 'dif-mal';
     const difTexto = dif === 0 ? 'Cuadró ✓' : (dif > 0 ? '+' + fmt(dif) : fmt(dif));
     const estadoClase = t.estado === 'Abierto' ? 'estado-abierto' : 'estado-cerrado';
-    let html =
+    d.innerHTML =
       '<div class="fila"><span class="id">' + t.id_turno + '</span><span class="' + estadoClase + '">' + t.estado + '</span></div>' +
-      '<div class="fila"><span class="resp">' + t.responsable + '</span><span style="color:#aaa;font-size:12px;">' + t.fecha_apertura + '</span></div>' +
-      '<div class="fila"><span>Esperado: ' + fmt(t.saldo_esperado) + '</span><span>Real: ' + fmt(t.saldo_real) + '</span></div>' +
-      '<div class="fila"><span>Diferencia:</span><span class="' + difClase + '">' + difTexto + '</span></div>';
-    d.innerHTML = html;
+      '<div class="fila"><span class="resp">' + t.responsable + '</span><span class="fecha">' + t.fecha_apertura + '</span></div>' +
+      '<div class="fila"><span class="saldo">Esperado: ' + fmt(t.saldo_esperado) + '</span><span class="saldo">Real: ' + fmt(t.saldo_real) + '</span></div>' +
+      '<div class="fila"><span class="saldo">Diferencia:</span><span class="' + difClase + '">' + difTexto + '</span></div>';
 
-    // Si el turno está abierto, agregar botón "Forzar cierre"
     if (t.estado === 'Abierto') {
       const btnForzar = document.createElement('button');
       btnForzar.className = 'btn-forzar';
-      btnForzar.textContent = '🔓 Forzar cierre';
+      btnForzar.textContent = 'Forzar cierre';
       btnForzar.addEventListener('click', function (ev) {
         ev.stopPropagation();
         forzarCierre(t.id_turno, t.responsable);
@@ -141,7 +214,7 @@ function pintar(items) {
 }
 
 async function forzarCierre(idTurno, responsable) {
-  if (!confirm('⚠️ Vas a forzar el cierre del turno ' + idTurno + ' de ' + responsable + '.\n\nEsta acción NO se puede deshacer. ¿Continuar?')) return;
+  if (!confirm('Vas a forzar el cierre del turno ' + idTurno + ' de ' + responsable + '.\n\nEsta acción NO se puede deshacer. ¿Continuar?')) return;
   const saldoRealStr = prompt('Escribe el efectivo REAL que hay en caja ahora:');
   if (saldoRealStr === null) return;
   const saldoReal = Number(saldoRealStr);
@@ -186,11 +259,11 @@ async function mostrarDetalle(idTurno, nodo) {
     const r = await jsonp({ accion: 'movimientos_turno', id_turno: idTurno }, 30000);
     if (!r || !r.ok) { d.textContent = 'Error al cargar movimientos'; return; }
     if (!r.items.length) { d.textContent = '(sin movimientos)'; return; }
-    let html = '<strong style="color:#ffd54f;">Movimientos del turno:</strong>';
+    let html = '<strong style="color:var(--azul);">Movimientos del turno:</strong>';
     r.items.forEach(function (m) {
       const signo = m.tipo === 'Ingreso' ? '+' : '-';
-      const color = m.tipo === 'Ingreso' ? '#7cfc9a' : '#ff6b6b';
-      html += '<div class="row"><span>' + m.fecha_hora + ' · ' + m.categoria + (m.descripcion ? ' (' + m.descripcion + ')' : '') + '</span><span style="color:' + color + ';font-weight:bold;">' + signo + fmt(m.monto) + '</span></div>';
+      const color = m.tipo === 'Ingreso' ? 'var(--exito)' : 'var(--alerta)';
+      html += '<div class="row"><span>' + m.fecha_hora + ' · ' + m.categoria + (m.descripcion ? ' (' + m.descripcion + ')' : '') + '</span><span style="color:' + color + ';font-weight:700;">' + signo + fmt(m.monto) + '</span></div>';
     });
     d.innerHTML = html;
   } catch (err) {

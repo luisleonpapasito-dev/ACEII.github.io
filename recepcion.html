@@ -3,16 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Recepción</title>
+<title>Recepción · ACEII</title>
 <link rel="stylesheet" href="estilos.css">
 <script src="comun.js"></script>
+<style>
+  #lista { max-height: 240px; }
+  .linea {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #E8ECF4;
+    font-size: 14px;
+  }
+  .linea:last-child { border-bottom: none; }
+  .linea button {
+    padding: 4px 10px;
+    margin: 0;
+    background: #FFE5E5;
+    color: var(--alerta);
+    font-weight: 700;
+    border-radius: 8px;
+  }
+  #panel {
+    background: var(--superficie-2);
+    padding: 14px;
+    border-radius: var(--radio-sm);
+    margin-top: 12px;
+  }
+  #total {
+    font-size: 18px;
+    color: var(--azul);
+    font-weight: 700;
+    margin: 10px 0;
+    text-align: center;
+  }
+  #pend {
+    color: var(--aviso);
+    font-size: 13px;
+    margin-top: 8px;
+    text-align: center;
+  }
+</style>
 </head>
 <body>
+
+<header class="app-header">
+  <div class="app-header-contenido">
+    <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
+    <div class="app-header-texto">
+      <div class="app-header-titulo">Recepción</div>
+      <div class="app-header-sub">
+        <a href="index.html" style="color:rgba(255,255,255,0.9); text-decoration:underline;">← Volver al menú</a>
+      </div>
+    </div>
+  </div>
+</header>
 
 <div id="estado">Cargando...</div>
 
 <div class="caja">
-  <a href="index.html">← Menú</a>
   <label>Proveedor</label>
   <select id="proveedor"></select>
   <label>Recibido por</label>
@@ -26,31 +77,31 @@
   <input type="text" id="buscar" placeholder="Escribe parte del nombre o del ID">
   <label><input type="checkbox" id="soloProv"> Solo productos de este proveedor</label>
   <select id="lista" size="6"></select>
-  <div id="elegido">Ningún producto elegido</div>
+  <div id="elegido" style="font-size:13px; color:var(--texto-suave); margin-top:6px;">Ningún producto elegido</div>
 
-  <div id="panel" style="display:none">
+  <div id="panel" style="display:none;">
     <div class="fila">
       <button id="btnUnd" class="tog on">Unidades</button>
       <button id="btnPaq" class="tog">Paquetes</button>
     </div>
     <label>Cantidad</label>
     <input type="number" id="cantidad" min="1" step="1" value="1" inputmode="numeric">
-    <div id="bloquePaq" style="display:none">
+    <div id="bloquePaq" style="display:none;">
       <label>Unidades por paquete (verifícalo)</label>
       <input type="number" id="upp" min="1" step="1" inputmode="numeric">
-      <label id="lblRecordar" style="display:none"><input type="checkbox" id="recordar" checked> Recordar este tamaño para este producto</label>
+      <label id="lblRecordar" style="display:none;"><input type="checkbox" id="recordar" checked> Recordar este tamaño para este producto</label>
     </div>
     <div id="total">Total: —</div>
-    <button class="main" id="btnAgregar">Agregar a la lista</button>
+    <button class="main" id="btnAgregar" style="width:100%;">Agregar a la lista</button>
   </div>
 </div>
 
 <div class="caja">
   <label>Lista de esta recepción</label>
-  <div id="listaItems">(vacía)</div>
+  <div id="listaItems" style="color:var(--texto-suave); font-size:14px;">(vacía)</div>
   <label>Observaciones (opcional)</label>
   <input type="text" id="obs" maxlength="300">
-  <button class="main" id="btnConfirmar" disabled>Confirmar recepción</button>
+  <button class="main" id="btnConfirmar" disabled style="width:100%; margin-top:8px;">Confirmar recepción</button>
   <div id="pend"></div>
 </div>
 
@@ -79,7 +130,6 @@ function llenarSelect(sel, items, vacio) {
   items.forEach(function (it) { sel.appendChild(new Option(it.t, it.v)); });
 }
 
-// ---------- Cola de envío (sobrevive a cortes de internet) ----------
 function leerCola() {
   try {
     const a = JSON.parse(localStorage.getItem(COLA_KEY) || '[]');
@@ -102,7 +152,7 @@ async function procesarCola() {
       let r = null;
       try { r = await post(Object.assign({ accion: 'recepcion' }, cola[0])); } catch (err) { r = null; }
       if (!r) {
-        mostrar('Sin conexión · ' + cola.length + ' recepción(es) pendiente(s). Se reintenta sola.', 'aviso');
+        mostrar('Sin conexión · ' + cola.length + ' recepción(es) pendiente(s).', 'aviso');
         setTimeout(procesarCola, 5000);
         return;
       }
@@ -117,7 +167,7 @@ async function procesarCola() {
         guardarCola();
         mostrar('Recepción rechazada: ' + r.error, 'error');
       } else {
-        mostrar('Error del servidor: ' + (r.error || 'desconocido') + ' · se reintenta', 'aviso');
+        mostrar('Error del servidor: ' + (r.error || 'desconocido'), 'aviso');
         setTimeout(procesarCola, 5000);
         return;
       }
@@ -127,7 +177,6 @@ async function procesarCola() {
   }
 }
 
-// ---------- Borrador (si se recarga la página no se pierde la lista) ----------
 function validar() {
   $('btnConfirmar').disabled = !(carrito.length && $('proveedor').value && $('recibido').value);
 }
@@ -155,7 +204,6 @@ function restaurarBorrador() {
   } catch (e) {}
 }
 
-// ---------- Carga de datos ----------
 async function cargarDatos() {
   mostrar('Cargando datos...', 'aviso');
   try {
@@ -183,7 +231,6 @@ async function cargarDatos() {
   }
 }
 
-// ---------- Selección del producto ----------
 function pintarLista() {
   const q = norm($('buscar').value);
   const prov = $('proveedor').value;
@@ -248,7 +295,6 @@ $('recibido').addEventListener('change', guardarBorrador);
 $('factura').addEventListener('change', guardarBorrador);
 $('obs').addEventListener('input', guardarBorrador);
 
-// ---------- Lista de la recepción ----------
 $('btnAgregar').addEventListener('click', function () {
   if (!elegido) return;
   const c = leerNum('cantidad');
@@ -276,8 +322,10 @@ function pintarCarrito() {
   const cont = $('listaItems');
   if (!carrito.length) {
     cont.textContent = '(vacía)';
+    cont.style.color = 'var(--texto-suave)';
   } else {
     cont.innerHTML = '';
+    cont.style.color = 'var(--texto)';
     carrito.forEach(function (it, i) {
       const d = document.createElement('div');
       d.className = 'linea';
@@ -320,6 +368,7 @@ $('btnConfirmar').addEventListener('click', function () {
 window.addEventListener('online', procesarCola);
 cola = leerCola();
 pintarPend();
+
 (async function () {
   const ok = await exigirTurnoCajaAbierto();
   if (!ok) return;

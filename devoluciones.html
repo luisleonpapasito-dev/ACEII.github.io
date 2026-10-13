@@ -3,46 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Devoluciones</title>
+<title>Devoluciones · ACEII</title>
 <link rel="stylesheet" href="estilos.css">
 <script src="comun.js"></script>
 <style>
-  #resultados, #resultadosNuevo { max-height: 240px; overflow-y: auto; }
-  .resultado { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; }
-  .resultado:hover { background: #2a2a2a; }
-  .resultado small { color: #aaa; display: block; }
-  .venta-item { padding: 8px; border-bottom: 1px solid #333; cursor: pointer; font-size: 13px; }
-  .venta-item:hover { background: #2a2a2a; }
-  .bloque { margin-top: 10px; padding: 10px; background: #2a2a2a; border-radius: 8px; }
-  .resumen { background: #1a1a1a; padding: 10px; border-radius: 8px; margin-top: 10px; }
-  .resumen .linea { display: flex; justify-content: space-between; padding: 3px 0; font-size: 14px; }
-  .resumen .linea.total { font-weight: bold; color: #ffd54f; font-size: 16px; border-top: 1px solid #333; margin-top: 4px; padding-top: 6px; }
-  .diferencia-positiva { color: #ff6b6b; }
-  .diferencia-negativa { color: #7cfc9a; }
+  #resultados, #resultadosNuevo { max-height: 240px; overflow-y: auto; margin-top: 6px; }
+  .resultado {
+    padding: 12px;
+    border-bottom: 1px solid #E8ECF4;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .resultado:hover { background: var(--superficie-2); }
+  .resultado b { font-size: 15px; color: var(--texto); }
+  .resultado small { color: var(--texto-suave); display: block; font-size: 12px; margin-top: 2px; }
+  .venta-item {
+    padding: 10px;
+    border-bottom: 1px solid #E8ECF4;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .venta-item:hover { background: var(--superficie-2); }
+  .bloque {
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--superficie-2);
+    border-radius: var(--radio-sm);
+  }
+  .resumen {
+    background: #fff;
+    padding: 14px;
+    border-radius: var(--radio-sm);
+    margin-top: 12px;
+    border: 1.5px solid var(--azul-suave);
+  }
+  .resumen .linea {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 14px;
+    border: none;
+  }
+  .resumen .linea.total {
+    font-weight: 700;
+    color: var(--azul);
+    font-size: 16px;
+    border-top: 1px solid var(--azul-suave);
+    margin-top: 6px;
+    padding-top: 8px;
+  }
 </style>
 </head>
 <body>
 
+<header class="app-header">
+  <div class="app-header-contenido">
+    <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
+    <div class="app-header-texto">
+      <div class="app-header-titulo">Devoluciones</div>
+      <div class="app-header-sub">
+        <a href="index.html" style="color:rgba(255,255,255,0.9); text-decoration:underline;">← Volver al menú</a>
+      </div>
+    </div>
+  </div>
+</header>
+
 <div id="estado">Cargando...</div>
 
 <div class="caja">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-    <a href="index.html">← Menú</a>
-    <span id="usuarioTurno" style="color:#7cfc9a; font-weight:bold; font-size:13px;"></span>
-  </div>
-
   <label>¿Qué producto se devuelve?</label>
   <input type="text" id="buscar" placeholder="Escribe 2 letras o más..." autocomplete="off">
   <div id="resultados"></div>
 
   <div id="panelProducto" class="bloque" style="display:none;">
-    <div id="prodNombre" style="font-weight:bold; margin-bottom:6px;"></div>
+    <div id="prodNombre" style="font-weight:700; margin-bottom:8px;"></div>
     <label>Cantidad a devolver</label>
     <input type="number" id="cantidadDevuelta" value="1" min="1" step="1">
   </div>
 </div>
 
-<div class="caja" id="panelDatos" style="display:none">
+<div class="caja" id="panelDatos" style="display:none;">
 
   <label>Motivo</label>
   <select id="motivo">
@@ -54,7 +94,6 @@
     <option value="Otro">Otro</option>
   </select>
 
-  <!-- Bloque devolución simple -->
   <div id="bloqueSimple">
     <label>Medio de reembolso</label>
     <select id="medioSimple">
@@ -63,13 +102,12 @@
     </select>
   </div>
 
-  <!-- Bloque cambio: producto nuevo -->
   <div id="bloqueCambio" style="display:none;">
     <label style="margin-top:12px;">¿Qué producto se lleva a cambio?</label>
     <input type="text" id="buscarNuevo" placeholder="Busca el producto nuevo..." autocomplete="off">
     <div id="resultadosNuevo"></div>
     <div id="panelNuevo" class="bloque" style="display:none;">
-      <div id="nuevoNombre" style="font-weight:bold; margin-bottom:6px;"></div>
+      <div id="nuevoNombre" style="font-weight:700; margin-bottom:8px;"></div>
       <label>Cantidad nueva</label>
       <input type="number" id="cantidadNueva" value="1" min="1" step="1">
     </div>
@@ -89,15 +127,15 @@
 
   <label style="margin-top:12px;">¿Vincular a una venta original? (opcional)</label>
   <button id="btnBuscarVenta" style="width:100%;">Buscar venta reciente</button>
-  <div id="listaVentas" style="display:none; max-height:200px; overflow-y:auto; background:#1a1a1a; border-radius:8px; margin-top:6px; padding:4px;"></div>
-  <div id="ventaElegida" style="color:#7cfc9a; font-size:13px; margin-top:6px;"></div>
+  <div id="listaVentas" style="display:none; max-height:200px; overflow-y:auto; background:#fff; border-radius:var(--radio-sm); margin-top:6px; padding:4px; border:1.5px solid #E8ECF4;"></div>
+  <div id="ventaElegida" style="color:var(--azul); font-size:13px; margin-top:6px; font-weight:600;"></div>
 
   <label>Observaciones (opcional)</label>
   <input type="text" id="obs" maxlength="200">
 
   <div id="resumen" class="resumen" style="display:none;"></div>
 
-  <button class="main" id="btnGuardar" style="width:100%; margin-top:8px;">Registrar</button>
+  <button class="main" id="btnGuardar" style="width:100%; margin-top:12px;">Registrar</button>
 </div>
 
 <script>
@@ -157,6 +195,7 @@ function pintarResultados() {
   if (!n) {
     const d = document.createElement('div');
     d.className = 'resultado';
+    d.style.color = 'var(--texto-suave)';
     d.textContent = 'Sin resultados.';
     cont.appendChild(d);
   }
@@ -190,6 +229,7 @@ function pintarResultadosNuevo() {
   if (!n) {
     const d = document.createElement('div');
     d.className = 'resultado';
+    d.style.color = 'var(--texto-suave)';
     d.textContent = 'Sin resultados.';
     cont.appendChild(d);
   }
@@ -217,9 +257,9 @@ function actualizarResumen() {
     totalNuevo = cantNue * elegidoNuevo.precio;
     html += '<div class="linea"><span>Lleva: ' + cantNue + '× ' + elegidoNuevo.nombre + '</span><span>$' + totalNuevo.toLocaleString('es-CO') + '</span></div>';
     const dif = totalNuevo - totalDev;
-    const clase = dif > 0 ? 'diferencia-positiva' : (dif < 0 ? 'diferencia-negativa' : '');
     const etiqueta = dif > 0 ? 'Cliente paga:' : (dif < 0 ? 'Se devuelve al cliente:' : 'Sin diferencia');
-    html += '<div class="linea total ' + clase + '"><span>' + etiqueta + '</span><span>$' + Math.abs(dif).toLocaleString('es-CO') + '</span></div>';
+    const color = dif > 0 ? 'var(--alerta)' : (dif < 0 ? 'var(--exito)' : 'var(--texto-suave)');
+    html += '<div class="linea total" style="color:' + color + '; border-color:' + color + ';"><span>' + etiqueta + '</span><span>$' + Math.abs(dif).toLocaleString('es-CO') + '</span></div>';
   }
   $('resumen').innerHTML = html;
   $('resumen').style.display = 'block';

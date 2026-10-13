@@ -3,19 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Inventario</title>
+<title>Inventario · ACEII</title>
 <link rel="stylesheet" href="estilos.css">
 <script src="comun.js"></script>
+<style>
+  #lista { max-height: 280px; }
+  #infoProducto {
+    background: var(--superficie-2);
+    padding: 12px;
+    border-radius: var(--radio-sm);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  #infoProducto strong { color: var(--texto); }
+  #infoProducto .stock-num {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--azul);
+  }
+</style>
 </head>
 <body>
+
+<header class="app-header">
+  <div class="app-header-contenido">
+    <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
+    <div class="app-header-texto">
+      <div class="app-header-titulo">Inventario</div>
+      <div class="app-header-sub">
+        <a href="index.html" style="color:rgba(255,255,255,0.9); text-decoration:underline;">← Volver al menú</a>
+      </div>
+    </div>
+  </div>
+</header>
 
 <div id="estado">Cargando...</div>
 
 <div class="caja">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-    <a href="index.html">← Menú</a>
-    <span id="usuarioTurno" style="color:#7cfc9a; font-weight:bold; font-size:13px;"></span>
-  </div>
   <label>Modo</label>
   <div class="fila">
     <button id="modoInicial" class="tog on">Inventario inicial</button>
@@ -27,13 +51,12 @@
   <select id="lista" size="8"></select>
 </div>
 
-<div class="caja" id="panel" style="display:none">
+<div class="caja" id="panel" style="display:none;">
   <div id="infoProducto"></div>
-  <hr style="border-color:#333">
-  <label>Conteo físico real (unidades)</label>
+  <label style="margin-top:12px;">Conteo físico real (unidades)</label>
   <input type="number" id="conteo" min="0" step="1" inputmode="numeric" placeholder="Escribe cuántas unidades hay">
 
-  <div id="bloqueMotivo" style="display:none">
+  <div id="bloqueMotivo" style="display:none;">
     <label>Motivo del ajuste</label>
     <select id="motivo">
       <option value="">Elige el motivo...</option>
@@ -49,7 +72,7 @@
   <label>Observaciones (opcional)</label>
   <input type="text" id="obs" maxlength="200" placeholder="Ej: Faltaron 3 por error de registro">
 
-  <button class="main" id="btnGuardar">Guardar</button>
+  <button class="main" id="btnGuardar" style="width:100%; margin-top:10px;">Guardar</button>
 </div>
 
 <script>
@@ -95,8 +118,8 @@ function pintarPanel() {
   if (!elegido) return;
   $('infoProducto').innerHTML =
     '<strong>' + elegido.id + ' · ' + elegido.nombre + '</strong><br>' +
-    '<span style="color:#aaa">Stock del sistema: <b style="color:#ffd54f">' + elegido.stock_actual + '</b> ' +
-    '(Inicial: ' + elegido.stock_inicial + ' + Entradas: ' + elegido.entradas + ' - Ventas: ' + elegido.ventas + ' + Ajustes: ' + elegido.ajustes + ')</span>';
+    '<span style="color:var(--texto-suave);">Stock del sistema: <span class="stock-num">' + elegido.stock_actual + '</span></span><br>' +
+    '<span style="color:var(--texto-claro); font-size:12px;">Inicial: ' + elegido.stock_inicial + ' + Entradas: ' + elegido.entradas + ' - Ventas: ' + elegido.ventas + ' + Ajustes: ' + elegido.ajustes + '</span>';
   $('conteo').value = '';
   $('obs').value = '';
   $('motivo').value = '';

@@ -1,11 +1,12 @@
 /* ============================================================
    ACEII · Cafetería — Estilos globales
+   Rediseño visual: composición modular con familias cromáticas
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --fondo: #EEF2F7;
+  --fondo: #F1F4F9;
   --superficie: #FFFFFF;
   --superficie-2: #F0F4FF;
   --panel: #F8FAFC;
@@ -14,20 +15,39 @@
   --texto-suave: #5A6072;
   --texto-claro: #8A94A6;
 
+  /* Familias cromáticas */
   --azul: #1B4DB1;
   --azul-claro: #4A7DE0;
-  --azul-suave: #E3ECFF;
+  --azul-pastel: #EFF6FF;
+  --azul-borde: #BFDBFE;
 
-  --verde: #2BB673;
-  --morado: #7B4DDB;
-  --naranja: #F2A100;
-  --rosa: #E91E63;
-  --cyan: #00BCD4;
+  --cyan: #0891B2;
+  --cyan-claro: #22D3EE;
+  --cyan-pastel: #ECFEFF;
+  --cyan-borde: #A5F3FC;
+
+  --morado: #7C3AED;
+  --morado-claro: #A78BFA;
+  --morado-pastel: #F5F3FF;
+  --morado-borde: #DDD6FE;
+
+  --amarillo: #D97706;
+  --amarillo-claro: #FBBF24;
+  --amarillo-pastel: #FFFBEB;
+  --amarillo-borde: #FDE68A;
+
+  --coral: #DC2626;
+  --coral-claro: #FB7185;
+  --coral-pastel: #FEF2F2;
+  --coral-borde: #FECACA;
+
+  --turquesa: #0D9488;
+  --turquesa-claro: #2DD4BF;
+  --turquesa-pastel: #F0FDFA;
+  --turquesa-borde: #99F6E4;
+
   --gris: #546E7A;
-  --amarillo: #FBC02D;
-  --violeta: #8E44AD;
-  --coral: #FF6B6B;
-  --turquesa: #14B8A6;
+  --gris-claro: #94A3B8;
 
   --exito: #2A9D5C;
   --alerta: #E63946;
@@ -42,6 +62,9 @@
   --fuente: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
+/* ============================================================
+   TEMA OSCURO
+   ============================================================ */
 html.tema-oscuro {
   --fondo: #0F1419;
   --superficie: #1A1F2E;
@@ -54,18 +77,33 @@ html.tema-oscuro {
 
   --azul: #4A7DE0;
   --azul-claro: #6B9BFF;
-  --azul-suave: #1E2A47;
+  --azul-pastel: #1E2A47;
+  --azul-borde: #2A3F6B;
 
-  --verde: #34D399;
-  --morado: #A78BFA;
-  --naranja: #FBBF24;
-  --rosa: #F472B6;
   --cyan: #22D3EE;
-  --gris: #94A3B8;
-  --amarillo: #FCD34D;
-  --violeta: #C084FC;
+  --cyan-claro: #67E8F9;
+  --cyan-pastel: #153A48;
+  --cyan-borde: #16576B;
+
+  --morado: #A78BFA;
+  --morado-claro: #C4B5FD;
+  --morado-pastel: #2A1F47;
+  --morado-borde: #3F2E6B;
+
+  --amarillo: #FBBF24;
+  --amarillo-claro: #FCD34D;
+  --amarillo-pastel: #3F2F10;
+  --amarillo-borde: #5A4418;
+
   --coral: #FB7185;
+  --coral-claro: #FCA5A5;
+  --coral-pastel: #3F1A22;
+  --coral-borde: #5A2830;
+
   --turquesa: #2DD4BF;
+  --turquesa-claro: #5EEAD4;
+  --turquesa-pastel: #143A35;
+  --turquesa-borde: #1E5A52;
 
   --exito: #34D399;
   --alerta: #F87171;
@@ -88,18 +126,33 @@ html.tema-oscuro {
 
     --azul: #4A7DE0;
     --azul-claro: #6B9BFF;
-    --azul-suave: #1E2A47;
+    --azul-pastel: #1E2A47;
+    --azul-borde: #2A3F6B;
 
-    --verde: #34D399;
-    --morado: #A78BFA;
-    --naranja: #FBBF24;
-    --rosa: #F472B6;
     --cyan: #22D3EE;
-    --gris: #94A3B8;
-    --amarillo: #FCD34D;
-    --violeta: #C084FC;
+    --cyan-claro: #67E8F9;
+    --cyan-pastel: #153A48;
+    --cyan-borde: #16576B;
+
+    --morado: #A78BFA;
+    --morado-claro: #C4B5FD;
+    --morado-pastel: #2A1F47;
+    --morado-borde: #3F2E6B;
+
+    --amarillo: #FBBF24;
+    --amarillo-claro: #FCD34D;
+    --amarillo-pastel: #3F2F10;
+    --amarillo-borde: #5A4418;
+
     --coral: #FB7185;
+    --coral-claro: #FCA5A5;
+    --coral-pastel: #3F1A22;
+    --coral-borde: #5A2830;
+
     --turquesa: #2DD4BF;
+    --turquesa-claro: #5EEAD4;
+    --turquesa-pastel: #143A35;
+    --turquesa-borde: #1E5A52;
 
     --exito: #34D399;
     --alerta: #F87171;
@@ -282,27 +335,70 @@ html.tema-oscuro .app-header {
 }
 
 /* ============================================================
-   PANEL COMÚN (envuelve las tarjetas)
+   PANEL COMÚN DEL MENÚ
+   Sistema visual: fondo único + blobs decorativos que se
+   desbordan entre tarjetas para dar continuidad.
    ============================================================ */
 .panel-menu {
   max-width: 480px;
   margin: 16px auto 24px;
-  padding: 12px;
+  padding: 14px;
   background: var(--panel);
-  border-radius: 24px;
-  border: 1px solid rgba(27, 77, 177, 0.06);
-  box-shadow: 0 2px 12px rgba(27, 77, 177, 0.06);
+  border-radius: 26px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(27, 77, 177, 0.05);
+  box-shadow: 0 4px 20px rgba(27, 77, 177, 0.06);
   animation: aparecerCaja 0.4s ease-out;
   transition: background 0.2s, border-color 0.2s;
 }
+
+/* Blobs decorativos de fondo (dan la sensación de composición) */
+.panel-menu::before,
+.panel-menu::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 0;
+}
+.panel-menu::before {
+  width: 220px;
+  height: 220px;
+  top: -80px;
+  left: -80px;
+  background: radial-gradient(circle, rgba(74, 125, 224, 0.35) 0%, transparent 70%);
+}
+.panel-menu::after {
+  width: 260px;
+  height: 260px;
+  bottom: -100px;
+  right: -100px;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.30) 0%, transparent 70%);
+}
+
 html.tema-oscuro .panel-menu {
   border-color: rgba(255, 255, 255, 0.04);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+html.tema-oscuro .panel-menu::before {
+  background: radial-gradient(circle, rgba(74, 125, 224, 0.20) 0%, transparent 70%);
+}
+html.tema-oscuro .panel-menu::after {
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.18) 0%, transparent 70%);
 }
 @media (prefers-color-scheme: dark) {
   html.tema-auto .panel-menu {
     border-color: rgba(255, 255, 255, 0.04);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+  html.tema-auto .panel-menu::before {
+    background: radial-gradient(circle, rgba(74, 125, 224, 0.20) 0%, transparent 70%);
+  }
+  html.tema-auto .panel-menu::after {
+    background: radial-gradient(circle, rgba(167, 139, 250, 0.18) 0%, transparent 70%);
   }
 }
 
@@ -310,14 +406,16 @@ html.tema-oscuro .panel-menu {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+  position: relative;
+  z-index: 1;
 }
 
 /* ============================================================
-   TARJETAS
+   TARJETAS — Diseño modular con familia cromática
    ============================================================ */
 .card {
   background: var(--superficie);
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 14px;
   text-decoration: none;
   color: var(--texto);
@@ -327,26 +425,54 @@ html.tema-oscuro .panel-menu {
   position: relative;
   transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
   overflow: hidden;
-  min-height: 118px;
+  min-height: 116px;
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(27, 77, 177, 0.06), 0 1px 2px rgba(27, 77, 177, 0.04);
   border: 1px solid rgba(27, 77, 177, 0.04);
 }
+
+/* Franja lateral izquierda según familia cromática */
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--acento, var(--azul));
+  opacity: 0.9;
+}
+
+/* Blob decorativo de esquina según familia */
+.card::after {
+  content: '';
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  top: -40px;
+  right: -40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--acento-suave, transparent) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
 .card:active {
   transform: scale(0.97);
 }
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(27, 77, 177, 0.12);
+  box-shadow: 0 8px 20px rgba(27, 77, 177, 0.14);
 }
 
 html.tema-oscuro .card {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   border-color: rgba(255, 255, 255, 0.05);
 }
 @media (prefers-color-scheme: dark) {
   html.tema-auto .card {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     border-color: rgba(255, 255, 255, 0.05);
   }
 }
@@ -371,135 +497,151 @@ html.tema-oscuro .card {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ---- Tarjetas destacadas (Caja y Ventas) ---- */
+/* ============================================================
+   FAMILIAS CROMÁTICAS — Definen acento y blob de cada tarjeta
+   ============================================================ */
+.card.f-azul {
+  --acento: var(--azul);
+  --acento-suave: rgba(74, 125, 224, 0.10);
+}
+.card.f-cyan {
+  --acento: var(--cyan);
+  --acento-suave: rgba(34, 211, 238, 0.10);
+}
+.card.f-morado {
+  --acento: var(--morado);
+  --acento-suave: rgba(167, 139, 250, 0.12);
+}
+.card.f-amarillo {
+  --acento: var(--amarillo);
+  --acento-suave: rgba(251, 191, 36, 0.12);
+}
+.card.f-coral {
+  --acento: var(--coral);
+  --acento-suave: rgba(251, 113, 133, 0.12);
+}
+.card.f-turquesa {
+  --acento: var(--turquesa);
+  --acento-suave: rgba(45, 212, 191, 0.12);
+}
+
+/* ============================================================
+   TARJETAS DESTACADAS (Caja y Ventas)
+   Fondo pastel + tratamiento especial
+   ============================================================ */
 .card.destacada {
   border-width: 1.5px;
+  min-height: 128px;
+}
+.card.destacada::after {
+  width: 150px;
+  height: 150px;
+  top: -50px;
+  right: -50px;
 }
 
-/* Caja del turno - fondo pastel azul */
-.card.destacada.azul {
+/* Caja del turno */
+.card.destacada.f-azul {
   background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
-  border-color: #BFDBFE;
+  border-color: var(--azul-borde);
 }
-.card.destacada.azul:hover {
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.20);
-}
-
-/* Ventas - fondo pastel azul cielo (familia con Caja) */
-.card.destacada.cielo {
-  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
-  border-color: #BAE6FD;
-}
-.card.destacada.cielo:hover {
-  box-shadow: 0 6px 16px rgba(14, 165, 233, 0.20);
+.card.destacada.f-azul::after {
+  background: radial-gradient(circle, rgba(74, 125, 224, 0.22) 0%, transparent 70%);
 }
 
-/* En modo oscuro las destacadas pierden el pastel */
-html.tema-oscuro .card.destacada.azul,
-html.tema-oscuro .card.destacada.cielo {
+/* Ventas */
+.card.destacada.f-cyan {
+  background: linear-gradient(135deg, #ECFEFF 0%, #CFFAFE 100%);
+  border-color: var(--cyan-borde);
+}
+.card.destacada.f-cyan::after {
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.22) 0%, transparent 70%);
+}
+
+/* Modo oscuro: las destacadas pierden el pastel */
+html.tema-oscuro .card.destacada.f-azul,
+html.tema-oscuro .card.destacada.f-cyan {
   background: var(--superficie);
-  border-color: rgba(255, 255, 255, 0.08);
+  border-color: var(--acento);
 }
 @media (prefers-color-scheme: dark) {
-  html.tema-auto .card.destacada.azul,
-  html.tema-auto .card.destacada.cielo {
+  html.tema-auto .card.destacada.f-azul,
+  html.tema-auto .card.destacada.f-cyan {
     background: var(--superficie);
-    border-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--acento);
   }
 }
 
 /* ============================================================
-   Iconos
+   ICONOS — Contenedores con forma variada según familia
    ============================================================ */
 .card-icono {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 10px var(--icono-sombra, rgba(27, 77, 177, 0.30));
-  transition: transform 0.15s ease-out, box-shadow 0.2s;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.15s ease-out;
 }
+
+/* Forma por familia */
+.card.f-azul .card-icono {
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--azul-claro) 0%, var(--azul) 100%);
+  box-shadow: 0 6px 14px rgba(74, 125, 224, 0.30);
+}
+.card.f-cyan .card-icono {
+  border-radius: 50% 50% 14px 14px;
+  background: linear-gradient(135deg, var(--cyan-claro) 0%, var(--cyan) 100%);
+  box-shadow: 0 6px 14px rgba(8, 145, 178, 0.30);
+}
+.card.f-morado .card-icono {
+  border-radius: 14px 50% 50% 14px;
+  background: linear-gradient(135deg, var(--morado-claro) 0%, var(--morado) 100%);
+  box-shadow: 0 6px 14px rgba(124, 58, 237, 0.30);
+}
+.card.f-amarillo .card-icono {
+  border-radius: 50% 50% 50% 14px;
+  background: linear-gradient(135deg, var(--amarillo-claro) 0%, var(--amarillo) 100%);
+  box-shadow: 0 6px 14px rgba(217, 119, 6, 0.30);
+}
+.card.f-coral .card-icono {
+  border-radius: 14px 14px 50% 50%;
+  background: linear-gradient(135deg, var(--coral-claro) 0%, var(--coral) 100%);
+  box-shadow: 0 6px 14px rgba(220, 38, 38, 0.30);
+}
+.card.f-turquesa .card-icono {
+  border-radius: 50% 14px 14px 50%;
+  background: linear-gradient(135deg, var(--turquesa-claro) 0%, var(--turquesa) 100%);
+  box-shadow: 0 6px 14px rgba(13, 148, 136, 0.30);
+}
+
 .card:active .card-icono {
   transform: scale(1.06);
 }
+
 .card-icono svg {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   fill: #fff;
   stroke: none;
 }
 
-/* ---- Colores vivos ---- */
-.card-icono.azul {
-  background: linear-gradient(135deg, #4A7DE0 0%, #1B4DB1 100%);
-  --icono-sombra: rgba(27, 77, 177, 0.40);
-}
-.card-icono.cielo {
-  background: linear-gradient(135deg, #38BDF8 0%, #0369A1 100%);
-  --icono-sombra: rgba(3, 105, 161, 0.40);
-}
-.card-icono.verde {
-  background: linear-gradient(135deg, #34D399 0%, #059669 100%);
-  --icono-sombra: rgba(5, 150, 105, 0.40);
-}
-.card-icono.naranja {
-  background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
-  --icono-sombra: rgba(245, 158, 11, 0.40);
-}
-.card-icono.morado {
-  background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%);
-  --icono-sombra: rgba(124, 58, 237, 0.40);
-}
-.card-icono.rosa {
-  background: linear-gradient(135deg, #F472B6 0%, #DB2777 100%);
-  --icono-sombra: rgba(219, 39, 119, 0.40);
-}
-.card-icono.cyan {
-  background: linear-gradient(135deg, #22D3EE 0%, #0891B2 100%);
-  --icono-sombra: rgba(8, 145, 178, 0.40);
-}
-.card-icono.amarillo {
-  background: linear-gradient(135deg, #FDE047 0%, #F59E0B 100%);
-  --icono-sombra: rgba(245, 158, 11, 0.40);
-}
-.card-icono.marino {
-  background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
-  --icono-sombra: rgba(30, 58, 138, 0.40);
-}
-.card-icono.violeta {
-  background: linear-gradient(135deg, #C084FC 0%, #9333EA 100%);
-  --icono-sombra: rgba(147, 51, 234, 0.40);
-}
-.card-icono.coral {
-  background: linear-gradient(135deg, #FB7185 0%, #DC2626 100%);
-  --icono-sombra: rgba(220, 38, 38, 0.40);
-}
-.card-icono.turquesa {
-  background: linear-gradient(135deg, #2DD4BF 0%, #0D9488 100%);
-  --icono-sombra: rgba(13, 148, 136, 0.40);
-}
-.card-icono.gris {
-  background: linear-gradient(135deg, #94A3B8 0%, #475569 100%);
-  --icono-sombra: rgba(71, 85, 105, 0.40);
+/* Contraste en fondos amarillos */
+.card.f-amarillo .card-icono svg {
+  fill: #1A1C1E;
 }
 
 html.tema-oscuro .card-icono {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
 }
 @media (prefers-color-scheme: dark) {
   html.tema-auto .card-icono {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
   }
-}
-
-/* Contraste: icono oscuro en fondos claros */
-.card-icono.naranja svg,
-.card-icono.cyan svg,
-.card-icono.amarillo svg {
-  fill: #1A1C1E;
 }
 
 .card-titulo {
@@ -507,11 +649,8 @@ html.tema-oscuro .card-icono {
   font-weight: 700;
   line-height: 1.2;
   color: var(--texto);
-}
-.card-sub {
-  font-size: 12px;
-  color: var(--texto-suave);
-  line-height: 1.3;
+  position: relative;
+  z-index: 1;
 }
 
 /* ============================================================
@@ -531,6 +670,8 @@ html.tema-oscuro .card-icono {
   cursor: pointer;
   border-radius: var(--radio-sm);
   transition: background 0.15s, color 0.15s;
+  position: relative;
+  z-index: 1;
 }
 .cerrar-sesion-box:hover {
   background: rgba(230, 57, 70, 0.08);
@@ -706,7 +847,7 @@ html.tema-oscuro .linea { border-bottom-color: #2A3348; }
 
 @media (min-width: 700px) {
   body {
-    background: linear-gradient(135deg, #E3ECFF 0%, #EEF2F7 100%);
+    background: linear-gradient(135deg, #E3ECFF 0%, #F1F4F9 100%);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -739,11 +880,12 @@ html.tema-oscuro .linea { border-bottom-color: #2A3348; }
     margin-left: auto;
     margin-right: auto;
   }
-  .panel-menu { padding: 16px; }
+  .panel-menu { padding: 18px; }
   .grid-menu { gap: 14px; }
-  .card { padding: 18px; min-height: 140px; }
-  .card-icono { width: 58px; height: 58px; }
-  .card-icono svg { width: 30px; height: 30px; }
+  .card { padding: 16px; min-height: 130px; }
+  .card.destacada { min-height: 150px; }
+  .card-icono { width: 54px; height: 54px; }
+  .card-icono svg { width: 26px; height: 26px; }
   .card-titulo { font-size: 15px; }
   .caja { padding: 24px; }
 }

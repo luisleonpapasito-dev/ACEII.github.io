@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Productos · ACEII</title>
 <link rel="stylesheet" href="estilos.css">
+<!-- Favicons -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1B4DB1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
 <script src="comun.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
 <style>
@@ -941,6 +951,15 @@ async function iniciarCamara() {
 
 function detenerCamara() {
   if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('service-worker.js').catch(function (e) {
+      console.warn('SW no registrado:', e);
+    });
+  });
 }
 </script>
 </body>

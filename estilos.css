@@ -468,3 +468,158 @@ a.op.off { background: var(--superficie-2); color: var(--texto-claro); }
     padding: 24px;
   }
 }
+
+/* ============================================================
+   MODO OSCURO AUTOMÁTICO
+   Se activa cuando el celular está en modo oscuro
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #0F1419;
+    --superficie: #1A1F2E;
+    --superficie-2: #232A3D;
+
+    --texto: #E8ECF4;
+    --texto-suave: #A8B0C0;
+    --texto-claro: #6B7280;
+
+    --azul: #4A7DE0;
+    --azul-claro: #6B9BFF;
+    --azul-suave: #1E2A47;
+
+    --verde: #34D399;
+    --morado: #A78BFA;
+    --naranja: #FBBF24;
+    --rosa: #F472B6;
+    --cyan: #22D3EE;
+
+    --exito: #34D399;
+    --alerta: #F87171;
+    --aviso: #FBBF24;
+
+    --sombra: 0 2px 8px rgba(0, 0, 0, 0.35);
+    --sombra-fuerte: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+
+  body {
+    background: var(--fondo);
+    color: var(--texto);
+  }
+
+  .app-header {
+    background: linear-gradient(135deg, #1A2540 0%, #2C3E70 100%);
+  }
+  .app-header::after {
+    background: var(--fondo);
+  }
+
+  .caja,
+  .card,
+  .turno,
+  .detalle,
+  .chart-box,
+  .kpi,
+  .sin-datos {
+    background: var(--superficie);
+    color: var(--texto);
+  }
+
+  #estado {
+    background: var(--superficie);
+    color: var(--texto-suave);
+  }
+
+  input[type=text],
+  input[type=password],
+  input[type=number],
+  input[type=range],
+  select,
+  textarea {
+    background: var(--superficie-2);
+    color: var(--texto);
+    border-color: #2A3348;
+  }
+  input:focus, select:focus, textarea:focus {
+    background: var(--superficie);
+    border-color: var(--azul-claro);
+  }
+
+  button {
+    background: var(--superficie-2);
+    color: var(--texto);
+  }
+  button.main {
+    background: var(--azul);
+    color: #fff;
+  }
+
+  .linea,
+  .resultado,
+  .item-carrito,
+  .mov,
+  .ranking-item,
+  .stock-item,
+  .resumen-fila,
+  .lista-productos .item,
+  .prod-item,
+  .cat-item {
+    border-bottom-color: #2A3348;
+  }
+
+  .resumen {
+    background: var(--superficie-2);
+    border-color: var(--azul-suave);
+  }
+
+  #panel {
+    background: var(--superficie-2);
+  }
+
+  #modalCam .caja-conf,
+  #panelEscaneo .caja-conf {
+    background: var(--superficie);
+    color: var(--texto);
+  }
+
+  .lista-productos .item:hover,
+  .resultado:hover,
+  .prod-item:hover,
+  .cat-item:hover {
+    background: var(--superficie-2);
+  }
+
+  /* Ajustes específicos por pantalla */
+  #saldoBox {
+    background: linear-gradient(135deg, #1E3A7A 0%, #2F5BB7 100%);
+  }
+
+  .btn-rapido {
+    background: var(--superficie);
+    border-color: var(--azul-suave);
+    color: var(--texto);
+  }
+  .btn-rapido.grupo {
+    background: #2A2418;
+    border-color: var(--naranja);
+  }
+  .btn-variante {
+    background: var(--superficie);
+    color: var(--texto);
+  }
+
+  .thumb,
+  .prod-thumb,
+  .res-thumb {
+    background: var(--superficie-2);
+  }
+
+  .aviso-id,
+  .aviso-info {
+    background: var(--azul-suave);
+    color: var(--azul-claro);
+  }
+
+  .bloque {
+    background: var(--superficie-2);
+  }
+}

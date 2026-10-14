@@ -156,22 +156,35 @@
     grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
-  .btn-variante {
-    background: #fff;
-    border: 2px solid transparent;
-    border-radius: 10px;
-    padding: 10px;
-    text-align: left;
-    cursor: pointer;
-    font-family: var(--fuente);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--texto);
-    transition: transform 0.1s;
-  }
+  
+.btn-variante {
+  background: #fff;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--fuente);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto);
+  transition: transform 0.1s, background 0.15s, border-color 0.15s;
+}
   .btn-variante:active { transform: scale(0.95); }
   .btn-variante .nom-v { display: block; font-size: 13px; }
   .btn-variante .pre-v { display: block; font-size: 12px; color: var(--azul); font-weight: 700; margin-top: 2px; }
+
+.btn-variante.presionado-var {
+  background: var(--exito) !important;
+  color: #fff !important;
+  transform: scale(1.05);
+  border-color: var(--exito);
+}
+.btn-variante.presionado-var .nom-v,
+.btn-variante.presionado-var .pre-v {
+  color: #fff !important;
+}
+
 
   /* ===== Buscador ===== */
   #resultados { max-height: 340px; overflow-y: auto; margin-top: 8px; }
@@ -1084,22 +1097,75 @@ function pintarRapidos() {
   });
 }
 
+// =====================================================================
+// Mostrar variantes con tap corto / tap largo
+// =====================================================================
 function mostrarVariantes(nombre, items) {
   $('tituloVariantes').textContent = nombre;
   const cont = $('listaVariantes');
   cont.innerHTML = '';
+
   items.forEach(function (p) {
     const btn = document.createElement('button');
     btn.className = 'btn-variante';
     btn.innerHTML =
       '<span class="nom-v">' + p.nombre + '</span>' +
       '<span class="pre-v">' + fmt(p.precio) + '</span>';
-    btn.addEventListener('click', function () {
+
+    // ---- Sistema de tap corto / tap largo ----
+    let tapTimerLocal = null;
+    let fueLargo = false;
+    let touchActivo = false;
+    let clickReciente = false;
+
+    btn.addEventListener('touchstart', function (e) {
+      touchActivo = true;
+      fueLargo = false;
+      btn.classList.add('presionado-var');
+      tapTimerLocal = setTimeout(function () {
+        fueLargo = true;
+        if (navigator.vibrate) navigator.vibrate(50);
+      }, 800);
+    }, { passive: true });
+
+    btn.addEventListener('touchend', function (e) {
+      clearTimeout(tapTimerLocal);
+      btn.classList.remove('presionado-var');
+      if (!touchActivo) return;
+      touchActivo = false;
+
+      clickReciente = true;
+      setTimeout(function () { clickReciente = false; }, 500);
+
+      if (fueLargo) {
+        e.preventDefault();
+        if (navigator.vibrate) navigator.vibrate(80);
+        // Tap largo → cobro rápido directo
+        $('panelVariantes').classList.remove('abierto');
+        abrirCobroRapido(p, 1);
+      } else {
+        // Tap corto → agregar al carrito
+        agregarProductoAlCarrito(p, 1);
+        $('panelVariantes').classList.remove('abierto');
+      }
+    });
+
+    btn.addEventListener('touchcancel', function () {
+      clearTimeout(tapTimerLocal);
+      btn.classList.remove('presionado-var');
+      touchActivo = false;
+    });
+
+    btn.addEventListener('click', function (e) {
+      if (clickReciente) return; // bloquea click fantasma
+      // Fallback PC: click normal = agregar al carrito
       agregarProductoAlCarrito(p, 1);
       $('panelVariantes').classList.remove('abierto');
     });
+
     cont.appendChild(btn);
   });
+
   $('panelVariantes').classList.add('abierto');
   $('panelVariantes').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }

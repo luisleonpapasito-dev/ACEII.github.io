@@ -25,9 +25,9 @@
   --cyan: #00BCD4;
   --gris: #546E7A;
   --amarillo: #FBC02D;
-  --indigo: #5C6BC0;
-  --ambar: #FF7043;
-  --esmeralda: #26A69A;
+  --violeta: #8E44AD;
+  --coral: #FF6B6B;
+  --turquesa: #14B8A6;
 
   --exito: #2A9D5C;
   --alerta: #E63946;
@@ -65,9 +65,9 @@ html.tema-oscuro {
   --cyan: #22D3EE;
   --gris: #94A3B8;
   --amarillo: #FCD34D;
-  --indigo: #818CF8;
-  --ambar: #FB923C;
-  --esmeralda: #4ADE80;
+  --violeta: #C084FC;
+  --coral: #FB7185;
+  --turquesa: #2DD4BF;
 
   --exito: #34D399;
   --alerta: #F87171;
@@ -98,9 +98,9 @@ html.tema-oscuro {
     --cyan: #22D3EE;
     --gris: #94A3B8;
     --amarillo: #FCD34D;
-    --indigo: #818CF8;
-    --ambar: #FB923C;
-    --esmeralda: #4ADE80;
+    --violeta: #C084FC;
+    --coral: #FB7185;
+    --turquesa: #2DD4BF;
 
     --exito: #34D399;
     --alerta: #F87171;
@@ -364,50 +364,50 @@ html.tema-oscuro .app-header {
   stroke: none;
 }
 
-/* ---- 11 colores únicos, sin repetición ---- */
+/* ---- 11 colores únicos, vivos y llamativos ---- */
 .card-icono.azul {
-  background: linear-gradient(135deg, #3F70D4 0%, #1B4DB1 100%);
-  --icono-sombra: rgba(27, 77, 177, 0.35);
+  background: linear-gradient(135deg, #4A7DE0 0%, #1B4DB1 100%);
+  --icono-sombra: rgba(27, 77, 177, 0.40);
 }
 .card-icono.verde {
-  background: linear-gradient(135deg, #3CC784 0%, #229E62 100%);
-  --icono-sombra: rgba(34, 158, 98, 0.35);
+  background: linear-gradient(135deg, #34D399 0%, #059669 100%);
+  --icono-sombra: rgba(5, 150, 105, 0.40);
 }
 .card-icono.naranja {
-  background: linear-gradient(135deg, #F7B21F 0%, #E08F00 100%);
-  --icono-sombra: rgba(224, 143, 0, 0.35);
+  background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+  --icono-sombra: rgba(245, 158, 11, 0.40);
 }
 .card-icono.morado {
-  background: linear-gradient(135deg, #8F63E6 0%, #6A3CC4 100%);
-  --icono-sombra: rgba(106, 60, 196, 0.35);
+  background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%);
+  --icono-sombra: rgba(124, 58, 237, 0.40);
 }
 .card-icono.rosa {
-  background: linear-gradient(135deg, #F0467F 0%, #D0154F 100%);
-  --icono-sombra: rgba(208, 21, 79, 0.35);
+  background: linear-gradient(135deg, #F472B6 0%, #DB2777 100%);
+  --icono-sombra: rgba(219, 39, 119, 0.40);
 }
 .card-icono.cyan {
-  background: linear-gradient(135deg, #26CBE0 0%, #00A6BC 100%);
-  --icono-sombra: rgba(0, 166, 188, 0.35);
+  background: linear-gradient(135deg, #22D3EE 0%, #0891B2 100%);
+  --icono-sombra: rgba(8, 145, 178, 0.40);
 }
 .card-icono.amarillo {
-  background: linear-gradient(135deg, #FFD24D 0%, #E0A800 100%);
-  --icono-sombra: rgba(224, 168, 0, 0.35);
+  background: linear-gradient(135deg, #FDE047 0%, #F59E0B 100%);
+  --icono-sombra: rgba(245, 158, 11, 0.40);
 }
-.card-icono.indigo {
-  background: linear-gradient(135deg, #7B89D4 0%, #4A5AA8 100%);
-  --icono-sombra: rgba(74, 90, 168, 0.35);
+.card-icono.violeta {
+  background: linear-gradient(135deg, #C084FC 0%, #9333EA 100%);
+  --icono-sombra: rgba(147, 51, 234, 0.40);
 }
-.card-icono.ambar {
-  background: linear-gradient(135deg, #FF8B5E 0%, #E05226 100%);
-  --icono-sombra: rgba(224, 82, 38, 0.35);
+.card-icono.coral {
+  background: linear-gradient(135deg, #FB7185 0%, #DC2626 100%);
+  --icono-sombra: rgba(220, 38, 38, 0.40);
 }
-.card-icono.esmeralda {
-  background: linear-gradient(135deg, #3EBFAF 0%, #1A8C7D 100%);
-  --icono-sombra: rgba(26, 140, 125, 0.35);
+.card-icono.turquesa {
+  background: linear-gradient(135deg, #2DD4BF 0%, #0D9488 100%);
+  --icono-sombra: rgba(13, 148, 136, 0.40);
 }
 .card-icono.gris {
-  background: linear-gradient(135deg, #6F8592 0%, #455A64 100%);
-  --icono-sombra: rgba(69, 90, 100, 0.35);
+  background: linear-gradient(135deg, #94A3B8 0%, #475569 100%);
+  --icono-sombra: rgba(71, 85, 105, 0.40);
 }
 
 html.tema-oscuro .card-icono {
@@ -452,6 +452,86 @@ html.tema-oscuro .card-icono {
 .card.ancha .card-icono {
   width: 48px;
   height: 48px;
+}
+
+/* ============================================================
+   SECCIONES DEL MENÚ (agrupación)
+   ============================================================ */
+.seccion {
+  margin-bottom: 18px;
+}
+.seccion-titulo {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--texto-claro);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin: 0 4px 8px;
+  padding-left: 4px;
+}
+html.tema-oscuro .seccion-titulo {
+  color: var(--texto-suave);
+}
+
+.seccion .grid-menu {
+  margin: 0;
+  padding: 0;
+  gap: 10px;
+}
+
+.seccion .card {
+  min-height: 108px;
+  padding: 14px;
+  gap: 8px;
+}
+.seccion .card .card-titulo {
+  font-size: 14px;
+  line-height: 1.25;
+}
+.seccion .card .card-icono {
+  width: 50px;
+  height: 50px;
+}
+.seccion .card .card-icono svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* Contraste: icono oscuro en fondos claros */
+.card-icono.naranja svg,
+.card-icono.cyan svg,
+.card-icono.amarillo svg {
+  fill: #1A1C1E;
+}
+
+/* Cerrar sesión discreto al final */
+.cerrar-sesion-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 24px auto 0;
+  padding: 12px 16px;
+  max-width: 300px;
+  color: var(--texto-suave);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--radio-sm);
+  transition: background 0.15s, color 0.15s;
+}
+.cerrar-sesion-box:hover {
+  background: var(--superficie-2);
+  color: var(--alerta);
+}
+.cerrar-sesion-box:active {
+  transform: scale(0.97);
+}
+.cerrar-sesion-icono {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  flex-shrink: 0;
 }
 
 /* ============================================================

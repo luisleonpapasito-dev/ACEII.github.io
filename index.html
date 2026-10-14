@@ -97,122 +97,113 @@
 </div>
 
 <!-- Paso 5: menú principal -->
-<main class="grid-menu" id="menu" style="display:none;">
+<main id="menu" style="display:none; max-width:480px; margin:16px auto 24px; padding:0 12px;">
 
-  <!-- Caja del turno · AZUL · point_of_sale -->
-  <a class="card" href="caja.html">
-    <div class="card-icono azul">
-      <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
+  <!-- SECCIÓN: OPERACIÓN DIARIA -->
+  <div class="seccion">
+    <div class="seccion-titulo">Operación diaria</div>
+    <div class="grid-menu">
+      <!-- Caja del turno · AZUL -->
+      <a class="card" href="caja.html">
+        <div class="card-icono azul">
+          <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
+        </div>
+        <div class="card-titulo">Caja del turno</div>
+      </a>
+      <!-- Ventas · VERDE -->
+      <a class="card" href="ventas.html">
+        <div class="card-icono verde">
+          <svg viewBox="0 -960 960 960"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM40-800v-80h130l148 310h368l166-310h88L740-560q-11 20-30 30t-40 10H320L240-620 160-440h560v80H160q-26 0-40-22t-2-46l80-160L60-880l-20-40v80Z"/></svg>
+        </div>
+        <div class="card-titulo">Ventas</div>
+      </a>
     </div>
-    <div class="card-titulo">Caja del turno</div>
-    <div class="card-sub">Registra y cobra los pedidos</div>
-    <div class="card-flecha">›</div>
-  </a>
+  </div>
 
-  <!-- Ventas · VERDE · shopping_cart -->
-  <a class="card" href="ventas.html">
-    <div class="card-icono verde">
-      <svg viewBox="0 -960 960 960"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM40-800v-80h130l148 310h368l166-310h88L740-560q-11 20-30 30t-40 10H320L240-620 160-440h560v80H160q-26 0-40-22t-2-46l80-160L60-880l-20-40v80Z"/></svg>
+  <!-- SECCIÓN: INVENTARIO -->
+  <div class="seccion">
+    <div class="seccion-titulo">Inventario</div>
+    <div class="grid-menu">
+      <!-- Recepción · NARANJA -->
+      <a class="card" href="recepcion.html">
+        <div class="card-icono naranja">
+          <svg viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-120H640q-30 38-71.5 59T480-240q-47 0-88.5-21T320-320H200v120Zm280-120q38 0 69-22t43-58h168v-360H200v360h168q12 36 43 58t69 22ZM200-200h560-560Z"/></svg>
+        </div>
+        <div class="card-titulo">Recepción</div>
+      </a>
+      <!-- Inventario · MORADO -->
+      <a class="card" href="inventario.html">
+        <div class="card-icono morado">
+          <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h560q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm280 440q11 0 19.5-7.5T510-220v-120l44 44q7 7 17 7t17-7q7-7 7-17t-7-17l-86-86q-12-12-28-12t-28 12l-86 86q-7 7-7 17t7 17q7 7 17 7t17-7l44-44v120q0 11 8.5 19.5T480-200Z"/></svg>
+        </div>
+        <div class="card-titulo">Inventario</div>
+      </a>
+      <!-- Devoluciones · ROSA -->
+      <a class="card" href="devoluciones.html">
+        <div class="card-icono rosa">
+          <svg viewBox="0 -960 960 960"><path d="M240-160q-33 0-56.5-23.5T160-240v-120q0-17 11.5-28.5T200-400q17 0 28.5 11.5T240-360v120h480v-480H520v80q0 17-11.5 28.5T480-600q-17 0-28.5-11.5T440-640v-120q0-33 23.5-56.5T520-840h200q33 0 56.5 23.5T800-760v520q0 33-23.5 56.5T720-160H240Zm119-176-57 57q-11 11-27.5 11T247-279q-11-11-11-27.5t11-27.5l124-124q12-12 28-12t28 12l124 124q11 11 11 27.5T551-279q-11 11-27.5 11T496-279l-57-57v116q0 17-11.5 28.5T400-180q-17 0-28.5-11.5T360-220v-116Z"/></svg>
+        </div>
+        <div class="card-titulo">Devoluciones</div>
+      </a>
     </div>
-    <div class="card-titulo">Ventas</div>
-    <div class="card-sub">Consulta y gestiona las ventas</div>
-    <div class="card-flecha">›</div>
-  </a>
+  </div>
 
-  <!-- Recepción · NARANJA · move_to_inbox -->
-  <a class="card" href="recepcion.html">
-    <div class="card-icono naranja">
-      <svg viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-120H640q-30 38-71.5 59T480-240q-47 0-88.5-21T320-320H200v120Zm280-120q38 0 69-22t43-58h168v-360H200v360h168q12 36 43 58t69 22ZM200-200h560-560Z"/></svg>
+  <!-- SECCIÓN: CATÁLOGO -->
+  <div class="seccion">
+    <div class="seccion-titulo">Catálogo</div>
+    <div class="grid-menu">
+      <!-- Productos · CYAN -->
+      <a class="card" href="productos.html">
+        <div class="card-icono cyan">
+          <svg viewBox="0 -960 960 960"><path d="M856-406 566-116q-23 23-56.5 22.5T453-117L119-451q-11-11-18-25.5T94-508v-252q0-33 23.5-56.5T174-840h252q17 0 31.5 7t25.5 18l372 372q23 23 22.5 56.5T856-406ZM260-600q25 0 42.5-17.5T320-660q0-25-17.5-42.5T260-720q-25 0-42.5 17.5T200-660q0 25 17.5 42.5T260-600Z"/></svg>
+        </div>
+        <div class="card-titulo">Productos</div>
+      </a>
+      <!-- Categorías · AMARILLO -->
+      <a class="card" href="categorias.html">
+        <div class="card-icono amarillo">
+          <svg viewBox="0 -960 960 960"><path d="M140-200q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm300 440q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Z"/></svg>
+        </div>
+        <div class="card-titulo">Categorías</div>
+      </a>
+      <!-- Códigos · TURQUESA -->
+      <a class="card" href="codigos.html">
+        <div class="card-icono turquesa">
+          <svg viewBox="0 -960 960 960"><path d="M120-680v-120q0-33 23.5-56.5T200-880h120q17 0 28.5 11.5T360-840q0 17-11.5 28.5T320-800H200v120q0 17-11.5 28.5T160-640q-17 0-28.5-11.5T120-680Zm720 0q0 17-11.5 28.5T800-640q-17 0-28.5-11.5T760-680v-120H640q-17 0-28.5-11.5T600-840q0-17 11.5-28.5T640-880h120q33 0 56.5 23.5T840-800v120ZM200-120q-33 0-56.5-23.5T120-200v-120q0-17 11.5-28.5T160-360q17 0 28.5 11.5T200-320v120h120q17 0 28.5 11.5T360-160q0 17-11.5 28.5T320-120H200Zm440 0q-17 0-28.5-11.5T600-160q0-17 11.5-28.5T640-200h120v-120q0-17 11.5-28.5T800-360q17 0 28.5 11.5T840-320v120q0 33-23.5 56.5T760-120H640ZM200-760v120q0 17-11.5 28.5T160-600q-17 0-28.5-11.5T120-640v-120q0-33 23.5-56.5T200-840h120q17 0 28.5 11.5T360-800q0 17-11.5 28.5T320-760H200Zm560 0H640q-17 0-28.5-11.5T600-800q0-17 11.5-28.5T640-840h120q33 0 56.5 23.5T840-760v120q0 17-11.5 28.5T800-600q-17 0-28.5-11.5T760-640v-120ZM240-240v-120q0-17 11.5-28.5T280-400h120q17 0 28.5 11.5T440-360v120q0 17-11.5 28.5T400-200H280q-17 0-28.5-11.5T240-240Zm280-200q-17 0-28.5-11.5T480-480q0-17 11.5-28.5T520-520q17 0 28.5 11.5T560-480q0 17-11.5 28.5T520-440Zm160 0q-17 0-28.5-11.5T640-480q0-17 11.5-28.5T680-520q17 0 28.5 11.5T720-480q0 17-11.5 28.5T680-440ZM520-280q-17 0-28.5-11.5T480-320q0-17 11.5-28.5T520-360q17 0 28.5 11.5T560-320q0 17-11.5 28.5T520-280Zm160 0q-17 0-28.5-11.5T640-320q0-17 11.5-28.5T680-360q17 0 28.5 11.5T720-320q0 17-11.5 28.5T680-280Z"/></svg>
+        </div>
+        <div class="card-titulo">Códigos</div>
+      </a>
     </div>
-    <div class="card-titulo">Recepción de mercancía</div>
-    <div class="card-sub">Registra los productos que llegan</div>
-    <div class="card-flecha">›</div>
-  </a>
+  </div>
 
-  <!-- Inventario · MORADO · inventory_2 -->
-  <a class="card" href="inventario.html">
-    <div class="card-icono morado">
-      <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h560q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm280 440q11 0 19.5-7.5T510-220v-120l44 44q7 7 17 7t17-7q7-7 7-17t-7-17l-86-86q-12-12-28-12t-28 12l-86 86q-7 7-7 17t7 17q7 7 17 7t17-7l44-44v120q0 11 8.5 19.5T480-200Z"/></svg>
+  <!-- SECCIÓN: REPORTES -->
+  <div class="seccion">
+    <div class="seccion-titulo">Reportes</div>
+    <div class="grid-menu">
+      <!-- Historial · VIOLETA -->
+      <a class="card" href="historial-caja.html">
+        <div class="card-icono violeta">
+          <svg viewBox="0 -960 960 960"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h480q50 0 85 35t35 85v560q0 50-35 85t-85 35H240Zm0-80h480v-560H240v560Zm80-80h320q17 0 28.5-11.5T680-280q0-17-11.5-28.5T640-320H320q-17 0-28.5 11.5T280-280q0 17 11.5 28.5T320-240Zm0-160h320q17 0 28.5-11.5T680-440q0-17-11.5-28.5T640-480H320q-17 0-28.5 11.5T280-440q0 17 11.5 28.5T320-400Zm0-160h320q17 0 28.5-11.5T680-600q0-17-11.5-28.5T640-640H320q-17 0-28.5 11.5T280-600q0 17 11.5 28.5T320-560Zm0-160h320q17 0 28.5-11.5T680-760q0-17-11.5-28.5T640-800H320q-17 0-28.5 11.5T280-760q0 17 11.5 28.5T320-720ZM240-160v-560 560Z"/></svg>
+        </div>
+        <div class="card-titulo">Historial</div>
+      </a>
+      <!-- Dashboard · CORAL -->
+      <a class="card" href="dashboard.html">
+        <div class="card-icono coral">
+          <svg viewBox="0 -960 960 960"><path d="M640-160v-280q0-17 11.5-28.5T680-480q17 0 28.5 11.5T720-440v280q0 17-11.5 28.5T680-120q-17 0-28.5-11.5T640-160Zm-200 0v-560q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v560q0 17-11.5 28.5T480-120q-17 0-28.5-11.5T440-160Zm-200 0v-400q0-17 11.5-28.5T280-600q17 0 28.5 11.5T320-560v400q0 17-11.5 28.5T280-120q-17 0-28.5-11.5T240-160Z"/></svg>
+        </div>
+        <div class="card-titulo">Dashboard</div>
+      </a>
     </div>
-    <div class="card-titulo">Inventario y ajustes</div>
-    <div class="card-sub">Controla el stock y haz ajustes</div>
-    <div class="card-flecha">›</div>
-  </a>
+  </div>
 
-  <!-- Devoluciones · ROSA · assignment_return -->
-  <a class="card" href="devoluciones.html">
-    <div class="card-icono rosa">
-      <svg viewBox="0 -960 960 960"><path d="M240-160q-33 0-56.5-23.5T160-240v-120q0-17 11.5-28.5T200-400q17 0 28.5 11.5T240-360v120h480v-480H520v80q0 17-11.5 28.5T480-600q-17 0-28.5-11.5T440-640v-120q0-33 23.5-56.5T520-840h200q33 0 56.5 23.5T800-760v520q0 33-23.5 56.5T720-160H240Zm119-176-57 57q-11 11-27.5 11T247-279q-11-11-11-27.5t11-27.5l124-124q12-12 28-12t28 12l124 124q11 11 11 27.5T551-279q-11 11-27.5 11T496-279l-57-57v116q0 17-11.5 28.5T400-180q-17 0-28.5-11.5T360-220v-116Z"/></svg>
-    </div>
-    <div class="card-titulo">Devoluciones</div>
-    <div class="card-sub">Gestiona las devoluciones</div>
-    <div class="card-flecha">›</div>
-  </a>
-
-  <!-- Productos · CYAN · sell -->
-  <a class="card" href="productos.html">
-    <div class="card-icono cyan">
-      <svg viewBox="0 -960 960 960"><path d="M856-406 566-116q-23 23-56.5 22.5T453-117L119-451q-11-11-18-25.5T94-508v-252q0-33 23.5-56.5T174-840h252q17 0 31.5 7t25.5 18l372 372q23 23 22.5 56.5T856-406ZM260-600q25 0 42.5-17.5T320-660q0-25-17.5-42.5T260-720q-25 0-42.5 17.5T200-660q0 25 17.5 42.5T260-600Z"/></svg>
-    </div>
-    <div class="card-titulo">Productos</div>
-    <div class="card-sub">Administra el catálogo</div>
-    <div class="card-flecha">›</div>
-  </a>
-
-  <!-- Categorías · AMARILLO · category -->
-  <a class="card" href="categorias.html">
-    <div class="card-icono amarillo">
-      <svg viewBox="0 -960 960 960"><path d="M140-200q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm300 440q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Z"/></svg>
-    </div>
-    <div class="card-titulo">Categorías</div>
-    <div class="card-sub">Administra las categorías</div>
-    <div class="card-flecha">›</div>
-  </a>
-
-  <!-- Historial · ÍNDIGO · receipt_long -->
-  <a class="card" href="historial-caja.html">
-    <div class="card-icono indigo">
-      <svg viewBox="0 -960 960 960"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h480q50 0 85 35t35 85v560q0 50-35 85t-85 35H240Zm0-80h480v-560H240v560Zm80-80h320q17 0 28.5-11.5T680-280q0-17-11.5-28.5T640-320H320q-17 0-28.5 11.5T280-280q0 17 11.5 28.5T320-240Zm0-160h320q17 0 28.5-11.5T680-440q0-17-11.5-28.5T640-480H320q-17 0-28.5 11.5T280-440q0 17 11.5 28.5T320-400Zm0-160h320q17 0 28.5-11.5T680-600q0-17-11.5-28.5T640-640H320q-17 0-28.5 11.5T280-600q0 17 11.5 28.5T320-560Zm0-160h320q17 0 28.5-11.5T680-760q0-17-11.5-28.5T640-800H320q-17 0-28.5 11.5T280-760q0 17 11.5 28.5T320-720ZM240-160v-560 560Z"/></svg>
-    </div>
-    <div class="card-titulo">Historial de caja</div>
-    <div class="card-sub">Consulta turnos y movimientos</div>
-    <div class="card-flecha">›</div>
-  </a>
-
-  <!-- Dashboard · ÁMBAR · bar_chart -->
-  <a class="card" href="dashboard.html">
-    <div class="card-icono ambar">
-      <svg viewBox="0 -960 960 960"><path d="M640-160v-280q0-17 11.5-28.5T680-480q17 0 28.5 11.5T720-440v280q0 17-11.5 28.5T680-120q-17 0-28.5-11.5T640-160Zm-200 0v-560q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v560q0 17-11.5 28.5T480-120q-17 0-28.5-11.5T440-160Zm-200 0v-400q0-17 11.5-28.5T280-600q17 0 28.5 11.5T320-560v400q0 17-11.5 28.5T280-120q-17 0-28.5-11.5T240-160Z"/></svg>
-    </div>
-    <div class="card-titulo">Dashboard</div>
-    <div class="card-sub">Estadísticas y métricas</div>
-    <div class="card-flecha">›</div>
-  </a>
-
-  <!-- Registrar códigos · ESMERALDA · qr_code_scanner -->
-  <a class="card" href="codigos.html">
-    <div class="card-icono esmeralda">
-      <svg viewBox="0 -960 960 960"><path d="M120-680v-120q0-33 23.5-56.5T200-880h120q17 0 28.5 11.5T360-840q0 17-11.5 28.5T320-800H200v120q0 17-11.5 28.5T160-640q-17 0-28.5-11.5T120-680Zm720 0q0 17-11.5 28.5T800-640q-17 0-28.5-11.5T760-680v-120H640q-17 0-28.5-11.5T600-840q0-17 11.5-28.5T640-880h120q33 0 56.5 23.5T840-800v120ZM200-120q-33 0-56.5-23.5T120-200v-120q0-17 11.5-28.5T160-360q17 0 28.5 11.5T200-320v120h120q17 0 28.5 11.5T360-160q0 17-11.5 28.5T320-120H200Zm440 0q-17 0-28.5-11.5T600-160q0-17 11.5-28.5T640-200h120v-120q0-17 11.5-28.5T800-360q17 0 28.5 11.5T840-320v120q0 33-23.5 56.5T760-120H640ZM200-760v120q0 17-11.5 28.5T160-600q-17 0-28.5-11.5T120-640v-120q0-33 23.5-56.5T200-840h120q17 0 28.5 11.5T360-800q0 17-11.5 28.5T320-760H200Zm560 0H640q-17 0-28.5-11.5T600-800q0-17 11.5-28.5T640-840h120q33 0 56.5 23.5T840-760v120q0 17-11.5 28.5T800-600q-17 0-28.5-11.5T760-640v-120ZM240-240v-120q0-17 11.5-28.5T280-400h120q17 0 28.5 11.5T440-360v120q0 17-11.5 28.5T400-200H280q-17 0-28.5-11.5T240-240Zm280-200q-17 0-28.5-11.5T480-480q0-17 11.5-28.5T520-520q17 0 28.5 11.5T560-480q0 17-11.5 28.5T520-440Zm160 0q-17 0-28.5-11.5T640-480q0-17 11.5-28.5T680-520q17 0 28.5 11.5T720-480q0 17-11.5 28.5T680-440ZM520-280q-17 0-28.5-11.5T480-320q0-17 11.5-28.5T520-360q17 0 28.5 11.5T560-320q0 17-11.5 28.5T520-280Zm160 0q-17 0-28.5-11.5T640-320q0-17 11.5-28.5T680-360q17 0 28.5 11.5T720-320q0 17-11.5 28.5T680-280Z"/></svg>
-    </div>
-    <div class="card-titulo">Registrar códigos</div>
-    <div class="card-sub">Asocia códigos de barras</div>
-    <div class="card-flecha">›</div>
-  </a>
-
-  <!-- Cerrar sesión · GRIS · logout -->
-  <div class="card ancha" onclick="cerrarSesion()">
-    <div class="card-icono gris">
-      <svg viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280q17 0 28.5 11.5T520-800q0 17-11.5 28.5T480-760H200v560h280q17 0 28.5 11.5T520-160q0 17-11.5 28.5T480-120H200Zm480-320H400q-17 0-28.5-11.5T360-480q0-17 11.5-28.5T400-520h280l-44-44q-11-11-11-28t11-28q11-11 28-11t28 11l112 112q12 12 12 28t-12 28L692-340q-11 11-28 11t-28-11q-11-11-11-28t11-28l44-44Z"/></svg>
-    </div>
-    <div class="card-texto">
-      <div class="card-titulo">Cerrar sesión general</div>
-      <div class="card-sub">Salir del sistema</div>
-    </div>
-    <div class="card-flecha">›</div>
+  <!-- Cerrar sesión (discreto al final) -->
+  <div class="cerrar-sesion-box" onclick="cerrarSesion()">
+    <svg viewBox="0 -960 960 960" class="cerrar-sesion-icono"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280q17 0 28.5 11.5T520-800q0 17-11.5 28.5T480-760H200v560h280q17 0 28.5 11.5T520-160q0 17-11.5 28.5T480-120H200Zm480-320H400q-17 0-28.5-11.5T360-480q0-17 11.5-28.5T400-520h280l-44-44q-11-11-11-28t11-28q11-11 28-11t28 11l112 112q12 12 12 28t-12 28L692-340q-11 11-28 11t-28-11q-11-11-11-28t11-28l44-44Z"/></svg>
+    <span>Cerrar sesión</span>
   </div>
 
 </main>
-
 <script>
 let turnoPendiente = null;
 let usuarioPendienteAjeno = null;

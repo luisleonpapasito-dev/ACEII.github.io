@@ -14,7 +14,7 @@ function norm(s) {
   return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
-// ---------- Token general (clave del sistema) ----------
+// ---------- Token general ----------
 function getToken() { try { return localStorage.getItem('caf_token') || ''; } catch (e) { return ''; } }
 function guardarToken(t) { try { localStorage.setItem('caf_token', t); } catch (e) {} }
 function borrarToken() { try { localStorage.removeItem('caf_token'); } catch (e) {} }
@@ -47,13 +47,11 @@ function borrarTurnoActual() {
   try { localStorage.removeItem('caf_turno_caja'); } catch (e) {}
 }
 
-// Exige token general Y usuario de turno
 function exigirSesion() {
   if (!getToken()) { location.href = 'index.html'; return; }
   if (!getUsuarioTurno()) { location.href = 'index.html'; return; }
 }
 
-// Exige que haya turno de caja abierto
 async function exigirTurnoCajaAbierto() {
   if (getTurnoActual()) return true;
   try {
@@ -112,7 +110,7 @@ function jsonp(params, limiteMs) {
 
 async function post(cuerpo) {
   const ctrl = new AbortController();
-  const t = setTimeout(function () { ctrl.abort(); }, 25000);
+  const t = setTimeout(function () { ctrl.abort(); }, 120000);
   try {
     const r = await fetch(URL_SERVIDOR, {
       method: 'POST',

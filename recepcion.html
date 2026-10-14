@@ -54,7 +54,8 @@
     margin-top: 8px;
     text-align: center;
   }
-  /* Modal de cámara */
+
+  /* Modal de cámara para escanear */
   #modalCam {
     display: none;
     position: fixed;
@@ -65,7 +66,6 @@
     background: #000;
     z-index: 100;
   }
-  /* Panel de escaneo (cubre TODO) */
   #panelEscaneo {
     display: none;
     position: fixed;
@@ -124,6 +124,38 @@
     color: #fff;
     border-color: var(--azul-claro);
   }
+
+  /* Fotos de facturas */
+  .foto-thumb {
+    display: inline-block;
+    position: relative;
+    margin: 4px;
+    width: 80px;
+    height: 80px;
+  }
+  .foto-thumb img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #E8ECF4;
+  }
+  .foto-thumb .quitar {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--alerta);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
 </style>
 </head>
 <body>
@@ -179,13 +211,22 @@
 <div class="caja">
   <label>Lista de esta recepción</label>
   <div id="listaItems" style="color:var(--texto-suave); font-size:14px;">(vacía)</div>
-  <label>Observaciones (opcional)</label>
+
+  <!-- Fotos de la factura -->
+  <div id="bloqueFotos" style="margin-top:14px;">
+    <label>📷 Fotos de la factura (opcional)</label>
+    <div id="fotosCont" style="margin-top:6px;"></div>
+    <button id="btnAgregarFoto" style="width:100%; margin-top:6px;">📷 Tomar foto de la factura</button>
+    <input type="file" id="inputFoto" accept="image/*" capture="environment" style="display:none;">
+  </div>
+
+  <label style="margin-top:12px;">Observaciones (opcional)</label>
   <input type="text" id="obs" maxlength="300">
   <button class="main" id="btnConfirmar" disabled style="width:100%; margin-top:8px;">Confirmar recepción</button>
   <div id="pend"></div>
 </div>
 
-<!-- Modal de cámara -->
+<!-- Modal de cámara (escanear) -->
 <div id="modalCam">
   <button id="btnCerrarCam" style="position:absolute; top:12px; right:12px; padding:10px 14px; background:var(--alerta); color:#fff; border:none; border-radius:10px; font-weight:600; z-index:2;">Cerrar</button>
   <video id="video" playsinline muted autoplay style="width:100%; height:100%; object-fit:cover;"></video>
@@ -193,7 +234,7 @@
   <div id="infoCam" style="position:absolute; bottom:20px; left:20px; right:20px; background:rgba(0,0,0,0.7); padding:12px; border-radius:10px; text-align:center; color:#fff; font-size:14px;">Apunta al código de barras</div>
 </div>
 
-<!-- Panel de escaneo (cubre TODO) -->
+<!-- Panel de escaneo (confirmar cantidad) -->
 <div id="panelEscaneo">
   <div class="caja-conf">
     <div class="label-chico">Código detectado</div>
@@ -239,6 +280,7 @@ let modoUnidad = 'Unidades';
 let carrito = [];
 let cola = [];
 let enviando = false;
+let fotos = []; // [{dataUrl, base64, tipoMime}]
 
 function idRecepcion() {
   const d = new Date();
@@ -348,6 +390,7 @@ async function cargarDatos() {
     restaurarBorrador();
     pintarLista();
     pintarCarrito();
+    pintarFotos();
     mostrar('Elige un producto o escanea el código');
   } catch (err) {
     mostrar('No se pudieron cargar los datos: ' + err.message, 'error');
@@ -489,8 +532,76 @@ function pintarCarrito() {
   validar();
 }
 
+// ---------- Fotos de la factura ----------
+$('btnAgregarFoto').addEventListener('click', function () {
+  $('inputFoto').click();
+});
+
+$('inputFoto').addEventListener('change', function (e) {
+  const archivo = e.target.files[0];
+  if (!archivo) return;
+  if (fotos.length >= 10) {
+    mostrar('Máximo 10 fotos', 'error');
+    return;
+  }
+  mostrar('Procesando foto...', 'aviso');
+  comprimirImagen(archivo, 1600, 0.8, function (dataUrl, base64, tipoMime) {
+    fotos.push({ dataUrl: dataUrl, base64: base64, tipoMime: tipoMime });
+    pintarFotos();
+    mostrar('Foto agregada ✓', 'ok');
+    $('inputFoto').value = '';
+  });
+});
+
+function comprimirImagen(archivo, maxAncho, calidad, callback) {
+  const reader = new FileReader();
+  reader.onload = function (ev) {
+    const img = new Image();
+    img.onload = function () {
+      let w = img.width;
+      let h = img.height;
+      if (w > maxAncho) {
+        h = Math.round(h * maxAncho / w);
+        w = maxAncho;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', calidad);
+      const base64 = dataUrl.split(',')[1];
+      callback(dataUrl, base64, 'image/jpeg');
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(archivo);
+}
+
+function pintarFotos() {
+  const cont = $('fotosCont');
+  cont.innerHTML = '';
+  if (!fotos.length) {
+    cont.innerHTML = '<div style="font-size:12px; color:var(--texto-claro); margin-bottom:6px;">(sin fotos)</div>';
+    return;
+  }
+  fotos.forEach(function (f, i) {
+    const d = document.createElement('div');
+    d.className = 'foto-thumb';
+    d.innerHTML = '<img src="' + f.dataUrl + '"><button class="quitar" data-i="' + i + '">✕</button>';
+    cont.appendChild(d);
+  });
+  cont.querySelectorAll('.quitar').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const i = Number(btn.getAttribute('data-i'));
+      fotos.splice(i, 1);
+      pintarFotos();
+    });
+  });
+}
+
 $('btnConfirmar').addEventListener('click', function () {
-  cola.push({
+  const recepcion = {
     id: idRecepcion(),
     ts: Date.now(),
     proveedor: $('proveedor').value,
@@ -500,14 +611,50 @@ $('btnConfirmar').addEventListener('click', function () {
     lineas: carrito.map(function (it) {
       return { id_producto: it.id, cantidad: it.cantidad, unidad: it.unidad, upp: it.upp, recordar: it.recordar };
     })
-  });
-  guardarCola();
-  carrito = [];
-  $('obs').value = '';
-  pintarCarrito();
-  guardarBorrador();
-  mostrar('Recepción guardada en el celular · enviando...', 'aviso');
-  procesarCola();
+  };
+
+  // Si hay fotos, las agregamos a la recepción que se va a enviar
+  if (fotos.length > 0) {
+    recepcion.fotos = fotos.map(function (f) {
+      return { base64: f.base64, tipoMime: f.tipoMime };
+    });
+    // Las fotos se envían directo, no van a la cola (porque son pesadas)
+    $('btnConfirmar').disabled = true;
+    mostrar('Subiendo ' + fotos.length + ' foto(s) y guardando...', 'aviso');
+    post(Object.assign({ accion: 'recepcion' }, recepcion))
+      .then(function (r) {
+        if (r && r.ok) {
+          mostrar('Recepción ' + r.id + ' guardada ✓ · ' + r.fotos + ' foto(s)', 'ok');
+          if (navigator.vibrate) navigator.vibrate(200);
+          carrito = [];
+          fotos = [];
+          $('obs').value = '';
+          pintarCarrito();
+          pintarFotos();
+          guardarBorrador();
+        } else if (r && r.error === 'Token inválido') {
+          borrarToken(); location.href = 'index.html';
+        } else {
+          mostrar('Error: ' + (r && r.error ? r.error : 'desconocido'), 'error');
+        }
+      })
+      .catch(function (err) {
+        mostrar('Error al enviar: ' + err.message, 'error');
+      })
+      .finally(function () {
+        $('btnConfirmar').disabled = false;
+      });
+  } else {
+    // Sin fotos: usar la cola normal (offline-friendly)
+    cola.push(recepcion);
+    guardarCola();
+    carrito = [];
+    $('obs').value = '';
+    pintarCarrito();
+    guardarBorrador();
+    mostrar('Recepción guardada en el celular · enviando...', 'aviso');
+    procesarCola();
+  }
 });
 
 // ---------- Arranque ----------
@@ -629,14 +776,12 @@ function procesarCodigoEscaneado(texto) {
     return;
   }
 
-  // Pausar lectura y detener cámara
   pausaLectura = true;
   productoEscaneado = p;
   if (navigator.vibrate) navigator.vibrate(80);
   detenerCamara();
   cicloActivo = false;
 
-  // Cargar datos en el panel
   $('codigoDetectado').textContent = code;
   $('nombreDetectado').textContent = p.nombre;
   $('escCantidad').value = 1;
@@ -684,7 +829,6 @@ $('escMas').addEventListener('click', function () {
 $('escCancelar').addEventListener('click', async function () {
   $('panelEscaneo').classList.remove('abierto');
   productoEscaneado = null;
-  // Reiniciar cámara
   setTimeout(async function () {
     pausaLectura = false;
     await iniciarCamara();
@@ -723,7 +867,6 @@ $('escAgregar').addEventListener('click', async function () {
   guardarBorrador();
   $('panelEscaneo').classList.remove('abierto');
   productoEscaneado = null;
-  // Reiniciar cámara
   setTimeout(async function () {
     pausaLectura = false;
     await iniciarCamara();

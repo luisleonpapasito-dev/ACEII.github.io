@@ -137,6 +137,155 @@
     border-radius: var(--radio-sm);
   }
   .btn-peligro:active { background: #C62828; }
+
+  /* ===== NUEVO: Botón "Ver ventas" ===== */
+  .btn-ver-ventas {
+    background: var(--azul-suave);
+    color: var(--azul);
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    width: 100%;
+  }
+  .btn-ver-ventas:active { background: var(--azul-claro); color: #fff; }
+
+  /* ===== NUEVO: Modal de ventas ===== */
+  #modalVentas {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 200;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+  #modalVentas.abierto { display: block; }
+  #modalVentas .contenido {
+    max-width: 480px;
+    margin: 20px auto;
+    background: var(--superficie);
+    border-radius: var(--radio);
+    padding: 18px;
+    box-shadow: var(--sombra-fuerte);
+  }
+  #modalVentas .cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+  #modalVentas .titulo {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--texto);
+    flex: 1;
+  }
+  #modalVentas .btn-cerrar {
+    padding: 6px 12px;
+    margin: 0;
+    border-radius: 8px;
+    font-weight: 700;
+  }
+
+  .venta-item {
+    background: var(--superficie-2);
+    border-radius: var(--radio-sm);
+    margin: 8px 0;
+    overflow: hidden;
+  }
+  .venta-cabecera {
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .venta-cabecera:active { background: var(--azul-suave); }
+  .venta-cabecera .flecha {
+    color: var(--azul);
+    font-weight: 700;
+    font-size: 12px;
+    width: 14px;
+    text-align: center;
+  }
+  .venta-cabecera .hora {
+    color: var(--texto-suave);
+    font-size: 12px;
+    width: 50px;
+  }
+  .venta-cabecera .id-v {
+    color: var(--texto-claro);
+    font-size: 11px;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .venta-cabecera .total {
+    font-weight: 700;
+    color: var(--azul);
+    font-size: 14px;
+  }
+  .venta-cabecera .medio {
+    font-size: 11px;
+    color: var(--texto-suave);
+    margin-left: 4px;
+  }
+
+  .venta-lineas {
+    display: none;
+    padding: 6px 12px 10px;
+    background: var(--superficie);
+    border-top: 1px solid #E8ECF4;
+  }
+  .venta-lineas.abierto { display: block; }
+  .venta-lineas .linea-prod {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 13px;
+    color: var(--texto-suave);
+  }
+  .venta-lineas .linea-prod .nom {
+    color: var(--texto);
+    flex: 1;
+    padding-right: 8px;
+  }
+  .venta-lineas .linea-prod .cant {
+    color: var(--texto-claro);
+    margin-right: 8px;
+    font-size: 12px;
+  }
+
+  .totales {
+    background: var(--azul-suave);
+    border-radius: var(--radio-sm);
+    padding: 12px;
+    margin-top: 14px;
+  }
+  .totales .fila-t {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 14px;
+  }
+  .totales .fila-t.total {
+    border-top: 1px solid var(--azul-claro);
+    margin-top: 6px;
+    padding-top: 8px;
+    font-weight: 700;
+    color: var(--azul);
+    font-size: 16px;
+  }
 </style>
 </head>
 <body>
@@ -203,7 +352,9 @@
 
   <div class="caja">
     <h4 class="titulo-seccion">Movimientos del turno</h4>
-    <div id="listaMovs" style="font-size:14px; color:var(--texto-suave);">(sin movimientos)</div>
+    <!-- NUEVO: Botón Ver ventas -->
+    <button class="btn-ver-ventas" id="btnVerVentas">📋 Ver ventas del turno</button>
+    <div id="listaMovs" style="font-size:14px; color:var(--texto-suave); margin-top:10px;">(sin movimientos)</div>
   </div>
 
   <div class="caja">
@@ -246,6 +397,17 @@
   </div>
 
   <button class="main" id="btnVolverMenu" style="width:100%; margin-top:20px; padding:16px; font-size:16px;">✅ Listo, volver al menú</button>
+</div>
+
+<!-- ===== NUEVO: Modal de ventas del turno ===== -->
+<div id="modalVentas">
+  <div class="contenido">
+    <div class="cabecera">
+      <div class="titulo" id="tituloModal">Ventas del turno</div>
+      <button class="btn-cerrar" id="btnCerrarModal">✕</button>
+    </div>
+    <div id="cuerpoModal" style="color:var(--texto-suave); font-size:13px;">Cargando...</div>
+  </div>
 </div>
 
 <script>
@@ -403,7 +565,6 @@ $('btnMov').addEventListener('click', async function () {
 $('btnCerrar').addEventListener('click', async function () {
   if (!turno) return;
 
-  // Verificar si hay cola pendiente en este celular
   const colaReceps = JSON.parse(localStorage.getItem('caf_cola_recepciones') || '[]');
   if (colaReceps.length > 0) {
     if (!confirm('⚠️ Hay ' + colaReceps.length + ' recepción(es) pendiente(s) de enviar al servidor.\n\nSi cierras el turno ahora, podrían perderse.\n\n¿Seguro quieres cerrar de todas formas?')) {
@@ -440,7 +601,6 @@ $('btnCerrar').addEventListener('click', async function () {
   }
 });
 
-// ---------- Mostrar resumen del cierre ----------
 function mostrarResumenCierre(r, observaciones) {
   $('pantallaTurno').style.display = 'none';
   $('pantallaResumen').style.display = 'block';
@@ -500,6 +660,91 @@ $('btnVolverMenu').addEventListener('click', function () {
   borrarUsuarioTurno();
   try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
   location.href = 'index.html';
+});
+
+// =====================================================================
+// NUEVO: Modal de ventas del turno (desglose plegable)
+// =====================================================================
+$('btnVerVentas').addEventListener('click', function () {
+  if (!turno) return;
+  abrirModalVentas(turno.id);
+});
+
+async function abrirModalVentas(idTurno) {
+  $('tituloModal').textContent = 'Ventas · ' + idTurno;
+  $('cuerpoModal').innerHTML = 'Cargando...';
+  $('modalVentas').classList.add('abierto');
+
+  try {
+    const r = await jsonp({ accion: 'ventas_del_turno', id_turno: idTurno }, 30000);
+    if (!r || !r.ok) {
+      $('cuerpoModal').innerHTML = '<div style="color:var(--alerta);">Error: ' + (r && r.error ? r.error : 'desconocido') + '</div>';
+      return;
+    }
+    if (!r.items.length) {
+      $('cuerpoModal').innerHTML = '<div style="text-align:center; padding:20px; color:var(--texto-suave);">No hay ventas registradas en este turno.</div>';
+      return;
+    }
+
+    let html = '';
+    r.items.forEach(function (v, idx) {
+      const hora = (v.fecha || '').split(' ')[1] || '';
+      const horaCorta = hora.substring(0, 5);
+      html +=
+        '<div class="venta-item">' +
+          '<div class="venta-cabecera" data-idx="' + idx + '">' +
+            '<span class="flecha">▶</span>' +
+            '<span class="hora">' + horaCorta + '</span>' +
+            '<span class="id-v">' + v.id_venta + '</span>' +
+            '<span class="total">' + fmt(v.total) + '</span>' +
+            '<span class="medio">' + (v.medio_pago === 'Efectivo' ? '💵' : '📱') + '</span>' +
+          '</div>' +
+          '<div class="venta-lineas" data-lineas="' + idx + '">' +
+            v.lineas.map(function (l) {
+              return '<div class="linea-prod">' +
+                '<span class="nom">' + l.producto + '</span>' +
+                '<span class="cant">' + l.cantidad + '× $' + l.precio.toLocaleString('es-CO') + '</span>' +
+                '<span style="font-weight:600;color:var(--texto);">$' + l.subtotal.toLocaleString('es-CO') + '</span>' +
+              '</div>';
+            }).join('') +
+          '</div>' +
+        '</div>';
+    });
+
+    html +=
+      '<div class="totales">' +
+        '<div class="fila-t"><span>💵 Efectivo</span><span style="font-weight:700;">' + fmt(r.total_efectivo) + '</span></div>' +
+        '<div class="fila-t"><span>📱 Transferencia</span><span style="font-weight:700;">' + fmt(r.total_transferencia) + '</span></div>' +
+        '<div class="fila-t total"><span>TOTAL</span><span>' + fmt(r.total_general) + '</span></div>' +
+      '</div>';
+
+    $('cuerpoModal').innerHTML = html;
+
+    $('cuerpoModal').querySelectorAll('.venta-cabecera').forEach(function (cab) {
+      cab.addEventListener('click', function () {
+        const idx = cab.getAttribute('data-idx');
+        const lineas = $('cuerpoModal').querySelector('[data-lineas="' + idx + '"]');
+        const flecha = cab.querySelector('.flecha');
+        if (lineas.classList.contains('abierto')) {
+          lineas.classList.remove('abierto');
+          flecha.textContent = '▶';
+        } else {
+          lineas.classList.add('abierto');
+          flecha.textContent = '▼';
+        }
+      });
+    });
+  } catch (err) {
+    $('cuerpoModal').innerHTML = '<div style="color:var(--alerta);">Error: ' + err.message + '</div>';
+  }
+}
+
+$('btnCerrarModal').addEventListener('click', function () {
+  $('modalVentas').classList.remove('abierto');
+});
+
+$('modalVentas').addEventListener('click', function (e) {
+  if (e.target === $('modalVentas')) $('modalVentas').classList.remove('abierto');
 });
 </script>
 <script>

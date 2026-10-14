@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Categorías · ACEII</title>
+<link rel="stylesheet" href="estilos.css">
+<script src="comun.js"></script>
+<style>
+  #listaCategorias {
+    max-height: 500px;
+    overflow-y: auto;
+    margin-top: 8px;
+  }
+  .cat-item {
+    padding: 14px 10px;
+    border-bottom: 1px solid #E8ECF4;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .cat-item:hover { background: var(--superficie-2); }
+  .cat-item:last-child { border-bottom: none; }
+  .cat-item.inactivo { opacity: 0.55; }
+
+  .cat-prefijo {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    background: var(--azul-suave);
+    color: var(--azul);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+
+  .cat-info { flex: 1; min-width: 0; }
+  .cat-info .nombre {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--texto);
+  }
+  .cat-info .badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 4px;
+  }
+  .badge-activo { background: #E0F7EC; color: var(--exito); }
+  .badge-inactivo { background: #FFE5E5; color: var(--alerta); }
+
+  .form-grupo {
+    margin-top: 12px;
+  }
+  .form-grupo label {
+    font-weight: 600;
+    color: var(--texto);
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  .form-grupo input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 4px;
+    box-sizing: border-box;
+  }
+  .aviso-info {
+    background: var(--azul-suave);
+    color: var(--azul);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin: 10px 0;
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-header-contenido">
+    <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
+    <div class="app-header-texto">
+      <div class="app-header-titulo">Categorías</div>
+      <div class="app-header-sub">
+        <a href="index.html" style="color:rgba(255,255,255,0.9); text-decoration:underline;">← Volver al menú</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div id="estado">Cargando...</div>
+
+<div class="caja">
+  <div style="display:flex; gap:8px; margin-bottom:8px;">
+    <button class="main" id="btnNueva" style="flex:1;">➕ Nueva categoría</button>
+    <button id="btnRecargar" style="flex:0 0 auto;">🔄</button>
+  </div>
+  <input type="text" id="buscar" placeholder="Buscar categoría..." autocomplete="off">
+  <div id="listaCategorias"></div>
+</div>
+
+<div class="caja" id="formPanel" style="display:none;">
+  <div id="formTitulo" style="font-weight:700; font-size:16px; margin-bottom:8px;">Nueva categoría</div>
+
+  <div class="aviso-info" id="avisoInfo" style="display:none;"></div>
+
+  <div class="form-grupo">
+    <label>Nombre *</label>
+    <input type="text" id="fNombre" maxlength="50" placeholder="Ej: Bebidas calientes">
+
+    <label>Prefijo * (3 letras mayúsculas)</label>
+    <input type="text" id="fPrefijo" maxlength="3" placeholder="Ej: BCA" style="text-transform:uppercase;">
+
+    <div style="display:flex; gap:8px; margin-top:14px;">
+      <button class="main" id="btnGuardar" style="flex:1;">Guardar</button>
+      <button id="btnCancelar" style="flex:0 0 auto;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+exigirSesion();
+pintarUsuarioTurno();
+
+let categorias = [];
+let modoForm = 'crear';
+let categoriaEditando = null;
+
+(async function () {
+  await cargarCategorias();
+})();
+
+async function cargarCategorias() {
+  mostrar('Cargando categorías...', 'aviso');
+  try {
+    const r = await jsonp({ accion: 'categorias_admin' }, 25000);
+    if (r && r.error === 'Token inválido') { borrarToken(); location.href = 'index.html'; return; }
+    if (!r || !r.ok) throw new Error(r && r.error ? r.error : 'respuesta vacía');
+    categorias = r.items;
+    pintarLista();
+    mostrar(categorias.length + ' categorías');
+  } catch (err) {
+    mostrar('Error al cargar: ' + err.message, 'error');
+  }
+}
+
+function pintarLista() {
+  const q = norm($('buscar').value);
+  const cont = $('listaCategorias');
+  cont.innerHTML = '';
+
+  let items = categorias.slice();
+  if (q) {
+    items = items.filter(function (c) {
+      return norm(c.nombre + ' ' + c.prefijo).indexOf(q) >= 0;
+    });
+  }
+
+  items.sort(function (a, b) { return a.nombre.localeCompare(b.nombre); });
+
+  if (!items.length) {
+    cont.innerHTML = '<div style="padding:20px; text-align:center; color:var(--texto-suave);">No hay categorías.</div>';
+    return;
+  }
+
+  items.forEach(function (c) {
+    const d = document.createElement('div');
+    d.className = 'cat-item' + (c.activo === 'No' ? ' inactivo' : '');
+    d.innerHTML =
+      '<div class="cat-prefijo">' + c.prefijo + '</div>' +
+      '<div class="cat-info">' +
+        '<div class="nombre">' + c.nombre + ' ' +
+          '<span class="badge ' + (c.activo === 'No' ? 'badge-inactivo' : 'badge-activo') + '">' +
+            (c.activo === 'No' ? 'INACTIVA' : 'Activa') +
+          '</span>' +
+        '</div>' +
+      '</div>';
+    d.addEventListener('click', function () { abrirEditar(c); });
+    cont.appendChild(d);
+  });
+}
+
+$('buscar').addEventListener('input', pintarLista);
+$('btnRecargar').addEventListener('click', cargarCategorias);
+
+// ---------- Formulario: Nueva categoría ----------
+$('btnNueva').addEventListener('click', function () {
+  modoForm = 'crear';
+  categoriaEditando = null;
+  $('formTitulo').textContent = 'Nueva categoría';
+  $('avisoInfo').style.display = 'none';
+  $('fNombre').value = '';
+  $('fPrefijo').value = '';
+  $('fPrefijo').disabled = false;
+  $('formPanel').style.display = 'block';
+  $('formPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  mostrar('Completa los datos');
+});
+
+// ---------- Formulario: Editar categoría ----------
+function abrirEditar(c) {
+  modoForm = 'editar';
+  categoriaEditando = c;
+  $('formTitulo').textContent = 'Editar: ' + c.nombre;
+  $('avisoInfo').style.display = 'block';
+  $('avisoInfo').textContent = 'El prefijo "' + c.prefijo + '" no se puede cambiar (está en uso por los IDs de los productos).';
+  $('fNombre').value = c.nombre;
+  $('fPrefijo').value = c.prefijo;
+  $('fPrefijo').disabled = true;
+  $('formPanel').style.display = 'block';
+  $('formPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  mostrar('Edita el nombre y guarda');
+}
+
+$('btnCancelar').addEventListener('click', function () {
+  $('formPanel').style.display = 'none';
+  categoriaEditando = null;
+  mostrar('Cancelado', 'aviso');
+});
+
+// ---------- Guardar ----------
+$('btnGuardar').addEventListener('click', async function () {
+  const nombre = $('fNombre').value.trim();
+  const prefijo = $('fPrefijo').value.trim().toUpperCase();
+
+  if (!nombre) { mostrar('Escribe el nombre', 'error'); return; }
+
+  if (modoForm === 'crear') {
+    if (!/^[A-Z]{3}$/.test(prefijo)) {
+      mostrar('El prefijo debe ser exactamente 3 letras mayúsculas (A-Z)', 'error');
+      return;
+    }
+  }
+
+  const u = getUsuarioTurno();
+  if (!u) { mostrar('No hay turno de usuario', 'error'); return; }
+
+  $('btnGuardar').disabled = true;
+  mostrar('Guardando...', 'aviso');
+
+  try {
+    let r;
+    if (modoForm === 'crear') {
+      r = await post({
+        accion: 'crear_categoria',
+        id_usuario: u.id,
+        nombre: nombre,
+        prefijo: prefijo
+      });
+    } else {
+      r = await post({
+        accion: 'editar_categoria',
+        id_usuario: u.id,
+        nombre_original: categoriaEditando.nombre,
+        nombre_nuevo: nombre
+      });
+    }
+
+    if (r.ok) {
+      mostrar(modoForm === 'crear' ? 'Categoría creada ✓' : 'Categoría actualizada ✓', 'ok');
+      if (navigator.vibrate) navigator.vibrate(200);
+      $('formPanel').style.display = 'none';
+      categoriaEditando = null;
+      await cargarCategorias();
+    } else if (r.error === 'Token inválido') {
+      borrarToken(); location.href = 'index.html';
+    } else {
+      mostrar(r.error || 'Error desconocido', 'error');
+    }
+  } catch (err) {
+    mostrar('Error: ' + err.message, 'error');
+  } finally {
+    $('btnGuardar').disabled = false;
+  }
+});
+
+// ---------- Activar/Desactivar (doble toque en el badge) ----------
+document.addEventListener('dblclick', async function (e) {
+  if (!e.target.classList.contains('badge-activo') && !e.target.classList.contains('badge-inactivo')) return;
+  const itemPadre = e.target.closest('.cat-item');
+  if (!itemPadre) return;
+  const prefijo = itemPadre.querySelector('.cat-prefijo').textContent;
+  const c = categorias.find(function (x) { return x.prefijo === prefijo; });
+  if (!c) return;
+
+  const nuevoEstado = (c.activo === 'No') ? 'Sí' : 'No';
+  if (!confirm('¿' + (nuevoEstado === 'No' ? 'Desactivar' : 'Reactivar') + ' "' + c.nombre + '"?')) return;
+
+  const u = getUsuarioTurno();
+  try {
+    const r = await post({
+      accion: 'activar_categoria',
+      id_usuario: u.id,
+      nombre: c.nombre,
+      activo: nuevoEstado
+    });
+    if (r.ok) {
+      mostrar('Categoría ' + (nuevoEstado === 'No' ? 'desactivada' : 'reactivada') + ' ✓', 'ok');
+      await cargarCategorias();
+    } else {
+      mostrar(r.error || 'Error desconocido', 'error');
+    }
+  } catch (err) {
+    mostrar('Error: ' + err.message, 'error');
+  }
+});
+</script>
+</body>
+</html>

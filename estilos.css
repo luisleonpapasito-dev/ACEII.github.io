@@ -3,7 +3,7 @@
    Tema claro, Material Design 3, azul ACI
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
   --fondo: #F5F7FB;
@@ -23,7 +23,11 @@
   --naranja: #F2A100;
   --rosa: #E91E63;
   --cyan: #00BCD4;
-  --gris: #5A6072;
+  --gris: #546E7A;
+  --amarillo: #FBC02D;
+  --indigo: #5C6BC0;
+  --ambar: #FF7043;
+  --esmeralda: #26A69A;
 
   --exito: #2A9D5C;
   --alerta: #E63946;
@@ -60,6 +64,10 @@ html.tema-oscuro {
   --rosa: #F472B6;
   --cyan: #22D3EE;
   --gris: #94A3B8;
+  --amarillo: #FCD34D;
+  --indigo: #818CF8;
+  --ambar: #FB923C;
+  --esmeralda: #4ADE80;
 
   --exito: #34D399;
   --alerta: #F87171;
@@ -69,7 +77,6 @@ html.tema-oscuro {
   --sombra-fuerte: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
-/* Modo AUTO: sigue al sistema */
 @media (prefers-color-scheme: dark) {
   html.tema-auto {
     --fondo: #0F1419;
@@ -90,6 +97,10 @@ html.tema-oscuro {
     --rosa: #F472B6;
     --cyan: #22D3EE;
     --gris: #94A3B8;
+    --amarillo: #FCD34D;
+    --indigo: #818CF8;
+    --ambar: #FB923C;
+    --esmeralda: #4ADE80;
 
     --exito: #34D399;
     --alerta: #F87171;
@@ -201,9 +212,9 @@ html.tema-oscuro .app-header {
   flex: 1;
 }
 .app-header-titulo {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 1px;
   line-height: 1.1;
 }
 .app-header-sub {
@@ -214,7 +225,7 @@ html.tema-oscuro .app-header {
 }
 
 /* ============================================================
-   Botón de tema (arriba a la derecha del header)
+   Botón de tema
    ============================================================ */
 .btn-tema {
   position: absolute;
@@ -309,7 +320,6 @@ html.tema-oscuro .app-header {
   box-shadow: var(--sombra-fuerte);
 }
 
-/* Animación escalonada de las tarjetas */
 .grid-menu .card {
   animation: entradaCard 0.35s ease-out backwards;
 }
@@ -354,7 +364,7 @@ html.tema-oscuro .app-header {
   stroke: none;
 }
 
-/* Gradientes y sombras por color */
+/* ---- 11 colores únicos, sin repetición ---- */
 .card-icono.azul {
   background: linear-gradient(135deg, #3F70D4 0%, #1B4DB1 100%);
   --icono-sombra: rgba(27, 77, 177, 0.35);
@@ -363,25 +373,41 @@ html.tema-oscuro .app-header {
   background: linear-gradient(135deg, #3CC784 0%, #229E62 100%);
   --icono-sombra: rgba(34, 158, 98, 0.35);
 }
-.card-icono.morado {
-  background: linear-gradient(135deg, #8F63E6 0%, #6A3CC4 100%);
-  --icono-sombra: rgba(106, 60, 196, 0.35);
-}
 .card-icono.naranja {
   background: linear-gradient(135deg, #F7B21F 0%, #E08F00 100%);
   --icono-sombra: rgba(224, 143, 0, 0.35);
 }
-.card-icono.cyan {
-  background: linear-gradient(135deg, #26CBE0 0%, #00A6BC 100%);
-  --icono-sombra: rgba(0, 166, 188, 0.35);
+.card-icono.morado {
+  background: linear-gradient(135deg, #8F63E6 0%, #6A3CC4 100%);
+  --icono-sombra: rgba(106, 60, 196, 0.35);
 }
 .card-icono.rosa {
   background: linear-gradient(135deg, #F0467F 0%, #D0154F 100%);
   --icono-sombra: rgba(208, 21, 79, 0.35);
 }
+.card-icono.cyan {
+  background: linear-gradient(135deg, #26CBE0 0%, #00A6BC 100%);
+  --icono-sombra: rgba(0, 166, 188, 0.35);
+}
+.card-icono.amarillo {
+  background: linear-gradient(135deg, #FFD24D 0%, #E0A800 100%);
+  --icono-sombra: rgba(224, 168, 0, 0.35);
+}
+.card-icono.indigo {
+  background: linear-gradient(135deg, #7B89D4 0%, #4A5AA8 100%);
+  --icono-sombra: rgba(74, 90, 168, 0.35);
+}
+.card-icono.ambar {
+  background: linear-gradient(135deg, #FF8B5E 0%, #E05226 100%);
+  --icono-sombra: rgba(224, 82, 38, 0.35);
+}
+.card-icono.esmeralda {
+  background: linear-gradient(135deg, #3EBFAF 0%, #1A8C7D 100%);
+  --icono-sombra: rgba(26, 140, 125, 0.35);
+}
 .card-icono.gris {
-  background: linear-gradient(135deg, #7D8799 0%, #5A6072 100%);
-  --icono-sombra: rgba(90, 96, 114, 0.35);
+  background: linear-gradient(135deg, #6F8592 0%, #455A64 100%);
+  --icono-sombra: rgba(69, 90, 100, 0.35);
 }
 
 html.tema-oscuro .card-icono {
@@ -503,9 +529,6 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(74, 125, 224, 0.15);
 }
 
-/* ============================================================
-   Etiquetas
-   ============================================================ */
 label {
   font-size: 13px;
   color: var(--texto-suave);
@@ -514,9 +537,6 @@ label {
   margin-top: 8px;
 }
 
-/* ============================================================
-   Filas y layout
-   ============================================================ */
 .fila {
   display: flex;
   gap: 8px;
@@ -526,9 +546,6 @@ label {
   flex: 1;
 }
 
-/* ============================================================
-   Botones toggle
-   ============================================================ */
 .tog {
   flex: 1;
   margin: 0;
@@ -543,9 +560,6 @@ label {
   border-color: var(--azul-claro);
 }
 
-/* ============================================================
-   Header de pantalla interna
-   ============================================================ */
 .pantalla-header {
   max-width: 480px;
   margin: 0 auto;
@@ -572,16 +586,10 @@ a {
   transition: color 0.15s;
 }
 
-/* ============================================================
-   Colores semánticos
-   ============================================================ */
 #estado.ok, .estado-ok { background: var(--exito) !important; color: #fff !important; }
 #estado.error, .estado-error { background: var(--alerta) !important; color: #fff !important; }
 #estado.aviso, .estado-aviso { background: var(--aviso) !important; color: #fff !important; }
 
-/* ============================================================
-   Compatibilidad pantallas viejas
-   ============================================================ */
 a.op {
   display: block;
   padding: 14px;
@@ -611,9 +619,6 @@ html.tema-oscuro .linea { border-bottom-color: #2A3348; }
   html.tema-auto .linea { border-bottom-color: #2A3348; }
 }
 
-/* ============================================================
-   Centrado en pantallas grandes (PC)
-   ============================================================ */
 @media (min-width: 700px) {
   body {
     background: linear-gradient(135deg, #E3ECFF 0%, #F5F7FB 100%);
@@ -646,7 +651,7 @@ html.tema-oscuro .linea { border-bottom-color: #2A3348; }
     height: 60px;
   }
   .app-header-titulo {
-    font-size: 26px;
+    font-size: 38px;
   }
   .app-header-sub {
     font-size: 14px;
@@ -690,9 +695,6 @@ html.tema-oscuro .linea { border-bottom-color: #2A3348; }
   }
 }
 
-/* ============================================================
-   Modo oscuro: ajustes específicos por pantalla
-   ============================================================ */
 html.tema-oscuro .caja,
 html.tema-oscuro .card {
   background: var(--superficie);
@@ -717,9 +719,6 @@ html.tema-oscuro #estado {
   }
 }
 
-/* ============================================================
-   TOAST GLOBAL FLOTANTE
-   ============================================================ */
 #toastGlobal {
   position: fixed;
   bottom: 24px;
@@ -750,9 +749,6 @@ html.tema-oscuro #estado {
 #toastGlobal.error { background: var(--alerta, #E63946); }
 #toastGlobal.aviso { background: var(--aviso, #FB8C00); }
 
-/* ============================================================
-   Listas de items: aparición escalonada
-   ============================================================ */
 .resultado, .prod-item, .cat-item, .turno, .mov, .item-carrito {
   animation: aparecerItem 0.25s ease-out backwards;
 }
@@ -761,16 +757,10 @@ html.tema-oscuro #estado {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ============================================================
-   Scroll suave global
-   ============================================================ */
 html {
   scroll-behavior: smooth;
 }
 
-/* ============================================================
-   Spinner global
-   ============================================================ */
 .spinner-global {
   display: inline-block;
   width: 18px;
@@ -786,9 +776,6 @@ html {
   to { transform: rotate(360deg); }
 }
 
-/* ============================================================
-   Reducir animaciones si el usuario las desactiva
-   ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;

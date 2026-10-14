@@ -1,12 +1,11 @@
 /* ============================================================
    ACEII · Cafetería — Estilos globales
-   Tema claro, Material Design 3, azul ACI
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --fondo: #F5F7FB;
+  --fondo: #EEF2F7;
   --superficie: #FFFFFF;
   --superficie-2: #F0F4FF;
 
@@ -42,9 +41,6 @@
   --fuente: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-/* ============================================================
-   TEMA OSCURO
-   ============================================================ */
 html.tema-oscuro {
   --fondo: #0F1419;
   --superficie: #1A1F2E;
@@ -155,14 +151,10 @@ body {
 #estado.ok { background: var(--exito); color: #fff; }
 #estado.error { background: var(--alerta); color: #fff; }
 #estado.aviso { background: var(--aviso); color: #fff; }
-
-/* Ocultar la barra cuando no hay nada que decir */
-#estado.estado-vacio {
-  display: none;
-}
+#estado.estado-vacio { display: none; }
 
 /* ============================================================
-   Header con onda azul
+   Header
    ============================================================ */
 .app-header {
   background: linear-gradient(135deg, #1B4DB1 0%, #4A7DE0 100%);
@@ -213,9 +205,7 @@ html.tema-oscuro .app-header {
   background: rgba(255, 255, 255, 0.08);
   padding: 4px;
 }
-.app-header-texto {
-  flex: 1;
-}
+.app-header-texto { flex: 1; }
 .app-header-titulo {
   font-size: 30px;
   font-weight: 800;
@@ -301,28 +291,25 @@ html.tema-oscuro .app-header {
 }
 
 .card {
-  background: var(--superficie);
   border-radius: var(--radio);
   padding: 14px;
-  box-shadow: var(--sombra);
   text-decoration: none;
   color: var(--texto);
   display: flex;
   flex-direction: column;
   gap: 10px;
   position: relative;
-  transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+  transition: transform 0.15s, box-shadow 0.15s;
   overflow: hidden;
   min-height: 130px;
   cursor: pointer;
+  border: 1.5px solid transparent;
 }
 .card:active {
   transform: scale(0.97);
-  box-shadow: var(--sombra-fuerte);
 }
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--sombra-fuerte);
 }
 
 .grid-menu .card {
@@ -346,7 +333,120 @@ html.tema-oscuro .app-header {
 }
 
 /* ============================================================
-   Iconos de las tarjetas
+   FONDOS PASTEL POR TARJETA (integración visual)
+   ============================================================ */
+.card.azul {
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border-color: #DBEAFE;
+}
+.card.azul:hover {
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.20);
+}
+
+.card.verde {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border-color: #D1FAE5;
+}
+.card.verde:hover {
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.20);
+}
+
+.card.naranja {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+  border-color: #FFEDD5;
+}
+.card.naranja:hover {
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.20);
+}
+
+.card.morado {
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  border-color: #EDE9FE;
+}
+.card.morado:hover {
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.20);
+}
+
+.card.rosa {
+  background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
+  border-color: #FCE7F3;
+}
+.card.rosa:hover {
+  box-shadow: 0 8px 20px rgba(236, 72, 153, 0.20);
+}
+
+.card.cyan {
+  background: linear-gradient(135deg, #ECFEFF 0%, #CFFAFE 100%);
+  border-color: #CFFAFE;
+}
+.card.cyan:hover {
+  box-shadow: 0 8px 20px rgba(6, 182, 212, 0.20);
+}
+
+.card.amarillo {
+  background: linear-gradient(135deg, #FEFCE8 0%, #FEF9C3 100%);
+  border-color: #FEF9C3;
+}
+.card.amarillo:hover {
+  box-shadow: 0 8px 20px rgba(234, 179, 8, 0.20);
+}
+
+.card.violeta {
+  background: linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%);
+  border-color: #F3E8FF;
+}
+.card.violeta:hover {
+  box-shadow: 0 8px 20px rgba(147, 51, 234, 0.20);
+}
+
+.card.coral {
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%);
+  border-color: #FFE4E6;
+}
+.card.coral:hover {
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.20);
+}
+
+.card.turquesa {
+  background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
+  border-color: #CCFBF1;
+}
+.card.turquesa:hover {
+  box-shadow: 0 8px 20px rgba(13, 148, 136, 0.20);
+}
+
+/* En modo oscuro los fondos pastel se vuelven oscuros */
+html.tema-oscuro .card.azul,
+html.tema-oscuro .card.verde,
+html.tema-oscuro .card.naranja,
+html.tema-oscuro .card.morado,
+html.tema-oscuro .card.rosa,
+html.tema-oscuro .card.cyan,
+html.tema-oscuro .card.amarillo,
+html.tema-oscuro .card.violeta,
+html.tema-oscuro .card.coral,
+html.tema-oscuro .card.turquesa {
+  background: var(--superficie);
+  border-color: transparent;
+}
+@media (prefers-color-scheme: dark) {
+  html.tema-auto .card.azul,
+  html.tema-auto .card.verde,
+  html.tema-auto .card.naranja,
+  html.tema-auto .card.morado,
+  html.tema-auto .card.rosa,
+  html.tema-auto .card.cyan,
+  html.tema-auto .card.amarillo,
+  html.tema-auto .card.violeta,
+  html.tema-auto .card.coral,
+  html.tema-auto .card.turquesa {
+    background: var(--superficie);
+    border-color: transparent;
+  }
+}
+
+/* ============================================================
+   Iconos
    ============================================================ */
 .card-icono {
   width: 52px;
@@ -369,50 +469,46 @@ html.tema-oscuro .app-header {
   stroke: none;
 }
 
-/* ---- 11 colores únicos ---- */
+/* ---- Paleta nueva viva ---- */
 .card-icono.azul {
-  background: linear-gradient(135deg, #4A7DE0 0%, #1B4DB1 100%);
-  --icono-sombra: rgba(27, 77, 177, 0.40);
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  --icono-sombra: rgba(37, 99, 235, 0.45);
 }
 .card-icono.verde {
   background: linear-gradient(135deg, #34D399 0%, #059669 100%);
-  --icono-sombra: rgba(5, 150, 105, 0.40);
+  --icono-sombra: rgba(16, 185, 129, 0.45);
 }
 .card-icono.naranja {
-  background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
-  --icono-sombra: rgba(245, 158, 11, 0.40);
+  background: linear-gradient(135deg, #FB923C 0%, #EA580C 100%);
+  --icono-sombra: rgba(249, 115, 22, 0.45);
 }
 .card-icono.morado {
   background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%);
-  --icono-sombra: rgba(124, 58, 237, 0.40);
+  --icono-sombra: rgba(139, 92, 246, 0.45);
 }
 .card-icono.rosa {
   background: linear-gradient(135deg, #F472B6 0%, #DB2777 100%);
-  --icono-sombra: rgba(219, 39, 119, 0.40);
+  --icono-sombra: rgba(236, 72, 153, 0.45);
 }
 .card-icono.cyan {
   background: linear-gradient(135deg, #22D3EE 0%, #0891B2 100%);
-  --icono-sombra: rgba(8, 145, 178, 0.40);
+  --icono-sombra: rgba(6, 182, 212, 0.45);
 }
 .card-icono.amarillo {
-  background: linear-gradient(135deg, #FDE047 0%, #F59E0B 100%);
-  --icono-sombra: rgba(245, 158, 11, 0.40);
+  background: linear-gradient(135deg, #FACC15 0%, #CA8A04 100%);
+  --icono-sombra: rgba(234, 179, 8, 0.45);
 }
 .card-icono.violeta {
   background: linear-gradient(135deg, #C084FC 0%, #9333EA 100%);
-  --icono-sombra: rgba(147, 51, 234, 0.40);
+  --icono-sombra: rgba(147, 51, 234, 0.45);
 }
 .card-icono.coral {
   background: linear-gradient(135deg, #FB7185 0%, #DC2626 100%);
-  --icono-sombra: rgba(220, 38, 38, 0.40);
+  --icono-sombra: rgba(220, 38, 38, 0.45);
 }
 .card-icono.turquesa {
   background: linear-gradient(135deg, #2DD4BF 0%, #0D9488 100%);
-  --icono-sombra: rgba(13, 148, 136, 0.40);
-}
-.card-icono.gris {
-  background: linear-gradient(135deg, #94A3B8 0%, #475569 100%);
-  --icono-sombra: rgba(71, 85, 105, 0.40);
+  --icono-sombra: rgba(13, 148, 136, 0.45);
 }
 
 html.tema-oscuro .card-icono {
@@ -433,7 +529,7 @@ html.tema-oscuro .card-icono {
 
 .card-titulo {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
   color: var(--texto);
 }
@@ -451,23 +547,8 @@ html.tema-oscuro .card-icono {
   font-weight: 600;
 }
 
-.card.ancha {
-  grid-column: span 2;
-  min-height: auto;
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
-}
-.card.ancha .card-texto {
-  flex: 1;
-}
-.card.ancha .card-icono {
-  width: 48px;
-  height: 48px;
-}
-
 /* ============================================================
-   Cerrar sesión discreto al final
+   Cerrar sesión
    ============================================================ */
 .cerrar-sesion-box {
   display: flex;
@@ -524,7 +605,6 @@ button.main {
 }
 button.main:active:not(:disabled) {
   background: var(--azul-claro);
-  box-shadow: 0 1px 3px rgba(27, 77, 177, 0.2);
 }
 button:disabled {
   opacity: 0.4;
@@ -532,7 +612,7 @@ button:disabled {
 }
 
 /* ============================================================
-   Inputs y selects
+   Inputs
    ============================================================ */
 input[type=text],
 input[type=password],
@@ -581,14 +661,8 @@ label {
   margin-top: 8px;
 }
 
-.fila {
-  display: flex;
-  gap: 8px;
-  margin: 6px 0;
-}
-.fila > * {
-  flex: 1;
-}
+.fila { display: flex; gap: 8px; margin: 6px 0; }
+.fila > * { flex: 1; }
 
 .tog {
   flex: 1;
@@ -665,7 +739,7 @@ html.tema-oscuro .linea { border-bottom-color: #2A3348; }
 
 @media (min-width: 700px) {
   body {
-    background: linear-gradient(135deg, #E3ECFF 0%, #F5F7FB 100%);
+    background: linear-gradient(135deg, #E3ECFF 0%, #EEF2F7 100%);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -687,66 +761,32 @@ html.tema-oscuro .linea { border-bottom-color: #2A3348; }
     border-radius: 24px;
     padding: 24px 28px 68px;
   }
-  .app-header::after {
-    display: none;
-  }
-  .app-header-logo {
-    width: 60px;
-    height: 60px;
-  }
-  .app-header-titulo {
-    font-size: 38px;
-  }
-  .app-header-sub {
-    font-size: 14px;
-  }
+  .app-header::after { display: none; }
+  .app-header-logo { width: 60px; height: 60px; }
+  .app-header-titulo { font-size: 38px; }
+  .app-header-sub { font-size: 14px; }
 
-  #estado,
-  .grid-menu,
-  .caja {
+  #estado, .grid-menu, .caja {
     width: 100%;
     max-width: 640px;
     margin-left: auto;
     margin-right: auto;
   }
-
-  .grid-menu {
-    padding: 0;
-    gap: 16px;
-  }
-
-  .card {
-    padding: 18px;
-    min-height: 150px;
-  }
-  .card-icono {
-    width: 58px;
-    height: 58px;
-  }
-  .card-icono svg {
-    width: 30px;
-    height: 30px;
-  }
-  .card-titulo {
-    font-size: 16px;
-  }
-  .card-sub {
-    font-size: 13px;
-  }
-
-  .caja {
-    padding: 24px;
-  }
+  .grid-menu { padding: 0; gap: 16px; }
+  .card { padding: 18px; min-height: 150px; }
+  .card-icono { width: 58px; height: 58px; }
+  .card-icono svg { width: 30px; height: 30px; }
+  .card-titulo { font-size: 16px; }
+  .card-sub { font-size: 13px; }
+  .caja { padding: 24px; }
 }
 
-html.tema-oscuro .caja,
-html.tema-oscuro .card {
+html.tema-oscuro .caja {
   background: var(--superficie);
   color: var(--texto);
 }
 @media (prefers-color-scheme: dark) {
-  html.tema-auto .caja,
-  html.tema-auto .card {
+  html.tema-auto .caja {
     background: var(--superficie);
     color: var(--texto);
   }
@@ -801,9 +841,7 @@ html.tema-oscuro #estado {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 .spinner-global {
   display: inline-block;

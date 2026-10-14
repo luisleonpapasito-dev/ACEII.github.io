@@ -488,6 +488,7 @@ function mostrarResumenCierre(r, observaciones) {
 $('btnVolverMenu').addEventListener('click', function () {
   borrarTurnoActual();
   borrarUsuarioTurno();
+  try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
   location.href = 'index.html';
 });
 </script>

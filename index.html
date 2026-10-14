@@ -215,18 +215,59 @@ async function entrar() {
 $('btnEntrar').addEventListener('click', entrar);
 $('clave').addEventListener('keydown', function (e) { if (e.key === 'Enter') entrar(); });
 
-async function cargarUsuarios() {
+async function cargarBannerTurno() {
+  const u = getUsuarioTurno();
+  if (!u) { $('bannerTurno').style.display = 'none'; return; }
+
+  // Primero: mostrar el valor cacheado si existe
   try {
-    const r = await jsonp({ accion: 'usuarios' }, 15000);
-    if (r && r.ok) {
-      const sel = $('usuarioTurno');
-      sel.innerHTML = '';
-      sel.appendChild(new Option('Elige tu nombre...', ''));
-      r.items.forEach(function (u) {
-        sel.appendChild(new Option(u.nombre + ' (' + u.id + ')', u.id));
-      });
+    const cache = JSON.parse(localStorage.getItem('caf_banner_cache') || 'null');
+    if (cache && cache.turno_id) {
+      $('bannerTurno').style.display = 'block';
+      $('bannerMiTurno').style.display = 'block';
+      $('bannerOtroTurno').style.display = 'none';
+      $('bannerSaldo').textContent = '$' + Number(cache.saldo_esperado || 0).toLocaleString('es-CO');
+      $('bannerTurnoId').textContent = 'Turno ' + cache.turno_id + ' · Base $' + Number(cache.base || 0).toLocaleString('es-CO');
     }
   } catch (e) {}
+
+  // Después: consultar al servidor
+  try {
+    const r = await jsonp({ accion: 'info_turno_actual', id_usuario: u.id }, 20000);
+    if (!r || !r.ok) {
+      // Si falla, dejar el cache visible (no ocultar el banner)
+      return;
+    }
+
+    $('bannerTurno').style.display = 'block';
+
+    if (r.mi_turno) {
+      $('bannerMiTurno').style.display = 'block';
+      $('bannerOtroTurno').style.display = 'none';
+      $('bannerSaldo').textContent = '$' + Number(r.saldo_esperado || 0).toLocaleString('es-CO');
+      $('bannerTurnoId').textContent = 'Turno ' + r.mi_turno.id + ' · Base $' + Number(r.mi_turno.base || 0).toLocaleString('es-CO');
+
+      // Guardar cache
+      try {
+        localStorage.setItem('caf_banner_cache', JSON.stringify({
+          turno_id: r.mi_turno.id,
+          base: r.mi_turno.base,
+          saldo_esperado: r.saldo_esperado,
+          ts: Date.now()
+        }));
+      } catch (e) {}
+    } else if (r.otro_turno) {
+      $('bannerMiTurno').style.display = 'none';
+      $('bannerOtroTurno').style.display = 'block';
+      $('bannerOtroTexto').textContent = 'Turno abierto por ' + r.otro_turno.responsable + ' desde ' + r.otro_turno.fecha_apertura + '. No puedes abrir turno hasta que lo cierre.';
+      try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
+    } else {
+      $('bannerTurno').style.display = 'none';
+      try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
+    }
+  } catch (e) {
+    // Si falla la consulta, el cache sigue visible
+  }
 }
 
 async function iniciarTurno() {

@@ -364,8 +364,12 @@ async function cargarTodo() {
 function llenarSelectsForm() {
   const selCat = $('fCategoria');
   selCat.innerHTML = '<option value="">Elige la categoría...</option>';
+  // Las categorías ahora vienen como objetos {nombre, prefijo}
   categorias.forEach(function (c) {
-    selCat.appendChild(new Option(c, c));
+    const nombre = (typeof c === 'string') ? c : c.nombre;
+    const prefijo = (typeof c === 'string') ? '' : c.prefijo;
+    const etiqueta = prefijo ? (nombre + ' (' + prefijo + ')') : nombre;
+    selCat.appendChild(new Option(etiqueta, nombre));
   });
 
   const selModo = $('fModo');
@@ -465,6 +469,16 @@ $('btnNuevo').addEventListener('click', async function () {
   modoForm = 'crear';
   productoEditando = null;
   imagenUrlActual = '';
+
+  // Recargar categorías por si se crearon nuevas en otra pantalla
+  try {
+    const rCat = await jsonp({ accion: 'categorias' }, 15000);
+    if (rCat && rCat.ok) {
+      categorias = rCat.items;
+      llenarSelectsForm();
+    }
+  } catch (e) {}
+
   $('formTitulo').textContent = 'Nuevo producto';
   $('fCategoria').value = '';
   $('fNombre').value = '';

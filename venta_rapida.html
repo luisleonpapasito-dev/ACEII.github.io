@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="estilos.css">
 <script src="comun.js"></script>
 <style>
-  /* Botones rápidos */
   #zonaRapidos {
     max-width: 480px;
     margin: 12px auto 0;
@@ -81,7 +80,6 @@
     background: #FFF8E8;
   }
 
-  /* Panel de variantes */
   #panelVariantes {
     display: none;
     max-width: 480px;
@@ -129,7 +127,6 @@
   .btn-variante .nom-v { display: block; font-size: 13px; }
   .btn-variante .pre-v { display: block; font-size: 12px; color: var(--azul); font-weight: 700; margin-top: 2px; }
 
-  /* Buscador */
   #resultados {
     max-height: 200px;
     overflow-y: auto;
@@ -150,7 +147,6 @@
   .resultado .meta { font-size: 12px; color: var(--texto-suave); }
   .resultado .precio { color: var(--azul); font-weight: 700; }
 
-  /* Carrito */
   #total {
     font-size: 26px;
     color: var(--azul);
@@ -198,7 +194,6 @@
     font-weight: 700;
   }
 
-  /* Botones de cobro */
   .cobro-fila {
     display: flex;
     gap: 8px;
@@ -236,7 +231,6 @@
 
 <div id="estado">Cargando...</div>
 
-<!-- Botones rápidos -->
 <div id="zonaRapidos">
   <div class="titulo-fila">
     <h4>⚡ Rápidos</h4>
@@ -245,7 +239,6 @@
   <div id="botonesRapidos"></div>
 </div>
 
-<!-- Panel de variantes -->
 <div id="panelVariantes">
   <div class="titulo-var">
     <span id="tituloVariantes">Elige una opción</span>
@@ -254,13 +247,11 @@
   <div id="listaVariantes"></div>
 </div>
 
-<!-- Buscador -->
 <div class="caja">
   <input type="text" id="buscar" placeholder="🔍 Buscar otros productos..." autocomplete="off">
   <div id="resultados"></div>
 </div>
 
-<!-- Carrito -->
 <div class="caja">
   <h4 style="margin:0 0 12px; font-size:15px; font-weight:700;">Carrito</h4>
   <div id="carrito" style="color:var(--texto-suave); font-size:14px;">(vacío)</div>
@@ -274,7 +265,6 @@
   <button id="btnVaciar" style="width:100%; margin-top:10px;">🗑️ Vaciar carrito</button>
 </div>
 
-<!-- Modal de configuración -->
 <div id="modalConfig" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; padding:20px; box-sizing:border-box; overflow-y:auto;">
   <div style="max-width:480px; margin:20px auto; background:#fff; border-radius:16px; padding:20px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -297,8 +287,8 @@ const CARRITO_KEY = 'caf_carrito_rapido';
 
 let productos = [];
 let carrito = [];
-let rapidos = []; // array de IDs seleccionados por el usuario
-let seleccionConfig = []; // IDs mientras configuras
+let rapidos = [];
+let seleccionConfig = [];
 
 function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
 
@@ -331,25 +321,48 @@ function cargarRapidosGuardados() {
   try {
     const arr = JSON.parse(localStorage.getItem(RAPIDOS_KEY) || 'null');
     if (Array.isArray(arr) && arr.length > 0) {
-      rapidos = arr;
-    } else {
-      // Por defecto: buscar las 6 empanadas y algunos productos típicos
-      const defaults = [];
-      // Buscar grupo "Empanadas"
-      const empanadas = productos.filter(function (p) {
-        return norm(p.categoria).indexOf('empanada') >= 0;
+      const validos = arr.filter(function (rid) {
+        if (rid.startsWith('GRUPO_')) {
+          const cat = rid.replace('GRUPO_', '');
+          return productos.some(function (p) { return norm(p.categoria) === norm(cat); });
+        }
+        return productos.some(function (p) { return p.id === rid; });
       });
-      if (empanadas.length > 0) defaults.push('GRUPO_Empanadas');
-
-      // Buscar productos específicos por nombre
-      ['chocoramo', 'gansito', 'jugo hit', 'agua pequeña'].forEach(function (nombre) {
-        const p = productos.find(function (x) { return norm(x.nombre).indexOf(nombre) >= 0; });
-        if (p) defaults.push(p.id);
-      });
-
-      rapidos = defaults.slice(0, 6);
+      if (validos.length > 0) {
+        rapidos = validos;
+        return;
+      }
     }
-  } catch (e) { rapidos = []; }
+  } catch (e) {}
+
+  // Valores por defecto
+  const defaults = [];
+
+  // 1. Grupos (categorías con 2+ productos)
+  const conteoCategorias = {};
+  productos.forEach(function (p) {
+    const cat = p.categoria || '';
+    if (!cat) return;
+    conteoCategorias[cat] = (conteoCategorias[cat] || 0) + 1;
+  });
+
+  // Preferir grupos específicos: Empanadas, Preparados, Combos
+  ['Empanadas', 'Preparados', 'Combos'].forEach(function (cat) {
+    if (conteoCategorias[cat] >= 2) {
+      defaults.push('GRUPO_' + cat);
+    }
+  });
+
+  // 2. Productos típicos por nombre
+  ['chocoramo', 'gansito', 'jugo hit', 'agua pequeña'].forEach(function (nombre) {
+    if (defaults.length >= 6) return;
+    const p = productos.find(function (x) {
+      return norm(x.nombre).indexOf(nombre) >= 0 && defaults.indexOf(x.id) < 0;
+    });
+    if (p) defaults.push(p.id);
+  });
+
+  rapidos = defaults.slice(0, 6);
 }
 
 function guardarRapidos() {
@@ -367,7 +380,6 @@ function pintarRapidos() {
 
   rapidos.forEach(function (rid) {
     if (rid.startsWith('GRUPO_')) {
-      // Es un grupo (por ejemplo, Empanadas)
       const nombreGrupo = rid.replace('GRUPO_', '');
       const itemsGrupo = productos.filter(function (p) {
         return norm(p.categoria) === norm(nombreGrupo);
@@ -379,27 +391,27 @@ function pintarRapidos() {
       btn.innerHTML =
         '<span class="emoji">🥟</span>' +
         '<span class="nom">' + nombreGrupo + '</span>' +
-        '<span class="pre">' + itemsGrupo.length + ' tipos</span>';
+        '<span class="pre">' + itemsGrupo.length + ' opciones</span>';
       btn.addEventListener('click', function () { mostrarVariantes(nombreGrupo, itemsGrupo); });
       cont.appendChild(btn);
-    } else {
-      // Es un producto individual
-      const p = productos.find(function (x) { return x.id === rid; });
-      if (!p) return;
-
-      const btn = document.createElement('button');
-      btn.className = 'btn-rapido';
-      btn.innerHTML =
-        '<span class="emoji">📦</span>' +
-        '<span class="nom">' + p.nombre + '</span>' +
-        '<span class="pre">' + fmt(p.precio) + '</span>';
-      btn.addEventListener('click', function () { agregarAlCarrito(p); });
-      cont.appendChild(btn);
+      return;
     }
+
+    const p = productos.find(function (x) { return x.id === rid; });
+    if (!p) return;
+
+    const btn = document.createElement('button');
+    btn.className = 'btn-rapido';
+    btn.innerHTML =
+      '<span class="emoji">📦</span>' +
+      '<span class="nom">' + p.nombre + '</span>' +
+      '<span class="pre">' + fmt(p.precio) + '</span>';
+    btn.addEventListener('click', function () { agregarAlCarrito(p); });
+    cont.appendChild(btn);
   });
 }
 
-// ---------- Variantes (panel desplegable) ----------
+// ---------- Variantes ----------
 function mostrarVariantes(nombre, items) {
   $('tituloVariantes').textContent = nombre;
   const cont = $('listaVariantes');
@@ -417,7 +429,6 @@ function mostrarVariantes(nombre, items) {
     cont.appendChild(btn);
   });
   $('panelVariantes').classList.add('abierto');
-  // Scroll al panel
   $('panelVariantes').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
@@ -425,7 +436,7 @@ $('btnCerrarVariantes').addEventListener('click', function () {
   $('panelVariantes').classList.remove('abierto');
 });
 
-// ---------- Agregar al carrito ----------
+// ---------- Carrito ----------
 function agregarAlCarrito(p) {
   const existente = carrito.find(function (x) { return x.id === p.id; });
   if (existente) {
@@ -443,7 +454,6 @@ function agregarAlCarrito(p) {
   guardarCarrito();
 }
 
-// ---------- Carrito ----------
 function pintarCarrito() {
   const c = $('carrito');
   if (!carrito.length) {
@@ -586,12 +596,13 @@ async function cobrar(medio) {
 
   // Si es efectivo, preguntar cuánto pagó el cliente (opcional)
   let cambio = null;
-  let recibido = null;
   if (medio === 'Efectivo') {
     const total = carrito.reduce(function (s, it) { return s + it.precio * it.cantidad; }, 0);
     const resp = prompt('Cliente paga con efectivo.\nTotal: ' + fmt(total) + '\n\n¿Con cuánto paga? (opcional, deja vacío para omitir):', '');
-    if (resp !== null && resp.trim() !== '') {
-      recibido = Number(resp.trim());
+    // Si el usuario cancela el prompt, abortar el cobro (no hacer nada)
+    if (resp === null) return;
+    if (resp.trim() !== '') {
+      const recibido = Number(resp.trim());
       if (!isNaN(recibido) && recibido >= total) {
         cambio = recibido - total;
       }
@@ -641,7 +652,7 @@ async function cobrar(medio) {
 $('btnEfectivo').addEventListener('click', function () { cobrar('Efectivo'); });
 $('btnTransferencia').addEventListener('click', function () { cobrar('Transferencia'); });
 
-// ---------- Configuración de botones rápidos ----------
+// ---------- Configuración ----------
 $('btnConfigurar').addEventListener('click', function () {
   seleccionConfig = rapidos.slice();
   $('modalConfig').style.display = 'block';
@@ -657,24 +668,31 @@ function pintarListaConfig() {
   const q = norm($('buscarConfig').value);
   cont.innerHTML = '';
 
-  // Opción: grupo Empanadas
-  if (!q || 'empanadas'.indexOf(q) >= 0) {
-    const empanadasCount = productos.filter(function (p) { return norm(p.categoria).indexOf('empanada') >= 0; }).length;
-    if (empanadasCount > 0) {
-      const d = document.createElement('div');
-      const sel = seleccionConfig.indexOf('GRUPO_Empanadas') >= 0;
-      d.style.cssText = 'padding:10px; border-bottom:1px solid #E8ECF4; cursor:pointer; display:flex; justify-content:space-between; align-items:center;' + (sel ? ' background:#E3ECFF;' : '');
-      d.innerHTML = '<div><strong>🥟 Empanadas</strong><br><small style="color:var(--texto-suave);">' + empanadasCount + ' tipos</small></div>' + (sel ? '✓' : '○');
-      d.addEventListener('click', function () {
-        const idx = seleccionConfig.indexOf('GRUPO_Empanadas');
-        if (idx >= 0) seleccionConfig.splice(idx, 1);
-        else if (seleccionConfig.length < 6) seleccionConfig.push('GRUPO_Empanadas');
-        else alert('Máximo 6 botones');
-        pintarListaConfig();
-      });
-      cont.appendChild(d);
-    }
-  }
+  // Grupos (categorías con 2+ productos)
+  const conteoCategorias = {};
+  productos.forEach(function (p) {
+    const cat = p.categoria || '';
+    if (!cat) return;
+    conteoCategorias[cat] = (conteoCategorias[cat] || 0) + 1;
+  });
+
+  Object.keys(conteoCategorias).forEach(function (cat) {
+    if (conteoCategorias[cat] < 2) return;
+    if (q && norm(cat).indexOf(q) < 0) return;
+    const grupoId = 'GRUPO_' + cat;
+    const sel = seleccionConfig.indexOf(grupoId) >= 0;
+    const d = document.createElement('div');
+    d.style.cssText = 'padding:10px; border-bottom:1px solid #E8ECF4; cursor:pointer; display:flex; justify-content:space-between; align-items:center;' + (sel ? ' background:#E3ECFF;' : '');
+    d.innerHTML = '<div><strong>🥟 ' + cat + '</strong><br><small style="color:var(--texto-suave);">' + conteoCategorias[cat] + ' opciones</small></div>' + (sel ? '✓' : '○');
+    d.addEventListener('click', function () {
+      const idx = seleccionConfig.indexOf(grupoId);
+      if (idx >= 0) seleccionConfig.splice(idx, 1);
+      else if (seleccionConfig.length < 6) seleccionConfig.push(grupoId);
+      else alert('Máximo 6 botones');
+      pintarListaConfig();
+    });
+    cont.appendChild(d);
+  });
 
   // Productos individuales
   const filtrados = productos.filter(function (p) {

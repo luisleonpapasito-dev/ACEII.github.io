@@ -18,6 +18,7 @@
     </div>
   </div>
 </header>
+
 <!-- Banner de info del turno -->
 <div id="bannerTurno" class="caja" style="display:none; margin-top:12px;">
   <div id="bannerMiTurno" style="display:none;">
@@ -41,17 +42,16 @@
   </div>
 </div>
 
-
-
-
 <div id="estado">ACEII</div>
 
+<!-- Paso 1: clave general -->
 <div class="caja" id="login" style="display:none;">
   <label>Clave del sistema</label>
   <input type="password" id="clave" placeholder="Escribe la clave">
   <button class="main" id="btnEntrar" style="width:100%;">Entrar</button>
 </div>
 
+<!-- Paso 2: usuario + PIN -->
 <div class="caja" id="turno" style="display:none;">
   <label>¿Quién inicia el turno?</label>
   <select id="usuarioTurno"></select>
@@ -60,6 +60,20 @@
   <button class="main" id="btnTurno" style="width:100%;">Entrar</button>
 </div>
 
+<!-- Paso 3: pantalla para cerrar turno ajeno -->
+<div class="caja" id="pantallaCerrarAjeno" style="display:none;">
+  <h3 style="margin-top:0; color:var(--naranja);">⚠️ Turno abierto por otra persona</h3>
+  <div id="infoTurnoAjeno" style="background:var(--superficie-2); padding:12px; border-radius:10px; font-size:14px; margin:10px 0;"></div>
+  <p style="font-size:13px; color:var(--texto-suave);">Para que puedas entrar, hay que cerrar ese turno primero. Escribe el efectivo real que hay en caja ahora mismo.</p>
+  <label>Efectivo real en caja</label>
+  <input type="number" id="saldoAjenoReal" min="0" step="100" inputmode="numeric" placeholder="Ej: 50000">
+  <label>Observaciones (opcional)</label>
+  <input type="text" id="obsCierreAjeno" maxlength="200" placeholder="Ej: Cierre automático por cambio de turno">
+  <button class="main" id="btnCerrarAjeno" style="width:100%; margin-top:10px;">🔓 Cerrar turno ajeno y continuar</button>
+  <button id="btnCancelarAjeno" style="width:100%; margin-top:6px;">Cancelar</button>
+</div>
+
+<!-- Paso 4: abrir turno de caja -->
 <div class="caja" id="abrirTurno" style="display:none;">
   <h3 style="margin-top:0;">Abrir turno de caja</h3>
   <div id="avisoBaseSugerida" style="color:#5A6072; font-size:14px; margin:8px 0; background:#F0F4FF; padding:10px; border-radius:10px;"></div>
@@ -71,6 +85,7 @@
   <button id="btnCancelarApertura" style="width:100%; margin-top:6px;">Cancelar (cerrar sesión)</button>
 </div>
 
+<!-- Paso 5: menú principal -->
 <main class="grid-menu" id="menu" style="display:none;">
 
   <a class="card" href="caja.html">
@@ -136,22 +151,21 @@
     <div class="card-flecha">›</div>
   </a>
 
-  <a class="card" href="codigos.html">
-    <div class="card-icono azul">
-      <svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
-    </div>
-    <div class="card-titulo">Registrar códigos</div>
-    <div class="card-sub">Asocia códigos de barras</div>
-    <div class="card-flecha">›</div>
-  </a>
-
-  <!-- NUEVA TARJETA: DASHBOARD -->
   <a class="card" href="dashboard.html">
     <div class="card-icono morado">
       <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
     </div>
     <div class="card-titulo">Dashboard</div>
     <div class="card-sub">Estadísticas y métricas</div>
+    <div class="card-flecha">›</div>
+  </a>
+
+  <a class="card" href="codigos.html">
+    <div class="card-icono azul">
+      <svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+    </div>
+    <div class="card-titulo">Registrar códigos</div>
+    <div class="card-sub">Asocia códigos de barras</div>
     <div class="card-flecha">›</div>
   </a>
 
@@ -170,6 +184,7 @@
 
 <script>
 let turnoPendiente = null;
+let usuarioPendienteAjeno = null; // guarda el usuario logueado mientras se cierra el turno ajeno
 
 function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
 
@@ -180,6 +195,7 @@ async function pintar() {
 
   $('login').style.display = (!hayToken) ? 'block' : 'none';
   $('turno').style.display = (hayToken && !hayUsuario) ? 'block' : 'none';
+  $('pantallaCerrarAjeno').style.display = 'none';
   $('abrirTurno').style.display = 'none';
   $('menu').style.display = (hayToken && hayUsuario && hayTurno) ? 'grid' : 'none';
 
@@ -215,59 +231,18 @@ async function entrar() {
 $('btnEntrar').addEventListener('click', entrar);
 $('clave').addEventListener('keydown', function (e) { if (e.key === 'Enter') entrar(); });
 
-async function cargarBannerTurno() {
-  const u = getUsuarioTurno();
-  if (!u) { $('bannerTurno').style.display = 'none'; return; }
-
-  // Primero: mostrar el valor cacheado si existe
+async function cargarUsuarios() {
   try {
-    const cache = JSON.parse(localStorage.getItem('caf_banner_cache') || 'null');
-    if (cache && cache.turno_id) {
-      $('bannerTurno').style.display = 'block';
-      $('bannerMiTurno').style.display = 'block';
-      $('bannerOtroTurno').style.display = 'none';
-      $('bannerSaldo').textContent = '$' + Number(cache.saldo_esperado || 0).toLocaleString('es-CO');
-      $('bannerTurnoId').textContent = 'Turno ' + cache.turno_id + ' · Base $' + Number(cache.base || 0).toLocaleString('es-CO');
+    const r = await jsonp({ accion: 'usuarios' }, 15000);
+    if (r && r.ok) {
+      const sel = $('usuarioTurno');
+      sel.innerHTML = '';
+      sel.appendChild(new Option('Elige tu nombre...', ''));
+      r.items.forEach(function (u) {
+        sel.appendChild(new Option(u.nombre + ' (' + u.id + ')', u.id));
+      });
     }
   } catch (e) {}
-
-  // Después: consultar al servidor
-  try {
-    const r = await jsonp({ accion: 'info_turno_actual', id_usuario: u.id }, 20000);
-    if (!r || !r.ok) {
-      // Si falla, dejar el cache visible (no ocultar el banner)
-      return;
-    }
-
-    $('bannerTurno').style.display = 'block';
-
-    if (r.mi_turno) {
-      $('bannerMiTurno').style.display = 'block';
-      $('bannerOtroTurno').style.display = 'none';
-      $('bannerSaldo').textContent = '$' + Number(r.saldo_esperado || 0).toLocaleString('es-CO');
-      $('bannerTurnoId').textContent = 'Turno ' + r.mi_turno.id + ' · Base $' + Number(r.mi_turno.base || 0).toLocaleString('es-CO');
-
-      // Guardar cache
-      try {
-        localStorage.setItem('caf_banner_cache', JSON.stringify({
-          turno_id: r.mi_turno.id,
-          base: r.mi_turno.base,
-          saldo_esperado: r.saldo_esperado,
-          ts: Date.now()
-        }));
-      } catch (e) {}
-    } else if (r.otro_turno) {
-      $('bannerMiTurno').style.display = 'none';
-      $('bannerOtroTurno').style.display = 'block';
-      $('bannerOtroTexto').textContent = 'Turno abierto por ' + r.otro_turno.responsable + ' desde ' + r.otro_turno.fecha_apertura + '. No puedes abrir turno hasta que lo cierre.';
-      try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
-    } else {
-      $('bannerTurno').style.display = 'none';
-      try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
-    }
-  } catch (e) {
-    // Si falla la consulta, el cache sigue visible
-  }
 }
 
 async function iniciarTurno() {
@@ -279,6 +254,38 @@ async function iniciarTurno() {
   try {
     const r = await post({ accion: 'login_turno', id_usuario: idUsr, pin: pin });
     if (r && r.ok) {
+      // Antes de asignar el usuario, verificar si hay OTRO turno abierto
+      let hayTurnoAjeno = false;
+      let infoAjeno = null;
+      try {
+        const info = await jsonp({ accion: 'info_turno_actual', id_usuario: idUsr }, 15000);
+        if (info && info.ok && info.otro_turno) {
+          hayTurnoAjeno = true;
+          infoAjeno = info.otro_turno;
+        }
+      } catch (e) {
+        // si falla, seguir
+      }
+
+      if (hayTurnoAjeno) {
+        // Guardar datos y mostrar pantalla para cerrar el turno ajeno
+        usuarioPendienteAjeno = { id: r.id_usuario, nombre: r.nombre };
+        $('login').style.display = 'none';
+        $('turno').style.display = 'none';
+        $('pantallaCerrarAjeno').style.display = 'block';
+        $('menu').style.display = 'none';
+        $('infoTurnoAjeno').innerHTML =
+          '<strong>Turno:</strong> ' + infoAjeno.id + '<br>' +
+          '<strong>Responsable:</strong> ' + infoAjeno.responsable + '<br>' +
+          '<strong>Desde:</strong> ' + infoAjeno.fecha_apertura + '<br>' +
+          '<strong>Base inicial:</strong> $' + Number(infoAjeno.base || 0).toLocaleString('es-CO');
+        $('saldoAjenoReal').value = '';
+        $('obsCierreAjeno').value = '';
+        mostrar('Cierra el turno de ' + infoAjeno.responsable + ' para continuar', 'aviso');
+        return;
+      }
+
+      // Todo bien, guardar usuario y turno
       guardarUsuarioTurno({ id: r.id_usuario, nombre: r.nombre });
       $('pinTurno').value = '';
       mostrar('Bienvenido ✓ ' + r.nombre, 'ok');
@@ -314,6 +321,7 @@ async function verificarTurnoCaja(idUsuario, nombre) {
 async function pedirBaseInicial(nombre) {
   $('login').style.display = 'none';
   $('turno').style.display = 'none';
+  $('pantallaCerrarAjeno').style.display = 'none';
   $('abrirTurno').style.display = 'block';
   $('menu').style.display = 'none';
   mostrar('Hola ' + nombre + ', abre tu turno');
@@ -383,53 +391,121 @@ $('btnCancelarApertura').addEventListener('click', function () {
   if (!confirm('Si cancelas, se cerrará tu sesión. ¿Continuar?')) return;
   borrarUsuarioTurno();
   borrarTurnoActual();
+  try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
   $('clave').value = '';
   pintar();
 });
 
-function cerrarSesion() {
-  const t = getTurnoActual();
-  let msj = '¿Cerrar la sesión general?';
-  if (t) {
-    msj = 'Tienes un turno ABIERTO.\n\nSi cierras sesión, el turno quedará pendiente en Google Sheets. Podrás recuperarlo cuando vuelvas a entrar con tu usuario.\n\n¿Seguro quieres cerrar sesión?';
+// ---------- Cerrar turno ajeno ----------
+$('btnCerrarAjeno').addEventListener('click', async function () {
+  if (!usuarioPendienteAjeno) return;
+  const saldoReal = Number($('saldoAjenoReal').value);
+  if (isNaN(saldoReal) || saldoReal < 0) { mostrar('Escribe el efectivo real contado', 'error'); return; }
+  const obs = $('obsCierreAjeno').value.trim() || 'Cierre al cambiar de turno';
+
+  $('btnCerrarAjeno').disabled = true;
+  mostrar('Cerrando turno ajeno...', 'aviso');
+
+  try {
+    // Obtener info del turno ajeno actual
+    const info = await jsonp({ accion: 'info_turno_actual', id_usuario: usuarioPendienteAjeno.id }, 15000);
+    if (!info || !info.ok || !info.otro_turno) {
+      // Ya no hay turno ajeno, seguir
+      await continuarLogin();
+      return;
+    }
+
+    // Cerrarlo
+    const r = await post({
+      accion: 'cerrar_turno',
+      id_usuario: usuarioPendienteAjeno.id,
+      id_turno: info.otro_turno.id,
+      saldo_real: saldoReal,
+      observaciones: obs
+    });
+
+    if (r.ok) {
+      mostrar('Turno ajeno cerrado ✓', 'ok');
+      await continuarLogin();
+    } else {
+      mostrar(r.error || 'Error al cerrar turno ajeno', 'error');
+      $('btnCerrarAjeno').disabled = false;
+    }
+  } catch (err) {
+    mostrar('Error: ' + err.message, 'error');
+    $('btnCerrarAjeno').disabled = false;
   }
-  if (!confirm(msj)) return;
-  borrarUsuarioTurno();
-  borrarTurnoActual();
+});
+
+$('btnCancelarAjeno').addEventListener('click', function () {
+  usuarioPendienteAjeno = null;
+  $('pantallaCerrarAjeno').style.display = 'none';
   $('clave').value = '';
+  borrarToken();
+  borrarUsuarioTurno();
   pintar();
+});
+
+// ---------- Continuar login después de cerrar turno ajeno ----------
+async function continuarLogin() {
+  if (!usuarioPendienteAjeno) return;
+  guardarUsuarioTurno({ id: usuarioPendienteAjeno.id, nombre: usuarioPendienteAjeno.nombre });
+  $('pantallaCerrarAjeno').style.display = 'none';
+  mostrar('Bienvenido ✓ ' + usuarioPendienteAjeno.nombre, 'ok');
+  const id = usuarioPendienteAjeno.id;
+  usuarioPendienteAjeno = null;
+  await verificarTurnoCaja(id, '');
 }
 
-pintar();
-if (getToken() && !getUsuarioTurno()) cargarUsuarios();
 // ---------- Banner con el saldo del turno ----------
 async function cargarBannerTurno() {
   const u = getUsuarioTurno();
   if (!u) { $('bannerTurno').style.display = 'none'; return; }
 
+  // Mostrar cache primero si existe
   try {
-    const r = await jsonp({ accion: 'info_turno_actual', id_usuario: u.id }, 15000);
-    if (!r || !r.ok) { $('bannerTurno').style.display = 'none'; return; }
+    const cache = JSON.parse(localStorage.getItem('caf_banner_cache') || 'null');
+    if (cache && cache.turno_id) {
+      $('bannerTurno').style.display = 'block';
+      $('bannerMiTurno').style.display = 'block';
+      $('bannerOtroTurno').style.display = 'none';
+      $('bannerSaldo').textContent = '$' + Number(cache.saldo_esperado || 0).toLocaleString('es-CO');
+      $('bannerTurnoId').textContent = 'Turno ' + cache.turno_id + ' · Base $' + Number(cache.base || 0).toLocaleString('es-CO');
+    }
+  } catch (e) {}
 
-    // Mostrar banner principal
+  // Consultar al servidor
+  try {
+    const r = await jsonp({ accion: 'info_turno_actual', id_usuario: u.id }, 20000);
+    if (!r || !r.ok) return;
+
     $('bannerTurno').style.display = 'block';
 
-    // Si tengo turno
     if (r.mi_turno) {
       $('bannerMiTurno').style.display = 'block';
       $('bannerOtroTurno').style.display = 'none';
       $('bannerSaldo').textContent = '$' + Number(r.saldo_esperado || 0).toLocaleString('es-CO');
       $('bannerTurnoId').textContent = 'Turno ' + r.mi_turno.id + ' · Base $' + Number(r.mi_turno.base || 0).toLocaleString('es-CO');
+
+      try {
+        localStorage.setItem('caf_banner_cache', JSON.stringify({
+          turno_id: r.mi_turno.id,
+          base: r.mi_turno.base,
+          saldo_esperado: r.saldo_esperado,
+          ts: Date.now()
+        }));
+      } catch (e) {}
     } else if (r.otro_turno) {
-      // No tengo turno, pero otro sí
       $('bannerMiTurno').style.display = 'none';
       $('bannerOtroTurno').style.display = 'block';
       $('bannerOtroTexto').textContent = 'Turno abierto por ' + r.otro_turno.responsable + ' desde ' + r.otro_turno.fecha_apertura + '. No puedes abrir turno hasta que lo cierre.';
+      try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
     } else {
       $('bannerTurno').style.display = 'none';
+      try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
     }
   } catch (e) {
-    $('bannerTurno').style.display = 'none';
+    // cache sigue visible si falla
   }
 }
 
@@ -439,6 +515,25 @@ document.addEventListener('visibilitychange', function () {
     cargarBannerTurno();
   }
 });
+
+// ---------- Cerrar sesión ----------
+function cerrarSesion() {
+  const t = getTurnoActual();
+  if (t) {
+    if (!confirm('⚠️ Tienes un turno ABIERTO.\n\nPara cerrar sesión primero debes cerrar el turno desde "Caja del turno".\n\n¿Quieres ir a cerrar el turno ahora?')) return;
+    location.href = 'caja.html';
+    return;
+  }
+  if (!confirm('¿Cerrar la sesión general?')) return;
+  borrarUsuarioTurno();
+  borrarTurnoActual();
+  try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
+  $('clave').value = '';
+  pintar();
+}
+
+pintar();
+if (getToken() && !getUsuarioTurno()) cargarUsuarios();
 </script>
 </body>
 </html>

@@ -7,7 +7,57 @@
 <link rel="stylesheet" href="estilos.css">
 <script src="comun.js"></script>
 <style>
-  #lista { max-height: 280px; }
+  #resultados {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 8px;
+  }
+  .resultado {
+    padding: 12px;
+    border-bottom: 1px solid #E8ECF4;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .resultado:hover { background: var(--superficie-2); }
+  .resultado:last-child { border-bottom: none; }
+
+  .thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: var(--superficie-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--azul);
+  }
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .info { flex: 1; min-width: 0; }
+  .info .nombre { font-size: 14px; font-weight: 600; color: var(--texto); }
+  .info .meta { font-size: 12px; color: var(--texto-suave); margin-top: 2px; }
+  .info .badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 4px;
+  }
+  .badge-ok { background: #E0F7EC; color: var(--exito); }
+  .badge-bajo { background: #FFF4DC; color: var(--naranja); }
+  .badge-cero { background: #FFE5E5; color: var(--alerta); }
+
   #infoProducto {
     background: var(--superficie-2);
     padding: 12px;
@@ -15,9 +65,8 @@
     font-size: 14px;
     line-height: 1.5;
   }
-  #infoProducto strong { color: var(--texto); }
   #infoProducto .stock-num {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
     color: var(--azul);
   }
@@ -46,9 +95,9 @@
     <button id="modoAjuste" class="tog">Ajuste</button>
   </div>
   <label>Busca el producto</label>
-  <input type="text" id="buscar" placeholder="Escribe parte del nombre o del ID">
+  <input type="text" id="buscar" placeholder="Escribe 2 letras o más..." autocomplete="off">
   <label><input type="checkbox" id="soloPendientes"> Mostrar solo productos con stock 0</label>
-  <select id="lista" size="8"></select>
+  <div id="resultados"></div>
 </div>
 
 <div class="caja" id="panel" style="display:none;">
@@ -83,6 +132,12 @@ let productos = [];
 let elegido = null;
 let modo = 'inicial';
 
+(async function () {
+  const ok = await exigirTurnoCajaAbierto();
+  if (!ok) return;
+  cargarDatos();
+})();
+
 async function cargarDatos() {
   mostrar('Cargando inventario...', 'aviso');
   try {
@@ -90,27 +145,82 @@ async function cargarDatos() {
     if (r && r.error === 'Token inválido') { borrarToken(); location.href = 'index.html'; return; }
     if (!r || !r.ok) throw new Error(r && r.error ? r.error : 'respuesta vacía');
     productos = r.items;
-    pintarLista();
+    pintarResultados();
     mostrar('Elige un producto');
   } catch (err) {
     mostrar('No se pudo cargar el inventario: ' + err.message, 'error');
   }
 }
 
-function pintarLista() {
+function colorPorCategoria(cat) {
+  const colores = {
+    'Bebidas': '#E3ECFF',
+    'Lácteos y avena': '#FFF4DC',
+    'Dulces y confitería': '#FCE4EC',
+    'Galletas y ponqués': '#EFE7FB',
+    'Pasabocas salados': '#E0F7EC',
+    'Preparados': '#FFE5E5',
+    'Comida instantánea': '#D6F5FA',
+    'Combos': '#EFE7FB',
+    'Empanadas': '#FFF4DC'
+  };
+  return colores[cat] || '#F0F4FF';
+}
+
+function pintarResultados() {
   const q = norm($('buscar').value);
   const soloPend = $('soloPendientes').checked;
-  const sel = $('lista');
-  sel.innerHTML = '';
-  let n = 0;
-  productos.forEach(function (p) {
-    if (soloPend && p.stock_actual !== 0) return;
-    if (q && norm(p.id + ' ' + p.nombre).indexOf(q) < 0) return;
-    n++;
-    sel.appendChild(new Option(p.id + ' · ' + p.nombre + ' (Sistema: ' + p.stock_actual + ')', p.id));
+  const cont = $('resultados');
+  cont.innerHTML = '';
+
+  if (q.length < 2 && !soloPend) return;
+
+  let items = productos.slice();
+  if (soloPend) items = items.filter(function (p) { return p.stock_actual === 0; });
+  if (q) items = items.filter(function (p) {
+    return norm(p.id + ' ' + p.nombre).indexOf(q) >= 0;
   });
-  if (!n) sel.appendChild(new Option('(sin resultados)', ''));
-  if (elegido) sel.value = elegido.id;
+
+  items = items.slice(0, 15);
+
+  if (!items.length) {
+    cont.innerHTML = '<div style="padding:14px; text-align:center; color:var(--texto-suave); font-size:13px;">Sin resultados.</div>';
+    return;
+  }
+
+  items.forEach(function (p) {
+    const d = document.createElement('div');
+    d.className = 'resultado';
+
+    let thumbHTML = '';
+    if (p.imagen_url) {
+      thumbHTML = '<img src="' + p.imagen_url + '" alt="" loading="lazy">';
+    } else {
+      const inicial = p.nombre ? p.nombre.charAt(0).toUpperCase() : '?';
+      thumbHTML = inicial;
+    }
+
+    let stockClase = 'badge-ok';
+    if (p.stock_actual === 0) stockClase = 'badge-cero';
+    else if (p.stock_actual <= 5) stockClase = 'badge-bajo';
+
+    d.innerHTML =
+      '<div class="thumb" style="background:' + (p.imagen_url ? '#fff' : '#F0F4FF') + ';">' + thumbHTML + '</div>' +
+      '<div class="info">' +
+        '<div class="nombre">' + p.nombre + '</div>' +
+        '<div class="meta">' + p.id + ' · Sistema: <span class="badge ' + stockClase + '">' + p.stock_actual + '</span></div>' +
+      '</div>';
+
+    d.addEventListener('click', function () {
+      elegido = p;
+      pintarPanel();
+      $('resultados').innerHTML = '';
+      $('buscar').value = '';
+      $('panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    cont.appendChild(d);
+  });
 }
 
 function pintarPanel() {
@@ -134,12 +244,8 @@ function fijarModo(m) {
 
 $('modoInicial').addEventListener('click', function () { fijarModo('inicial'); });
 $('modoAjuste').addEventListener('click', function () { fijarModo('ajuste'); });
-$('lista').addEventListener('change', function () {
-  elegido = productos.find(function (p) { return p.id === $('lista').value; }) || null;
-  pintarPanel();
-});
-$('buscar').addEventListener('input', pintarLista);
-$('soloPendientes').addEventListener('change', pintarLista);
+$('buscar').addEventListener('input', pintarResultados);
+$('soloPendientes').addEventListener('change', pintarResultados);
 
 $('btnGuardar').addEventListener('click', async function () {
   if (!elegido) return;
@@ -188,10 +294,9 @@ $('btnGuardar').addEventListener('click', async function () {
         elegido.ajustes = elegido.ajustes + r.diferencia;
         elegido.stock_actual = r.stock_nuevo;
       }
-      pintarLista();
-      pintarPanel();
       elegido = null;
-      $('lista').value = '';
+      $('panel').style.display = 'none';
+      mostrar('Elige otro producto', 'ok');
     } else if (r.error === 'Token inválido') {
       borrarToken(); location.href = 'index.html';
     } else {
@@ -203,12 +308,6 @@ $('btnGuardar').addEventListener('click', async function () {
     $('btnGuardar').disabled = false;
   }
 });
-
-(async function () {
-  const ok = await exigirTurnoCajaAbierto();
-  if (!ok) return;
-  cargarDatos();
-})();
 </script>
 </body>
 </html>

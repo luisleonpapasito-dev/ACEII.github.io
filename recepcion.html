@@ -8,7 +8,6 @@
 <script src="comun.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
 <style>
-  #lista { max-height: 240px; }
   .linea {
     display: flex;
     justify-content: space-between;
@@ -156,6 +155,46 @@
     padding: 0;
     line-height: 1;
   }
+
+  /* Lista de productos (tarjetas) */
+  .lista-productos {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 8px;
+  }
+  .lista-productos .item {
+    padding: 10px;
+    border-bottom: 1px solid #E8ECF4;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    transition: background 0.15s;
+  }
+  .lista-productos .item:hover { background: var(--superficie-2); }
+  .lista-productos .item:last-child { border-bottom: none; }
+  .lista-productos .thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: var(--superficie-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--azul);
+  }
+  .lista-productos .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .lista-productos .info { flex: 1; min-width: 0; }
+  .lista-productos .nombre { font-size: 14px; font-weight: 600; color: var(--texto); }
+  .lista-productos .meta { font-size: 12px; color: var(--texto-suave); margin-top: 2px; }
+  .lista-productos .precio { color: var(--azul); font-weight: 700; font-size: 13px; }
 </style>
 </head>
 <body>
@@ -186,24 +225,28 @@
 <div class="caja">
   <label>Producto</label>
   <button class="main" id="btnCam" style="width:100%; margin-bottom:8px;">📷 Escanear código de barras</button>
-  <input type="text" id="buscar" placeholder="O escribe parte del nombre o del ID">
+  <input type="text" id="buscar" placeholder="Escribe 2 letras o más..." autocomplete="off">
   <label><input type="checkbox" id="soloProv"> Solo productos de este proveedor</label>
-  <select id="lista" size="6"></select>
+  <div id="listaProductos" class="lista-productos"></div>
   <div id="elegido" style="font-size:13px; color:var(--texto-suave); margin-top:6px;">Ningún producto elegido</div>
 
   <div id="panel" style="display:none;">
-    <div class="fila">
-      <button id="btnUnd" class="tog on">Unidades</button>
-      <button id="btnPaq" class="tog">Paquetes</button>
+    <label>Modo</label>
+    <div class="tog-fila" style="display:flex; gap:8px; margin:8px 0;">
+      <button id="btnUnd" class="tog on" style="flex:1;">Unidades</button>
+      <button id="btnPaq" class="tog" style="flex:1;">Paquetes</button>
     </div>
+
     <label>Cantidad</label>
-    <input type="number" id="cantidad" min="1" step="1" value="1" inputmode="numeric">
+    <input type="number" id="cantidad" value="1" min="1" step="1" inputmode="numeric">
+
     <div id="bloquePaq" style="display:none;">
       <label>Unidades por paquete (verifícalo)</label>
       <input type="number" id="upp" min="1" step="1" inputmode="numeric">
       <label id="lblRecordar" style="display:none;"><input type="checkbox" id="recordar" checked> Recordar este tamaño para este producto</label>
     </div>
-    <div id="total">Total: —</div>
+
+    <div id="total" style="font-size:18px; color:var(--azul); font-weight:700; margin:10px 0; text-align:center;">Total: —</div>
     <button class="main" id="btnAgregar" style="width:100%;">Agregar a la lista</button>
   </div>
 </div>
@@ -397,21 +440,56 @@ async function cargarDatos() {
   }
 }
 
+/* ---------- Lista de productos (tarjetas) ---------- */
 function pintarLista() {
   const q = norm($('buscar').value);
   const prov = $('proveedor').value;
   const soloProv = $('soloProv').checked && prov;
-  const sel = $('lista');
-  sel.innerHTML = '';
-  let n = 0;
-  productos.forEach(function (p) {
-    if (soloProv && p.proveedor !== prov) return;
-    if (q && norm(p.id + ' ' + p.nombre).indexOf(q) < 0) return;
-    n++;
-    sel.appendChild(new Option(p.id + ' · ' + p.nombre, p.id));
+  const cont = $('listaProductos');
+  cont.innerHTML = '';
+
+  if (q.length < 2) return;
+
+  let items = productos.slice();
+  if (soloProv) items = items.filter(function (p) { return p.proveedor === prov; });
+  if (q) items = items.filter(function (p) {
+    return norm(p.id + ' ' + p.nombre).indexOf(q) >= 0;
   });
-  if (!n) sel.appendChild(new Option('(sin resultados)', ''));
-  if (elegido) sel.value = elegido.id;
+
+  items = items.slice(0, 15);
+
+  if (!items.length) {
+    cont.innerHTML = '<div style="padding:14px; text-align:center; color:var(--texto-suave); font-size:13px;">Sin resultados.</div>';
+    return;
+  }
+
+  items.forEach(function (p) {
+    const d = document.createElement('div');
+    d.className = 'item';
+
+    let thumbHTML = '';
+    if (p.imagen_url) {
+      thumbHTML = '<img src="' + p.imagen_url + '" alt="" loading="lazy">';
+    } else {
+      thumbHTML = p.nombre ? p.nombre.charAt(0).toUpperCase() : '?';
+    }
+
+    d.innerHTML =
+      '<div class="thumb">' + thumbHTML + '</div>' +
+      '<div class="info">' +
+        '<div class="nombre">' + p.nombre + '</div>' +
+        '<div class="meta">' + p.id + ' · ' + (p.proveedor || 'Sin proveedor') + '</div>' +
+      '</div>' +
+      '<div class="precio">$' + Number(p.precio || 0).toLocaleString('es-CO') + '</div>';
+
+    d.addEventListener('click', function () {
+      elegido = p;
+      pintarPanel();
+      cont.innerHTML = '';
+      $('buscar').value = '';
+    });
+    cont.appendChild(d);
+  });
 }
 
 function leerNum(id) {
@@ -445,10 +523,6 @@ function pintarPanel() {
   fijarModo('Unidades');
 }
 
-$('lista').addEventListener('change', function () {
-  elegido = productos.find(function (p) { return p.id === $('lista').value; }) || null;
-  pintarPanel();
-});
 $('buscar').addEventListener('input', pintarLista);
 $('soloProv').addEventListener('change', pintarLista);
 $('btnUnd').addEventListener('click', function () { fijarModo('Unidades'); });
@@ -478,7 +552,6 @@ $('btnAgregar').addEventListener('click', function () {
   });
   mostrar('Agregado: ' + elegido.nombre, 'ok');
   elegido = null;
-  $('lista').value = '';
   pintarPanel();
   pintarCarrito();
   guardarBorrador();

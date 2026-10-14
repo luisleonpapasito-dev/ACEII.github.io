@@ -16,6 +16,25 @@
 <meta name="theme-color" content="#1B4DB1" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
 <script src="comun.js"></script>
+<style>
+  /* Ocultar #estado cuando solo dice ACEII */
+  #estado.estado-vacio {
+    display: none;
+  }
+  /* Títulos de sección más grandes y en negrilla */
+  .seccion-titulo {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--texto);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 4px 4px 12px;
+    padding-left: 4px;
+  }
+  html.tema-oscuro .seccion-titulo {
+    color: var(--texto-suave);
+  }
+</style>
 </head>
 <body>
 
@@ -53,7 +72,7 @@
   </div>
 </div>
 
-<div id="estado">ACEII</div>
+<div id="estado" class="estado-vacio">ACEII</div>
 
 <!-- Paso 1: clave general -->
 <div class="caja" id="login" style="display:none;">
@@ -243,7 +262,7 @@ async function pintar() {
   $('turno').style.display = (hayToken && !hayUsuario) ? 'block' : 'none';
   $('pantallaCerrarAjeno').style.display = 'none';
   $('abrirTurno').style.display = 'none';
-  $('menu').style.display = (hayToken && hayUsuario && hayTurno) ? 'grid' : 'none';
+  $('menu').style.display = (hayToken && hayUsuario && hayTurno) ? 'block' : 'none';
 
   if (hayToken && hayUsuario && hayTurno) {
     pintarUsuarioTurno();

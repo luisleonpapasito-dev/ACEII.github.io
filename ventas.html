@@ -984,9 +984,82 @@ function guardarRapidos() {
 }
 
 // Sistema de tap corto / tap largo
+// Sistema de tap corto / tap largo
 let tapTimer = null;
 let tapFueLargo = false;
 let touchIniciado = false;
+let touchReciente = false; // ⬅ NUEVO: para bloquear clicks fantasma
+
+function crearBotonRapido(p, esGrupo, itemsGrupo) {
+  const btn = document.createElement('button');
+  btn.className = 'btn-rapido' + (esGrupo ? ' grupo' : '');
+
+  if (esGrupo) {
+    btn.innerHTML =
+      '<span class="emoji">🥟</span>' +
+      '<span class="nom">' + p + '</span>' +
+      '<span class="pre">' + itemsGrupo.length + ' opciones</span>';
+  } else {
+    btn.innerHTML =
+      '<span class="emoji">📦</span>' +
+      '<span class="nom">' + p.nombre + '</span>' +
+      '<span class="pre">' + fmt(p.precio) + '</span>';
+  }
+
+  btn.addEventListener('touchstart', function (e) {
+    touchIniciado = true;
+    tapFueLargo = false;
+    btn.classList.add('presionado');
+    tapTimer = setTimeout(function () {
+      tapFueLargo = true;
+      if (navigator.vibrate) navigator.vibrate(50);
+    }, 800);
+  }, { passive: true });
+
+  btn.addEventListener('touchend', function (e) {
+    clearTimeout(tapTimer);
+    btn.classList.remove('presionado');
+    if (!touchIniciado) return;
+    touchIniciado = false;
+
+    // ⬇ Marcar que acabamos de manejar con touch (evita el click fantasma)
+    touchReciente = true;
+    setTimeout(function () { touchReciente = false; }, 500);
+
+    if (esGrupo) {
+      // Los grupos SIEMPRE abren variantes (tap corto o largo da igual)
+      e.preventDefault();
+      mostrarVariantes(p, itemsGrupo);
+    } else {
+      // Productos individuales: distinguen tap corto vs largo
+      if (tapFueLargo) {
+        e.preventDefault();
+        if (navigator.vibrate) navigator.vibrate(80);
+        abrirCobroRapido(p, 1);
+      } else {
+        agregarProductoAlCarrito(p, 1);
+      }
+    }
+  });
+
+  btn.addEventListener('touchcancel', function () {
+    clearTimeout(tapTimer);
+    btn.classList.remove('presionado');
+    touchIniciado = false;
+  });
+
+  // Fallback para PC (mouse) - SOLO si no hubo un touch reciente
+  btn.addEventListener('click', function (e) {
+    if (touchReciente) return; // ⬅ ignorar click fantasma
+    if (esGrupo) {
+      mostrarVariantes(p, itemsGrupo);
+    } else {
+      agregarProductoAlCarrito(p, 1);
+    }
+  });
+
+  return btn;
+}
 
 function crearBotonRapido(p, esGrupo, itemsGrupo) {
   const btn = document.createElement('button');

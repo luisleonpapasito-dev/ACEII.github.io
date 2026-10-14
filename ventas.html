@@ -983,12 +983,13 @@ function guardarRapidos() {
   try { localStorage.setItem(RAPIDOS_KEY, JSON.stringify(rapidos)); } catch (e) {}
 }
 
-// Sistema de tap corto / tap largo
-// Sistema de tap corto / tap largo
+// =====================================================================
+// Sistema de tap corto / tap largo (VERSIÓN ÚNICA Y CORREGIDA)
+// =====================================================================
 let tapTimer = null;
 let tapFueLargo = false;
 let touchIniciado = false;
-let touchReciente = false; // ⬅ NUEVO: para bloquear clicks fantasma
+let touchReciente = false;
 
 function crearBotonRapido(p, esGrupo, itemsGrupo) {
   const btn = document.createElement('button');
@@ -1022,16 +1023,13 @@ function crearBotonRapido(p, esGrupo, itemsGrupo) {
     if (!touchIniciado) return;
     touchIniciado = false;
 
-    // ⬇ Marcar que acabamos de manejar con touch (evita el click fantasma)
     touchReciente = true;
     setTimeout(function () { touchReciente = false; }, 500);
 
     if (esGrupo) {
-      // Los grupos SIEMPRE abren variantes (tap corto o largo da igual)
       e.preventDefault();
       mostrarVariantes(p, itemsGrupo);
     } else {
-      // Productos individuales: distinguen tap corto vs largo
       if (tapFueLargo) {
         e.preventDefault();
         if (navigator.vibrate) navigator.vibrate(80);
@@ -1048,77 +1046,8 @@ function crearBotonRapido(p, esGrupo, itemsGrupo) {
     touchIniciado = false;
   });
 
-  // Fallback para PC (mouse) - SOLO si no hubo un touch reciente
   btn.addEventListener('click', function (e) {
-    if (touchReciente) return; // ⬅ ignorar click fantasma
-    if (esGrupo) {
-      mostrarVariantes(p, itemsGrupo);
-    } else {
-      agregarProductoAlCarrito(p, 1);
-    }
-  });
-
-  return btn;
-}
-
-function crearBotonRapido(p, esGrupo, itemsGrupo) {
-  const btn = document.createElement('button');
-  btn.className = 'btn-rapido' + (esGrupo ? ' grupo' : '');
-
-  if (esGrupo) {
-    btn.innerHTML =
-      '<span class="emoji">🥟</span>' +
-      '<span class="nom">' + p + '</span>' +
-      '<span class="pre">' + itemsGrupo.length + ' opciones</span>';
-  } else {
-    btn.innerHTML =
-      '<span class="emoji">📦</span>' +
-      '<span class="nom">' + p.nombre + '</span>' +
-      '<span class="pre">' + fmt(p.precio) + '</span>';
-  }
-
-  btn.addEventListener('touchstart', function (e) {
-    touchIniciado = true;
-    tapFueLargo = false;
-    btn.classList.add('presionado');
-    tapTimer = setTimeout(function () {
-      tapFueLargo = true;
-      if (navigator.vibrate) navigator.vibrate(50);
-    }, 800);
-  }, { passive: true });
-
-  btn.addEventListener('touchend', function (e) {
-    clearTimeout(tapTimer);
-    btn.classList.remove('presionado');
-    if (!touchIniciado) return;
-    touchIniciado = false;
-    if (tapFueLargo) {
-      e.preventDefault();
-      if (navigator.vibrate) navigator.vibrate(80);
-      if (esGrupo) {
-        mostrarVariantes(p, itemsGrupo);
-      } else {
-        abrirCobroRapido(p, 1);
-      }
-    } else {
-      // Tap corto
-      if (esGrupo) {
-        mostrarVariantes(p, itemsGrupo);
-      } else {
-        agregarProductoAlCarrito(p, 1);
-      }
-    }
-  });
-
-  btn.addEventListener('touchcancel', function () {
-    clearTimeout(tapTimer);
-    btn.classList.remove('presionado');
-    touchIniciado = false;
-  });
-
-  // Fallback para PC (mouse)
-  btn.addEventListener('click', function (e) {
-    if (touchIniciado) return; // ya se manejó con touch
+    if (touchReciente) return;
     if (esGrupo) {
       mostrarVariantes(p, itemsGrupo);
     } else {
@@ -1468,7 +1397,6 @@ $('mcConfirmar').addEventListener('click', async function () {
       mostrar(msj, 'ok');
       if (navigator.vibrate) navigator.vibrate(200);
       try { localStorage.setItem('caf_ultimo_medio', mcMedio); } catch (e) {}
-      // Descontar stock local
       const p = productos.find(function (x) { return x.id === mcProducto.id; });
       if (p) p.stock -= mcCantidad;
       $('modalCobro').classList.remove('abierto');

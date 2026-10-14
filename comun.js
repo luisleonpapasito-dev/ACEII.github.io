@@ -4,17 +4,55 @@ const URL_SERVIDOR = 'https://script.google.com/macros/s/AKfycbytYTtsMeI-9Pw-wWZ
 const $ = function (id) { return document.getElementById(id); };
 
 // ============================================================
-// TOASTS GLOBALES
-// Reemplaza el banner #estado por notificaciones flotantes
+// TEMA (claro / oscuro / auto)
+// Se aplica ANTES de que se renderice el body para evitar "flash"
 // ============================================================
+(function aplicarTemaInmediato() {
+  try {
+    const tema = localStorage.getItem('caf_tema') || 'auto';
+    const html = document.documentElement;
+    html.classList.remove('tema-claro', 'tema-oscuro', 'tema-auto');
+    html.classList.add('tema-' + tema);
+  } catch (e) {
+    document.documentElement.classList.add('tema-auto');
+  }
+})();
 
+function getTema() {
+  try { return localStorage.getItem('caf_tema') || 'auto'; } catch (e) { return 'auto'; }
+}
+
+function setTema(tema) {
+  try { localStorage.setItem('caf_tema', tema); } catch (e) {}
+  const html = document.documentElement;
+  html.classList.remove('tema-claro', 'tema-oscuro', 'tema-auto');
+  html.classList.add('tema-' + tema);
+  window.dispatchEvent(new CustomEvent('caf-tema-cambiado', { detail: { tema: tema } }));
+}
+
+function siguienteTema() {
+  const actual = getTema();
+  const orden = ['auto', 'claro', 'oscuro'];
+  const idx = orden.indexOf(actual);
+  const siguiente = orden[(idx + 1) % orden.length];
+  setTema(siguiente);
+  return siguiente;
+}
+
+function emojiTema(tema) {
+  if (tema === 'claro') return '☀️';
+  if (tema === 'oscuro') return '🌙';
+  return '⚙️';
+}
+
+// ============================================================
+// TOASTS GLOBALES
+// ============================================================
 function mostrar(texto, clase) {
-  // Sigue actualizando #estado por si algún HTML lo usa directo
   const e = document.getElementById('estado');
   if (e) {
     e.textContent = texto;
     e.className = clase || '';
-    // Ocultar el banner cuando hay un mensaje "ok" o "error" (se muestra como toast)
     if (clase === 'ok' || clase === 'error' || clase === 'aviso') {
       e.style.display = 'none';
     } else {
@@ -22,7 +60,6 @@ function mostrar(texto, clase) {
     }
   }
 
-  // Mostrar toast flotante
   if (texto && (clase === 'ok' || clase === 'error' || clase === 'aviso')) {
     mostrarToast_(texto, clase);
   }
@@ -32,14 +69,12 @@ let toastTimeout_ = null;
 let toastNode_ = null;
 
 function mostrarToast_(texto, clase) {
-  // Crear el contenedor si no existe
   if (!toastNode_) {
     toastNode_ = document.createElement('div');
     toastNode_.id = 'toastGlobal';
     document.body.appendChild(toastNode_);
   }
 
-  // Icono según clase
   let icono = '';
   if (clase === 'ok') icono = '✅ ';
   else if (clase === 'error') icono = '⚠️ ';
@@ -48,19 +83,20 @@ function mostrarToast_(texto, clase) {
   toastNode_.textContent = icono + texto;
   toastNode_.className = 'toast-global visible ' + (clase || '');
 
-  // Auto-ocultar
   clearTimeout(toastTimeout_);
   toastTimeout_ = setTimeout(function () {
     toastNode_.classList.remove('visible');
   }, clase === 'error' ? 4000 : 2500);
 
-  // Vibración (solo para ok y error)
   if (navigator.vibrate) {
     if (clase === 'ok') navigator.vibrate(60);
     else if (clase === 'error') navigator.vibrate([80, 40, 80]);
   }
 }
 
+// ============================================================
+// UTILIDADES
+// ============================================================
 function norm(s) {
   return String(s || '')
     .toLowerCase()

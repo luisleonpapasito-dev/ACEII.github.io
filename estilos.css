@@ -23,6 +23,7 @@
   --naranja: #F2A100;
   --rosa: #E91E63;
   --cyan: #00BCD4;
+  --gris: #5A6072;
 
   --exito: #2A9D5C;
   --alerta: #E63946;
@@ -35,6 +36,68 @@
   --sombra-fuerte: 0 4px 12px rgba(27, 77, 177, 0.12);
 
   --fuente: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ============================================================
+   TEMA OSCURO (aplicado por clase manual)
+   ============================================================ */
+html.tema-oscuro {
+  --fondo: #0F1419;
+  --superficie: #1A1F2E;
+  --superficie-2: #232A3D;
+
+  --texto: #E8ECF4;
+  --texto-suave: #A8B0C0;
+  --texto-claro: #6B7280;
+
+  --azul: #4A7DE0;
+  --azul-claro: #6B9BFF;
+  --azul-suave: #1E2A47;
+
+  --verde: #34D399;
+  --morado: #A78BFA;
+  --naranja: #FBBF24;
+  --rosa: #F472B6;
+  --cyan: #22D3EE;
+  --gris: #94A3B8;
+
+  --exito: #34D399;
+  --alerta: #F87171;
+  --aviso: #FBBF24;
+
+  --sombra: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --sombra-fuerte: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Modo AUTO: sigue al sistema */
+@media (prefers-color-scheme: dark) {
+  html.tema-auto {
+    --fondo: #0F1419;
+    --superficie: #1A1F2E;
+    --superficie-2: #232A3D;
+
+    --texto: #E8ECF4;
+    --texto-suave: #A8B0C0;
+    --texto-claro: #6B7280;
+
+    --azul: #4A7DE0;
+    --azul-claro: #6B9BFF;
+    --azul-suave: #1E2A47;
+
+    --verde: #34D399;
+    --morado: #A78BFA;
+    --naranja: #FBBF24;
+    --rosa: #F472B6;
+    --cyan: #22D3EE;
+    --gris: #94A3B8;
+
+    --exito: #34D399;
+    --alerta: #F87171;
+    --aviso: #FBBF24;
+
+    --sombra: 0 2px 8px rgba(0, 0, 0, 0.35);
+    --sombra-fuerte: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
 }
 
 * {
@@ -52,6 +115,13 @@ body {
   line-height: 1.5;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  animation: fadeInBody 0.25s ease-out;
+  transition: background 0.2s, color 0.2s;
+}
+
+@keyframes fadeInBody {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ============================================================
@@ -86,7 +156,17 @@ body {
   position: relative;
   overflow: hidden;
   box-shadow: var(--sombra-fuerte);
+  transition: background 0.2s;
 }
+html.tema-oscuro .app-header {
+  background: linear-gradient(135deg, #1A2540 0%, #2C3E70 100%);
+}
+@media (prefers-color-scheme: dark) {
+  html.tema-auto .app-header {
+    background: linear-gradient(135deg, #1A2540 0%, #2C3E70 100%);
+  }
+}
+
 .app-header::after {
   content: '';
   position: absolute;
@@ -96,6 +176,7 @@ body {
   height: 40px;
   background: var(--fondo);
   border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  transition: background 0.2s;
 }
 .app-header-contenido {
   position: relative;
@@ -133,6 +214,46 @@ body {
 }
 
 /* ============================================================
+   Botón de tema (arriba a la derecha del header)
+   ============================================================ */
+.btn-tema {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  padding: 0;
+  margin: 0;
+  transition: transform 0.15s, background 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.btn-tema:active {
+  transform: scale(0.92);
+  background: rgba(255, 255, 255, 0.28);
+}
+@media (min-width: 700px) {
+  .btn-tema {
+    top: 24px;
+    right: 28px;
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
+  }
+}
+
+/* ============================================================
    Caja / Card general
    ============================================================ */
 .caja {
@@ -143,6 +264,12 @@ body {
   padding: var(--padding);
   box-sizing: border-box;
   box-shadow: var(--sombra);
+  animation: aparecerCaja 0.3s ease-out;
+  transition: background 0.2s, color 0.2s;
+}
+@keyframes aparecerCaja {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ============================================================
@@ -168,7 +295,7 @@ body {
   flex-direction: column;
   gap: 10px;
   position: relative;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
   overflow: hidden;
   min-height: 130px;
   cursor: pointer;
@@ -177,24 +304,93 @@ body {
   transform: scale(0.97);
   box-shadow: var(--sombra-fuerte);
 }
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-fuerte);
+}
 
+/* Animación escalonada de las tarjetas */
+.grid-menu .card {
+  animation: entradaCard 0.35s ease-out backwards;
+}
+.grid-menu .card:nth-child(1)  { animation-delay: 0.02s; }
+.grid-menu .card:nth-child(2)  { animation-delay: 0.06s; }
+.grid-menu .card:nth-child(3)  { animation-delay: 0.10s; }
+.grid-menu .card:nth-child(4)  { animation-delay: 0.14s; }
+.grid-menu .card:nth-child(5)  { animation-delay: 0.18s; }
+.grid-menu .card:nth-child(6)  { animation-delay: 0.22s; }
+.grid-menu .card:nth-child(7)  { animation-delay: 0.26s; }
+.grid-menu .card:nth-child(8)  { animation-delay: 0.30s; }
+.grid-menu .card:nth-child(9)  { animation-delay: 0.34s; }
+.grid-menu .card:nth-child(10) { animation-delay: 0.38s; }
+.grid-menu .card:nth-child(11) { animation-delay: 0.42s; }
+
+@keyframes entradaCard {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   Iconos de las tarjetas (filled con gradiente + sombra)
+   ============================================================ */
 .card-icono {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 4px 10px var(--icono-sombra, rgba(27, 77, 177, 0.30));
+  transition: transform 0.15s ease-out, box-shadow 0.2s;
+}
+.card:active .card-icono {
+  transform: scale(1.06);
 }
 .card-icono svg {
-  width: 22px;
-  height: 22px;
-  stroke: #fff;
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  width: 26px;
+  height: 26px;
+  fill: #fff;
+  stroke: none;
+}
+
+/* Gradientes y sombras por color */
+.card-icono.azul {
+  background: linear-gradient(135deg, #3F70D4 0%, #1B4DB1 100%);
+  --icono-sombra: rgba(27, 77, 177, 0.35);
+}
+.card-icono.verde {
+  background: linear-gradient(135deg, #3CC784 0%, #229E62 100%);
+  --icono-sombra: rgba(34, 158, 98, 0.35);
+}
+.card-icono.morado {
+  background: linear-gradient(135deg, #8F63E6 0%, #6A3CC4 100%);
+  --icono-sombra: rgba(106, 60, 196, 0.35);
+}
+.card-icono.naranja {
+  background: linear-gradient(135deg, #F7B21F 0%, #E08F00 100%);
+  --icono-sombra: rgba(224, 143, 0, 0.35);
+}
+.card-icono.cyan {
+  background: linear-gradient(135deg, #26CBE0 0%, #00A6BC 100%);
+  --icono-sombra: rgba(0, 166, 188, 0.35);
+}
+.card-icono.rosa {
+  background: linear-gradient(135deg, #F0467F 0%, #D0154F 100%);
+  --icono-sombra: rgba(208, 21, 79, 0.35);
+}
+.card-icono.gris {
+  background: linear-gradient(135deg, #7D8799 0%, #5A6072 100%);
+  --icono-sombra: rgba(90, 96, 114, 0.35);
+}
+
+html.tema-oscuro .card-icono {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+@media (prefers-color-scheme: dark) {
+  html.tema-auto .card-icono {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
 }
 
 .card-titulo {
@@ -217,13 +413,6 @@ body {
   font-weight: 600;
 }
 
-.card-icono.azul { background: var(--azul); }
-.card-icono.verde { background: var(--verde); }
-.card-icono.morado { background: var(--morado); }
-.card-icono.naranja { background: var(--naranja); }
-.card-icono.rosa { background: var(--rosa); }
-.card-icono.cyan { background: var(--cyan); }
-
 .card.ancha {
   grid-column: span 2;
   min-height: auto;
@@ -235,8 +424,8 @@ body {
   flex: 1;
 }
 .card.ancha .card-icono {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
 }
 
 /* ============================================================
@@ -253,17 +442,19 @@ button {
   color: var(--texto);
   cursor: pointer;
   margin: 4px 4px 4px 0;
-  transition: background 0.15s, transform 0.1s;
+  transition: transform 0.1s ease-out, background 0.15s, box-shadow 0.15s;
 }
-button:active {
-  transform: scale(0.98);
+button:active:not(:disabled) {
+  transform: scale(0.97);
 }
 button.main {
   background: var(--azul);
   color: #fff;
+  box-shadow: 0 2px 6px rgba(27, 77, 177, 0.25);
 }
-button.main:active {
+button.main:active:not(:disabled) {
   background: var(--azul-claro);
+  box-shadow: 0 1px 3px rgba(27, 77, 177, 0.2);
 }
 button:disabled {
   opacity: 0.4;
@@ -277,7 +468,8 @@ input[type=text],
 input[type=password],
 input[type=number],
 input[type=range],
-select {
+select,
+textarea {
   font-family: var(--fuente);
   width: 100%;
   padding: 12px 14px;
@@ -288,12 +480,27 @@ select {
   border: 1.5px solid #E1E5EE;
   font-size: 15px;
   box-sizing: border-box;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
 }
-input:focus, select:focus {
+html.tema-oscuro input,
+html.tema-oscuro select,
+html.tema-oscuro textarea {
+  background: var(--superficie-2);
+  border-color: #2A3348;
+}
+@media (prefers-color-scheme: dark) {
+  html.tema-auto input,
+  html.tema-auto select,
+  html.tema-auto textarea {
+    background: var(--superficie-2);
+    border-color: #2A3348;
+  }
+}
+input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--azul);
   background: var(--superficie);
+  box-shadow: 0 0 0 3px rgba(74, 125, 224, 0.15);
 }
 
 /* ============================================================
@@ -362,6 +569,7 @@ label {
 a {
   color: var(--azul);
   text-decoration: none;
+  transition: color 0.15s;
 }
 
 /* ============================================================
@@ -396,6 +604,11 @@ a.op.off { background: var(--superficie-2); color: var(--texto-claro); }
   padding: 8px 0;
   border-bottom: 1px solid #E8ECF4;
   font-size: 14px;
+  transition: border-color 0.2s;
+}
+html.tema-oscuro .linea { border-bottom-color: #2A3348; }
+@media (prefers-color-scheme: dark) {
+  html.tema-auto .linea { border-bottom-color: #2A3348; }
 }
 
 /* ============================================================
@@ -409,6 +622,14 @@ a.op.off { background: var(--superficie-2); color: var(--texto-claro); }
     flex-direction: column;
     align-items: center;
     padding: 32px 0;
+  }
+  html.tema-oscuro body {
+    background: linear-gradient(135deg, #0F1419 0%, #1A1F2E 100%);
+  }
+  @media (prefers-color-scheme: dark) {
+    html.tema-auto body {
+      background: linear-gradient(135deg, #0F1419 0%, #1A1F2E 100%);
+    }
   }
 
   .app-header {
@@ -450,12 +671,12 @@ a.op.off { background: var(--superficie-2); color: var(--texto-claro); }
     min-height: 150px;
   }
   .card-icono {
-    width: 50px;
-    height: 50px;
+    width: 58px;
+    height: 58px;
   }
   .card-icono svg {
-    width: 26px;
-    height: 26px;
+    width: 30px;
+    height: 30px;
   }
   .card-titulo {
     font-size: 16px;
@@ -470,165 +691,35 @@ a.op.off { background: var(--superficie-2); color: var(--texto-claro); }
 }
 
 /* ============================================================
-   MODO OSCURO AUTOMÁTICO
-   Se activa cuando el celular está en modo oscuro
+   Modo oscuro: ajustes específicos por pantalla
    ============================================================ */
+html.tema-oscuro .caja,
+html.tema-oscuro .card {
+  background: var(--superficie);
+  color: var(--texto);
+}
 @media (prefers-color-scheme: dark) {
-  :root {
-    --fondo: #0F1419;
-    --superficie: #1A1F2E;
-    --superficie-2: #232A3D;
-
-    --texto: #E8ECF4;
-    --texto-suave: #A8B0C0;
-    --texto-claro: #6B7280;
-
-    --azul: #4A7DE0;
-    --azul-claro: #6B9BFF;
-    --azul-suave: #1E2A47;
-
-    --verde: #34D399;
-    --morado: #A78BFA;
-    --naranja: #FBBF24;
-    --rosa: #F472B6;
-    --cyan: #22D3EE;
-
-    --exito: #34D399;
-    --alerta: #F87171;
-    --aviso: #FBBF24;
-
-    --sombra: 0 2px 8px rgba(0, 0, 0, 0.35);
-    --sombra-fuerte: 0 4px 12px rgba(0, 0, 0, 0.5);
-  }
-
-  body {
-    background: var(--fondo);
-    color: var(--texto);
-  }
-
-  .app-header {
-    background: linear-gradient(135deg, #1A2540 0%, #2C3E70 100%);
-  }
-  .app-header::after {
-    background: var(--fondo);
-  }
-
-  .caja,
-  .card,
-  .turno,
-  .detalle,
-  .chart-box,
-  .kpi,
-  .sin-datos {
+  html.tema-auto .caja,
+  html.tema-auto .card {
     background: var(--superficie);
     color: var(--texto);
   }
+}
 
-  #estado {
+html.tema-oscuro #estado {
+  background: var(--superficie);
+  color: var(--texto-suave);
+}
+@media (prefers-color-scheme: dark) {
+  html.tema-auto #estado {
     background: var(--superficie);
     color: var(--texto-suave);
-  }
-
-  input[type=text],
-  input[type=password],
-  input[type=number],
-  input[type=range],
-  select,
-  textarea {
-    background: var(--superficie-2);
-    color: var(--texto);
-    border-color: #2A3348;
-  }
-  input:focus, select:focus, textarea:focus {
-    background: var(--superficie);
-    border-color: var(--azul-claro);
-  }
-
-  button {
-    background: var(--superficie-2);
-    color: var(--texto);
-  }
-  button.main {
-    background: var(--azul);
-    color: #fff;
-  }
-
-  .linea,
-  .resultado,
-  .item-carrito,
-  .mov,
-  .ranking-item,
-  .stock-item,
-  .resumen-fila,
-  .lista-productos .item,
-  .prod-item,
-  .cat-item {
-    border-bottom-color: #2A3348;
-  }
-
-  .resumen {
-    background: var(--superficie-2);
-    border-color: var(--azul-suave);
-  }
-
-  #panel {
-    background: var(--superficie-2);
-  }
-
-  #modalCam .caja-conf,
-  #panelEscaneo .caja-conf {
-    background: var(--superficie);
-    color: var(--texto);
-  }
-
-  .lista-productos .item:hover,
-  .resultado:hover,
-  .prod-item:hover,
-  .cat-item:hover {
-    background: var(--superficie-2);
-  }
-
-  /* Ajustes específicos por pantalla */
-  #saldoBox {
-    background: linear-gradient(135deg, #1E3A7A 0%, #2F5BB7 100%);
-  }
-
-  .btn-rapido {
-    background: var(--superficie);
-    border-color: var(--azul-suave);
-    color: var(--texto);
-  }
-  .btn-rapido.grupo {
-    background: #2A2418;
-    border-color: var(--naranja);
-  }
-  .btn-variante {
-    background: var(--superficie);
-    color: var(--texto);
-  }
-
-  .thumb,
-  .prod-thumb,
-  .res-thumb {
-    background: var(--superficie-2);
-  }
-
-  .aviso-id,
-  .aviso-info {
-    background: var(--azul-suave);
-    color: var(--azul-claro);
-  }
-
-  .bloque {
-    background: var(--superficie-2);
   }
 }
 
 /* ============================================================
    TOAST GLOBAL FLOTANTE
-   Reemplaza el banner #estado feo
    ============================================================ */
-
 #toastGlobal {
   position: fixed;
   bottom: 24px;
@@ -650,76 +741,18 @@ a.op.off { background: var(--superficie-2); color: var(--texto-claro); }
   line-height: 1.4;
   word-break: break-word;
 }
-
 #toastGlobal.visible {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
   pointer-events: auto;
 }
-
 #toastGlobal.ok { background: var(--exito, #2A9D5C); }
 #toastGlobal.error { background: var(--alerta, #E63946); }
 #toastGlobal.aviso { background: var(--aviso, #FB8C00); }
 
 /* ============================================================
-   ANIMACIONES GLOBALES (sutiles)
+   Listas de items: aparición escalonada
    ============================================================ */
-
-/* 1. Fade-in suave al entrar a una pantalla */
-body {
-  animation: fadeInBody 0.25s ease-out;
-}
-@keyframes fadeInBody {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* 2. Cajas aparecen suavemente */
-.caja {
-  animation: aparecerCaja 0.3s ease-out;
-}
-@keyframes aparecerCaja {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* 3. Botones con mejor feedback */
-button {
-  transition: transform 0.1s ease-out, background 0.15s, box-shadow 0.15s;
-}
-button:active:not(:disabled) {
-  transform: scale(0.97);
-}
-button.main {
-  box-shadow: 0 2px 6px rgba(27, 77, 177, 0.25);
-}
-button.main:active:not(:disabled) {
-  box-shadow: 0 1px 3px rgba(27, 77, 177, 0.2);
-}
-
-/* 4. Links con transición */
-a {
-  transition: color 0.15s;
-}
-
-/* 5. Inputs con transición suave */
-input, select, textarea {
-  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
-}
-input:focus, select:focus, textarea:focus {
-  box-shadow: 0 0 0 3px rgba(74, 125, 224, 0.15);
-}
-
-/* 6. Tarjetas del menú con hover */
-.card {
-  transition: transform 0.15s ease-out, box-shadow 0.15s;
-}
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-fuerte);
-}
-
-/* 7. Listas de items: aparición escalonada */
 .resultado, .prod-item, .cat-item, .turno, .mov, .item-carrito {
   animation: aparecerItem 0.25s ease-out backwards;
 }
@@ -728,12 +761,16 @@ input:focus, select:focus, textarea:focus {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* 8. Scroll suave global */
+/* ============================================================
+   Scroll suave global
+   ============================================================ */
 html {
   scroll-behavior: smooth;
 }
 
-/* 9. Loading spinner global (por si lo usas) */
+/* ============================================================
+   Spinner global
+   ============================================================ */
 .spinner-global {
   display: inline-block;
   width: 18px;
@@ -749,7 +786,9 @@ html {
   to { transform: rotate(360deg); }
 }
 
-/* 10. Reducir animaciones si el usuario las desactiva */
+/* ============================================================
+   Reducir animaciones si el usuario las desactiva
+   ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;

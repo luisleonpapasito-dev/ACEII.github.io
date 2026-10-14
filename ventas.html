@@ -127,6 +127,30 @@
     background: #FFF8E8;
   }
 
+  /* Toggle de rápidos */
+#btnToggleRapidos {
+  background: var(--azul-suave);
+  color: var(--azul);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  transition: background 0.15s, color 0.15s;
+}
+#btnToggleRapidos:active {
+  background: var(--azul-claro);
+  color: #fff;
+}
+
+#botonesRapidos {
+  animation: fadeInRapidos 0.2s ease-out;
+}
+@keyframes fadeInRapidos {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
   #panelVariantes {
     display: none;
     margin: 10px 0;
@@ -662,9 +686,12 @@
   <div id="zonaRapidos">
     <div class="titulo-fila">
       <h4>⚡ Rápidos <small style="font-weight:400;color:var(--texto-claro);font-size:11px;">(mantén para cobrar)</small></h4>
-      <button id="btnConfigurar" type="button">⚙️</button>
+      <div style="display:flex; gap:6px;">
+        <button id="btnToggleRapidos" type="button">▼ Mostrar</button>
+        <button id="btnConfigurar" type="button">⚙️</button>
+      </div>
     </div>
-    <div id="botonesRapidos"></div>
+    <div id="botonesRapidos" style="display:none;"></div>
   </div>
 
   <div id="panelVariantes">
@@ -1765,6 +1792,43 @@ $('escAgregar').addEventListener('click', function () {
   setTimeout(function () { pausaLectura = false; }, 800);
 });
 
+// =====================================================================
+// Toggle de botones rápidos (mostrar / ocultar)
+// =====================================================================
+const RAPIDOS_VISIBLES_KEY = 'caf_rapidos_visibles';
+
+function aplicarEstadoRapidos(visible) {
+  const botones = document.getElementById('botonesRapidos');
+  const btn = document.getElementById('btnToggleRapidos');
+  if (!botones || !btn) return;
+  if (visible) {
+    botones.style.display = 'grid';
+    btn.textContent = '▲ Ocultar';
+    btn.style.background = 'var(--azul)';
+    btn.style.color = '#fff';
+  } else {
+    botones.style.display = 'none';
+    btn.textContent = '▼ Mostrar';
+    btn.style.background = 'var(--azul-suave)';
+    btn.style.color = 'var(--azul)';
+  }
+  try { localStorage.setItem(RAPIDOS_VISIBLES_KEY, visible ? '1' : '0'); } catch (e) {}
+}
+
+document.getElementById('btnToggleRapidos').addEventListener('click', function () {
+  const visible = document.getElementById('botonesRapidos').style.display === 'grid';
+  aplicarEstadoRapidos(!visible);
+  if (navigator.vibrate) navigator.vibrate(30);
+});
+
+(function () {
+  let visible = false;
+  try {
+    visible = localStorage.getItem(RAPIDOS_VISIBLES_KEY) === '1';
+  } catch (e) {}
+  aplicarEstadoRapidos(visible);
+})();
+
 // ---------- Confirmar salida ----------
 function hayCarrito() { return carrito && carrito.length > 0; }
 
@@ -1784,6 +1848,7 @@ window.addEventListener('beforeunload', function (e) {
   }
 });
 </script>
+
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {

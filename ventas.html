@@ -198,14 +198,18 @@
   .btn-variante .nom-v { display: block; font-size: 13px; }
   .btn-variante .pre-v { display: block; font-size: 12px; color: var(--azul); font-weight: 700; margin-top: 2px; }
 
-.btn-variante.presionado-var {
+/* Estado presionado (mantener para cobro rápido) */
+.btn-rapido.presionado,
+.btn-variante.presionado {
   background: var(--exito) !important;
   color: #fff !important;
+  border-color: var(--exito) !important;
   transform: scale(1.05);
-  border-color: var(--exito);
 }
-.btn-variante.presionado-var .nom-v,
-.btn-variante.presionado-var .pre-v {
+.btn-rapido.presionado .nom,
+.btn-rapido.presionado .pre,
+.btn-variante.presionado .nom-v,
+.btn-variante.presionado .pre-v {
   color: #fff !important;
 }
 
@@ -838,6 +842,87 @@ if ('BarcodeDetector' in window) {
 
 function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
 
+// =====================================================================
+// Helper: detecta si fue un tap o un scroll
+// Si el dedo se movió más de THRESHOLD px → es scroll, no tap
+// =====================================================================
+const TAP_THRESHOLD = 10; // píxeles de tolerancia
+
+function crearDetectorTap(elemento, onTap, onLongPress) {
+  let startX = 0, startY = 0;
+  let timer = null;
+  let fueLargo = false;
+  let touchActivo = false;
+  let clickReciente = false;
+
+  elemento.addEventListener('touchstart', function (e) {
+    const touch = e.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+    touchActivo = true;
+    fueLargo = false;
+
+    if (onLongPress) {
+      timer = setTimeout(function () {
+        fueLargo = true;
+        elemento.classList.add('presionado');
+        if (navigator.vibrate) navigator.vibrate(50);
+      }, 800);
+    }
+  }, { passive: true });
+
+  elemento.addEventListener('touchmove', function (e) {
+    // Si se mueve mucho, cancelar el timer (era scroll)
+    const touch = e.touches[0];
+    const dx = Math.abs(touch.clientX - startX);
+    const dy = Math.abs(touch.clientY - startY);
+    if (dx > TAP_THRESHOLD || dy > TAP_THRESHOLD) {
+      clearTimeout(timer);
+      fueLargo = false;
+      touchActivo = false;  // marcar como scroll
+      elemento.classList.remove('presionado');
+    }
+  }, { passive: true });
+
+  elemento.addEventListener('touchend', function (e) {
+    clearTimeout(timer);
+    elemento.classList.remove('presionado');
+
+    // Si fue scroll, no hacer nada
+    if (!touchActivo) return;
+    touchActivo = false;
+
+    // Verificar que no se haya movido al final también
+    const touch = e.changedTouches[0];
+    const dx = Math.abs(touch.clientX - startX);
+    const dy = Math.abs(touch.clientY - startY);
+    if (dx > TAP_THRESHOLD || dy > TAP_THRESHOLD) return;
+
+    // Marcar click reciente para bloquear el "click fantasma"
+    clickReciente = true;
+    setTimeout(function () { clickReciente = false; }, 500);
+
+    if (fueLargo && onLongPress) {
+      onLongPress();
+    } else {
+      onTap();
+    }
+  });
+
+  elemento.addEventListener('touchcancel', function () {
+    clearTimeout(timer);
+    touchActivo = false;
+    fueLargo = false;
+    elemento.classList.remove('presionado');
+  });
+
+  // Fallback para PC (mouse)
+  elemento.addEventListener('click', function () {
+    if (clickReciente) return;
+    onTap();
+  });
+}
+
 // ---------- Arranque ----------
 (async function () {
   const ok = await exigirTurnoCajaAbierto();
@@ -912,8 +997,8 @@ function pintarResultados() {
         (cantEnCarrito ? '<br><span class="en-carrito">' + cantEnCarrito + ' en carrito</span>' : '') +
       '</div>';
 
-    if (p.stock > 0) {
-      d.addEventListener('click', function () { mostrarPanelCantidad(p); });
+      if (p.stock > 0) {
+      crearDetectorTap(d, function () { mostrarPanelCantidad(p); }, null);
     }
     cont.appendChild(d);
   });
@@ -1047,54 +1132,25 @@ function crearBotonRapido(p, esGrupo, itemsGrupo) {
       '<span class="pre">' + fmt(p.precio) + '</span>';
   }
 
-  btn.addEventListener('touchstart', function (e) {
-    touchIniciado = true;
-    tapFueLargo = false;
-    btn.classList.add('presionado');
-    tapTimer = setTimeout(function () {
-      tapFueLargo = true;
-      if (navigator.vibrate) navigator.vibrate(50);
-    }, 800);
-  }, { passive: true });
-
-  btn.addEventListener('touchend', function (e) {
-    clearTimeout(tapTimer);
-    btn.classList.remove('presionado');
-    if (!touchIniciado) return;
-    touchIniciado = false;
-
-    touchReciente = true;
-    setTimeout(function () { touchReciente = false; }, 500);
-
-    if (esGrupo) {
-      e.preventDefault();
-      mostrarVariantes(p, itemsGrupo);
-    } else {
-      if (tapFueLargo) {
-        e.preventDefault();
-        if (navigator.vibrate) navigator.vibrate(80);
-        abrirCobroRapido(p, 1);
-      } else {
-        agregarProductoAlCarrito(p, 1);
-      }
-    }
-  });
-
-  btn.addEventListener('touchcancel', function () {
-    clearTimeout(tapTimer);
-    btn.classList.remove('presionado');
-    touchIniciado = false;
-  });
-
-  btn.addEventListener('click', function (e) {
-    if (touchReciente) return;
+  // Definir qué hace el tap corto y el tap largo
+  const onTap = function () {
     if (esGrupo) {
       mostrarVariantes(p, itemsGrupo);
     } else {
       agregarProductoAlCarrito(p, 1);
     }
-  });
+  };
 
+  const onLongPress = function () {
+    if (esGrupo) {
+      mostrarVariantes(p, itemsGrupo);
+    } else {
+      if (navigator.vibrate) navigator.vibrate(80);
+      abrirCobroRapido(p, 1);
+    }
+  };
+
+  crearDetectorTap(btn, onTap, onLongPress);
   return btn;
 }
 
@@ -1139,57 +1195,18 @@ function mostrarVariantes(nombre, items) {
       '<span class="nom-v">' + p.nombre + '</span>' +
       '<span class="pre-v">' + fmt(p.precio) + '</span>';
 
-    // ---- Sistema de tap corto / tap largo ----
-    let tapTimerLocal = null;
-    let fueLargo = false;
-    let touchActivo = false;
-    let clickReciente = false;
-
-    btn.addEventListener('touchstart', function (e) {
-      touchActivo = true;
-      fueLargo = false;
-      btn.classList.add('presionado-var');
-      tapTimerLocal = setTimeout(function () {
-        fueLargo = true;
-        if (navigator.vibrate) navigator.vibrate(50);
-      }, 800);
-    }, { passive: true });
-
-    btn.addEventListener('touchend', function (e) {
-      clearTimeout(tapTimerLocal);
-      btn.classList.remove('presionado-var');
-      if (!touchActivo) return;
-      touchActivo = false;
-
-      clickReciente = true;
-      setTimeout(function () { clickReciente = false; }, 500);
-
-      if (fueLargo) {
-        e.preventDefault();
-        if (navigator.vibrate) navigator.vibrate(80);
-        // Tap largo → cobro rápido directo
-        $('panelVariantes').classList.remove('abierto');
-        abrirCobroRapido(p, 1);
-      } else {
-        // Tap corto → agregar al carrito
-        agregarProductoAlCarrito(p, 1);
-        $('panelVariantes').classList.remove('abierto');
-      }
-    });
-
-    btn.addEventListener('touchcancel', function () {
-      clearTimeout(tapTimerLocal);
-      btn.classList.remove('presionado-var');
-      touchActivo = false;
-    });
-
-    btn.addEventListener('click', function (e) {
-      if (clickReciente) return; // bloquea click fantasma
-      // Fallback PC: click normal = agregar al carrito
+    const onTap = function () {
       agregarProductoAlCarrito(p, 1);
       $('panelVariantes').classList.remove('abierto');
-    });
+    };
 
+    const onLongPress = function () {
+      if (navigator.vibrate) navigator.vibrate(80);
+      $('panelVariantes').classList.remove('abierto');
+      abrirCobroRapido(p, 1);
+    };
+
+    crearDetectorTap(btn, onTap, onLongPress);
     cont.appendChild(btn);
   });
 

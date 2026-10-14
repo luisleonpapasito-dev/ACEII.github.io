@@ -15,25 +15,25 @@
   --texto-suave: #667085;
   --texto-claro: #98a2b3;
 
-  /* ===== COLORES VIVIDOS ===== */
-  --azul: #2563EB;
+  /* ===== COLORES VIVIDOS (más saturados) ===== */
+  --azul: #1D4ED8;
   --azul-claro: #3B82F6;
   --azul-suave: #DBEAFE;
 
-  --verde: #10B981;
+  --verde: #059669;
   --morado: #7C3AED;
-  --naranja: #F59E0B;
-  --rosa: #EC4899;
+  --naranja: #D97706;
+  --rosa: #DB2777;
   --cyan: #0891B2;
-  --gris: #546E7A;
-  --amarillo: #F59E0B;
+  --gris: #475569;
+  --amarillo: #D97706;
   --violeta: #8B5CF6;
-  --coral: #E63946;
-  --turquesa: #14B8A6;
+  --coral: #DC2626;
+  --turquesa: #0D9488;
 
-  --exito: #10B981;
-  --alerta: #E63946;
-  --aviso: #F59E0B;
+  --exito: #059669;
+  --alerta: #DC2626;
+  --aviso: #D97706;
 
   --radio: 18px;
   --radio-sm: 12px;
@@ -202,7 +202,7 @@ body {
     0 0 30px 30px;
 
   box-shadow:
-    0 10px 30px rgba(37, 99, 235, 0.20);
+    0 10px 30px rgba(37, 99, 235, 0.25);
 
   transition:
     background 0.25s ease,
@@ -512,7 +512,7 @@ html.tema-oscuro .app-header {
 
 
 /* ============================================================
-   TARJETAS DEL MENÚ
+   TARJETAS DEL MENÚ — con gradiente sutil de profundidad
    ============================================================ */
 
 .card {
@@ -529,7 +529,13 @@ html.tema-oscuro .app-header {
 
   padding: 15px 14px 14px;
 
-  background: var(--superficie);
+  /* Gradiente radial sutil para efecto de profundidad */
+  background:
+    radial-gradient(
+      circle at 20% 0%,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(248, 250, 253, 1) 100%
+    );
 
   color: var(--texto);
 
@@ -552,25 +558,25 @@ html.tema-oscuro .app-header {
 }
 
 
-/* Decoración pastel en la esquina (más viva) */
+/* Blob decorativo de esquina (más sutil) */
 
 .card::after {
   content: '';
 
   position: absolute;
 
-  width: 80px;
-  height: 80px;
+  width: 65px;
+  height: 65px;
 
-  right: -30px;
-  top: -30px;
+  right: -25px;
+  top: -25px;
 
   border-radius: 50%;
 
   background:
     color-mix(
       in srgb,
-      var(--acento, var(--azul)) 16%,
+      var(--acento, var(--azul)) 12%,
       transparent
     );
 
@@ -578,7 +584,7 @@ html.tema-oscuro .app-header {
 }
 
 
-/* Línea lateral */
+/* Línea lateral izquierda */
 
 .card::before {
   content: '';
@@ -624,7 +630,12 @@ html.tema-oscuro .app-header {
 /* Tema oscuro */
 
 html.tema-oscuro .card {
-  background: var(--superficie);
+  background:
+    radial-gradient(
+      circle at 20% 0%,
+      #1e2a3f 0%,
+      #192231 100%
+    );
 
   border-color:
     rgba(255, 255, 255, 0.055);
@@ -636,7 +647,12 @@ html.tema-oscuro .card {
 
 @media (prefers-color-scheme: dark) {
   html.tema-auto .card {
-    background: var(--superficie);
+    background:
+      radial-gradient(
+        circle at 20% 0%,
+        #1e2a3f 0%,
+        #192231 100%
+      );
 
     border-color:
       rgba(255, 255, 255, 0.055);
@@ -703,26 +719,24 @@ html.tema-oscuro .card {
 
 
 /* ============================================================
-   ICONOS — ahora más vividos
+   ICONOS — Ahora en CÍRCULO, colores vividos
    ============================================================ */
 
 .card-icono {
   position: relative;
   z-index: 1;
 
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
 
-  border-radius: 15px;
+  /* CÍRCULO perfecto */
+  border-radius: 50%;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   flex-shrink: 0;
-
-  box-shadow:
-    0 4px 10px rgba(40, 60, 100, 0.10);
 
   transition:
     transform 0.16s ease,
@@ -731,18 +745,15 @@ html.tema-oscuro .card {
 
 .card:hover .card-icono {
   transform: translateY(-1px);
-
-  box-shadow:
-    0 7px 16px rgba(40, 60, 100, 0.14);
 }
 
 .card:active .card-icono {
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
 .card-icono svg {
-  width: 23px;
-  height: 23px;
+  width: 24px;
+  height: 24px;
 
   fill: #ffffff;
 
@@ -750,55 +761,55 @@ html.tema-oscuro .card {
 }
 
 
-/* Colores de iconos — ahora vivos y con sombra de color */
+/* Colores de iconos — vividos con sombra de color */
 
 .card-icono.azul {
   background:
-    linear-gradient(145deg, #3B82F6, #2563EB);
+    linear-gradient(145deg, #3B82F6, #1D4ED8);
   box-shadow:
-    0 4px 12px rgba(37, 99, 235, 0.35);
+    0 6px 14px rgba(29, 78, 216, 0.40);
 }
 
 .card-icono.cyan {
   background:
     linear-gradient(145deg, #06B6D4, #0891B2);
   box-shadow:
-    0 4px 12px rgba(8, 145, 178, 0.35);
+    0 6px 14px rgba(8, 145, 178, 0.40);
 }
 
 .card-icono.amarillo {
   background:
-    linear-gradient(145deg, #FBBF24, #F59E0B);
+    linear-gradient(145deg, #FBBF24, #D97706);
   box-shadow:
-    0 4px 12px rgba(245, 158, 11, 0.40);
+    0 6px 14px rgba(217, 119, 6, 0.40);
 }
 
 .card-icono.morado {
   background:
-    linear-gradient(145deg, #8B5CF6, #7C3AED);
+    linear-gradient(145deg, #A78BFA, #7C3AED);
   box-shadow:
-    0 4px 12px rgba(124, 58, 237, 0.35);
+    0 6px 14px rgba(124, 58, 237, 0.40);
 }
 
 .card-icono.coral {
   background:
-    linear-gradient(145deg, #F87171, #E63946);
+    linear-gradient(145deg, #F87171, #DC2626);
   box-shadow:
-    0 4px 12px rgba(230, 57, 70, 0.35);
+    0 6px 14px rgba(220, 38, 38, 0.40);
 }
 
 .card-icono.verde {
   background:
-    linear-gradient(145deg, #34D399, #10B981);
+    linear-gradient(145deg, #34D399, #059669);
   box-shadow:
-    0 4px 12px rgba(16, 185, 129, 0.35);
+    0 6px 14px rgba(5, 150, 105, 0.40);
 }
 
 .card-icono.gris {
   background:
     linear-gradient(145deg, #64748B, #475569);
   box-shadow:
-    0 4px 12px rgba(71, 85, 105, 0.35);
+    0 6px 14px rgba(71, 85, 105, 0.40);
 }
 
 
@@ -891,7 +902,7 @@ html.tema-oscuro .card {
 
 .cerrar-sesion-box:hover {
   background:
-    rgba(230, 57, 70, 0.10);
+    rgba(220, 38, 38, 0.10);
 
   color: var(--alerta);
 }
@@ -956,7 +967,7 @@ button.main {
   color: #fff;
 
   box-shadow:
-    0 4px 10px rgba(37, 99, 235, 0.28);
+    0 4px 12px rgba(29, 78, 216, 0.32);
 }
 
 button.main:active:not(:disabled) {
@@ -1035,7 +1046,7 @@ textarea:focus {
   background: var(--superficie);
 
   box-shadow:
-    0 0 0 3px rgba(37, 99, 235, 0.15);
+    0 0 0 3px rgba(29, 78, 216, 0.15);
 }
 
 label {
@@ -1466,13 +1477,11 @@ html.tema-oscuro .linea {
   .card-icono {
     width: 52px;
     height: 52px;
-
-    border-radius: 16px;
   }
 
   .card-icono svg {
-    width: 25px;
-    height: 25px;
+    width: 26px;
+    height: 26px;
   }
 
   .card-titulo {

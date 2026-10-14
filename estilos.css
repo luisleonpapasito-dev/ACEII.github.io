@@ -623,3 +623,138 @@ a.op.off { background: var(--superficie-2); color: var(--texto-claro); }
     background: var(--superficie-2);
   }
 }
+
+/* ============================================================
+   TOAST GLOBAL FLOTANTE
+   Reemplaza el banner #estado feo
+   ============================================================ */
+
+#toastGlobal {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #1A1C1E;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  z-index: 99999;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+  max-width: 90vw;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+#toastGlobal.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#toastGlobal.ok { background: var(--exito, #2A9D5C); }
+#toastGlobal.error { background: var(--alerta, #E63946); }
+#toastGlobal.aviso { background: var(--aviso, #FB8C00); }
+
+/* ============================================================
+   ANIMACIONES GLOBALES (sutiles)
+   ============================================================ */
+
+/* 1. Fade-in suave al entrar a una pantalla */
+body {
+  animation: fadeInBody 0.25s ease-out;
+}
+@keyframes fadeInBody {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* 2. Cajas aparecen suavemente */
+.caja {
+  animation: aparecerCaja 0.3s ease-out;
+}
+@keyframes aparecerCaja {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 3. Botones con mejor feedback */
+button {
+  transition: transform 0.1s ease-out, background 0.15s, box-shadow 0.15s;
+}
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+button.main {
+  box-shadow: 0 2px 6px rgba(27, 77, 177, 0.25);
+}
+button.main:active:not(:disabled) {
+  box-shadow: 0 1px 3px rgba(27, 77, 177, 0.2);
+}
+
+/* 4. Links con transición */
+a {
+  transition: color 0.15s;
+}
+
+/* 5. Inputs con transición suave */
+input, select, textarea {
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+input:focus, select:focus, textarea:focus {
+  box-shadow: 0 0 0 3px rgba(74, 125, 224, 0.15);
+}
+
+/* 6. Tarjetas del menú con hover */
+.card {
+  transition: transform 0.15s ease-out, box-shadow 0.15s;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-fuerte);
+}
+
+/* 7. Listas de items: aparición escalonada */
+.resultado, .prod-item, .cat-item, .turno, .mov, .item-carrito {
+  animation: aparecerItem 0.25s ease-out backwards;
+}
+@keyframes aparecerItem {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 8. Scroll suave global */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 9. Loading spinner global (por si lo usas) */
+.spinner-global {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: girarGlobal 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+@keyframes girarGlobal {
+  to { transform: rotate(360deg); }
+}
+
+/* 10. Reducir animaciones si el usuario las desactiva */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

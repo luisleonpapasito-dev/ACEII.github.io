@@ -3,11 +3,62 @@ const URL_SERVIDOR = 'https://script.google.com/macros/s/AKfycbytYTtsMeI-9Pw-wWZ
 
 const $ = function (id) { return document.getElementById(id); };
 
+// ============================================================
+// TOASTS GLOBALES
+// Reemplaza el banner #estado por notificaciones flotantes
+// ============================================================
+
 function mostrar(texto, clase) {
-  const e = $('estado');
-  if (!e) return;
-  e.textContent = texto;
-  e.className = clase || '';
+  // Sigue actualizando #estado por si algún HTML lo usa directo
+  const e = document.getElementById('estado');
+  if (e) {
+    e.textContent = texto;
+    e.className = clase || '';
+    // Ocultar el banner cuando hay un mensaje "ok" o "error" (se muestra como toast)
+    if (clase === 'ok' || clase === 'error' || clase === 'aviso') {
+      e.style.display = 'none';
+    } else {
+      e.style.display = '';
+    }
+  }
+
+  // Mostrar toast flotante
+  if (texto && (clase === 'ok' || clase === 'error' || clase === 'aviso')) {
+    mostrarToast_(texto, clase);
+  }
+}
+
+let toastTimeout_ = null;
+let toastNode_ = null;
+
+function mostrarToast_(texto, clase) {
+  // Crear el contenedor si no existe
+  if (!toastNode_) {
+    toastNode_ = document.createElement('div');
+    toastNode_.id = 'toastGlobal';
+    document.body.appendChild(toastNode_);
+  }
+
+  // Icono según clase
+  let icono = '';
+  if (clase === 'ok') icono = '✅ ';
+  else if (clase === 'error') icono = '⚠️ ';
+  else if (clase === 'aviso') icono = '⏳ ';
+
+  toastNode_.textContent = icono + texto;
+  toastNode_.className = 'toast-global visible ' + (clase || '');
+
+  // Auto-ocultar
+  clearTimeout(toastTimeout_);
+  toastTimeout_ = setTimeout(function () {
+    toastNode_.classList.remove('visible');
+  }, clase === 'error' ? 4000 : 2500);
+
+  // Vibración (solo para ok y error)
+  if (navigator.vibrate) {
+    if (clase === 'ok') navigator.vibrate(60);
+    else if (clase === 'error') navigator.vibrate([80, 40, 80]);
+  }
 }
 
 function norm(s) {

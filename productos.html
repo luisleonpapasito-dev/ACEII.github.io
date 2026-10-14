@@ -9,41 +9,69 @@
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
 <style>
   #listaProductos {
-    max-height: 420px;
+    max-height: 500px;
     overflow-y: auto;
     margin-top: 8px;
   }
   .prod-item {
-    padding: 12px;
+    padding: 10px;
     border-bottom: 1px solid #E8ECF4;
     cursor: pointer;
     transition: background 0.15s;
+    display: flex;
+    gap: 12px;
+    align-items: center;
   }
   .prod-item:hover { background: var(--superficie-2); }
   .prod-item:last-child { border-bottom: none; }
   .prod-item.inactivo { opacity: 0.55; }
-  .prod-item .fila {
+
+  .prod-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: var(--superficie-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--azul);
+  }
+  .prod-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .prod-info { flex: 1; min-width: 0; }
+  .prod-info .fila {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 8px;
   }
-  .prod-item .nombre {
+  .prod-info .nombre {
     font-size: 15px;
     font-weight: 600;
     color: var(--texto);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
-  .prod-item .meta {
+  .prod-info .meta {
     font-size: 12px;
     color: var(--texto-suave);
     margin-top: 2px;
   }
-  .prod-item .precio {
+  .prod-info .precio {
     color: var(--azul);
     font-weight: 700;
     font-size: 14px;
   }
-  .prod-item .badge {
+  .prod-info .badge {
     font-size: 11px;
     font-weight: 700;
     padding: 2px 8px;
@@ -104,6 +132,49 @@
     border-radius: 8px;
   }
 
+  /* Bloque de imagen */
+  .imagen-bloque {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 6px;
+    background: var(--superficie-2);
+    padding: 10px;
+    border-radius: 10px;
+  }
+  .imagen-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--texto-claro);
+    font-size: 12px;
+    text-align: center;
+    border: 2px solid #E8ECF4;
+  }
+  .imagen-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .imagen-acciones {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .imagen-acciones button {
+    margin: 0;
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
   /* Modal de cámara */
   #modalCam {
     display: none;
@@ -144,6 +215,7 @@
     box-sizing: border-box;
     pointer-events: none;
   }
+  #modalCam .marco.ok { border-color: #40c4ff; }
   #modalCam .info {
     position: absolute;
     bottom: 20px;
@@ -174,7 +246,6 @@
 
 <div id="estado">Cargando...</div>
 
-<!-- Buscador y filtros -->
 <div class="caja">
   <div style="display:flex; gap:8px; margin-bottom:8px;">
     <button class="main" id="btnNuevo" style="flex:1;">➕ Nuevo producto</button>
@@ -185,13 +256,24 @@
   <div id="listaProductos"></div>
 </div>
 
-<!-- Formulario (crear / editar) -->
 <div class="caja" id="formPanel" style="display:none;">
   <div id="formTitulo" style="font-weight:700; font-size:16px; margin-bottom:8px;">Nuevo producto</div>
 
   <div class="aviso-id" id="avisoId" style="display:none;"></div>
 
   <div class="form-grupo">
+    <label>Imagen del producto</label>
+    <div class="imagen-bloque">
+      <div class="imagen-preview" id="imagenPreview">Sin imagen</div>
+      <div class="imagen-acciones">
+        <button class="main" id="btnSubirFoto" type="button">📷 Subir foto</button>
+        <input type="file" id="inputFoto" accept="image/*" capture="environment" style="display:none;">
+        <button id="btnPegarUrl" type="button">🔗 Pegar URL</button>
+        <button id="btnQuitarFoto" type="button" style="display:none;">🗑️ Quitar imagen</button>
+      </div>
+    </div>
+    <input type="hidden" id="fImagenUrl">
+
     <label>Categoría *</label>
     <select id="fCategoria"></select>
 
@@ -232,7 +314,6 @@
   </div>
 </div>
 
-<!-- Modal de cámara -->
 <div id="modalCam">
   <button class="cerrar" id="btnCerrarCam">Cerrar</button>
   <video id="video" playsinline muted autoplay></video>
@@ -250,6 +331,7 @@ let proveedores = [];
 let modos = [];
 let modoForm = 'crear';
 let productoEditando = null;
+let imagenUrlActual = '';
 
 (async function () {
   await cargarTodo();
@@ -299,6 +381,23 @@ function llenarSelectsForm() {
   });
 }
 
+// Placeholder con la inicial
+function colorPorCategoria(cat) {
+  const colores = {
+    'Bebidas': '#E3ECFF',
+    'Lácteos y avena': '#FFF4DC',
+    'Dulces y confitería': '#FCE4EC',
+    'Galletas y ponqués': '#EFE7FB',
+    'Pasabocas salados': '#E0F7EC',
+    'Preparados': '#FFE5E5',
+    'Comida instantánea': '#D6F5FA',
+    'Combos': '#EFE7FB',
+    'Papelería e impresión': '#F0F4FF',
+    'Higiene y salud': '#E0F7EC'
+  };
+  return colores[cat] || '#F0F4FF';
+}
+
 function pintarLista() {
   const q = norm($('buscar').value);
   const soloActivos = $('soloActivos').checked;
@@ -323,19 +422,35 @@ function pintarLista() {
   items.forEach(function (p) {
     const d = document.createElement('div');
     d.className = 'prod-item' + (p.activo === 'No' ? ' inactivo' : '');
+
+    // Miniatura
+    let thumbHTML = '';
+    if (p.imagen_url) {
+      thumbHTML = '<img src="' + p.imagen_url + '" alt="" loading="lazy">';
+    } else {
+      const inicial = p.nombre ? p.nombre.charAt(0).toUpperCase() : '?';
+      const color = colorPorCategoria(p.categoria);
+      thumbHTML = '<span style="color:var(--azul);">' + inicial + '</span>';
+      d.style.setProperty('--thumb-bg', color);
+    }
+
     d.innerHTML =
-      '<div class="fila">' +
-        '<span class="nombre">' + p.nombre + '</span>' +
-        '<span class="precio">$' + p.precio.toLocaleString('es-CO') + '</span>' +
-      '</div>' +
-      '<div class="meta">' +
-        p.id + ' · ' + p.categoria +
-        ' <span class="badge badge-modo">' + p.modo + '</span>' +
-        ' <span class="badge ' + (p.activo === 'No' ? 'badge-inactivo' : 'badge-activo') + '">' +
-          (p.activo === 'No' ? 'INACTIVO' : 'Activo') +
-        '</span>' +
-      '</div>' +
-      '<div class="meta">' + (p.proveedor ? p.proveedor : '(sin proveedor)') + (p.codigo ? ' · ' + p.codigo : '') + '</div>';
+      '<div class="prod-thumb" style="background:' + (p.imagen_url ? '#fff' : colorPorCategoria(p.categoria)) + ';">' + thumbHTML + '</div>' +
+      '<div class="prod-info">' +
+        '<div class="fila">' +
+          '<span class="nombre">' + p.nombre + '</span>' +
+          '<span class="precio">$' + p.precio.toLocaleString('es-CO') + '</span>' +
+        '</div>' +
+        '<div class="meta">' +
+          p.id + ' · ' + p.categoria +
+          ' <span class="badge badge-modo">' + p.modo + '</span>' +
+          ' <span class="badge ' + (p.activo === 'No' ? 'badge-inactivo' : 'badge-activo') + '">' +
+            (p.activo === 'No' ? 'INACTIVO' : 'Activo') +
+          '</span>' +
+        '</div>' +
+        '<div class="meta">' + (p.proveedor ? p.proveedor : '(sin proveedor)') + (p.codigo ? ' · ' + p.codigo : '') + '</div>' +
+      '</div>';
+
     d.addEventListener('click', function () { abrirEditar(p); });
     cont.appendChild(d);
   });
@@ -349,6 +464,7 @@ $('btnRecargar').addEventListener('click', cargarTodo);
 $('btnNuevo').addEventListener('click', async function () {
   modoForm = 'crear';
   productoEditando = null;
+  imagenUrlActual = '';
   $('formTitulo').textContent = 'Nuevo producto';
   $('fCategoria').value = '';
   $('fNombre').value = '';
@@ -361,6 +477,7 @@ $('btnNuevo').addEventListener('click', async function () {
   $('fNota').value = '';
   $('avisoId').style.display = 'none';
   $('btnEliminarBox').style.display = 'none';
+  pintarImagen('');
   $('formPanel').style.display = 'block';
   $('formPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
   mostrar('Completa los datos del nuevo producto');
@@ -370,6 +487,7 @@ $('btnNuevo').addEventListener('click', async function () {
 function abrirEditar(p) {
   modoForm = 'editar';
   productoEditando = p;
+  imagenUrlActual = p.imagen_url || '';
   $('formTitulo').textContent = 'Editar: ' + p.nombre;
   $('avisoId').style.display = 'block';
   $('avisoId').textContent = 'ID: ' + p.id + ' (no editable)';
@@ -383,12 +501,102 @@ function abrirEditar(p) {
   $('fCodigo').value = p.codigo || '';
   $('fNota').value = p.nota || '';
   $('btnEliminarBox').style.display = 'block';
+  pintarImagen(imagenUrlActual);
   $('formPanel').style.display = 'block';
   $('formPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
   mostrar('Edita los datos y guarda');
 }
 
-// ---------- Auto-generar ID al elegir categoría en modo "crear" ----------
+// ---------- Pintar la imagen del formulario ----------
+function pintarImagen(url) {
+  imagenUrlActual = url || '';
+  $('fImagenUrl').value = imagenUrlActual;
+  const prev = $('imagenPreview');
+  if (imagenUrlActual) {
+    prev.innerHTML = '<img src="' + imagenUrlActual + '">';
+    $('btnQuitarFoto').style.display = 'block';
+  } else {
+    prev.textContent = 'Sin imagen';
+    $('btnQuitarFoto').style.display = 'none';
+  }
+}
+
+// ---------- Subir foto ----------
+$('btnSubirFoto').addEventListener('click', function () {
+  $('inputFoto').click();
+});
+
+$('inputFoto').addEventListener('change', function (e) {
+  const archivo = e.target.files[0];
+  if (!archivo) return;
+  mostrar('Subiendo imagen...', 'aviso');
+  comprimirImagen(archivo, 800, 0.85, async function (base64, tipoMime) {
+    const u = getUsuarioTurno();
+    const idProd = (modoForm === 'editar' && productoEditando) ? productoEditando.id : 'TEMP';
+    try {
+      const r = await post({
+        accion: 'subir_imagen_producto',
+        id_usuario: u.id,
+        id_producto: idProd,
+        base64: base64,
+        tipoMime: tipoMime
+      });
+      if (r && r.ok && r.url) {
+        pintarImagen(r.url);
+        mostrar('Imagen subida ✓', 'ok');
+      } else {
+        mostrar('Error al subir: ' + (r && r.error ? r.error : 'desconocido'), 'error');
+      }
+    } catch (err) {
+      mostrar('Error: ' + err.message, 'error');
+    }
+    $('inputFoto').value = '';
+  });
+});
+
+// ---------- Pegar URL ----------
+$('btnPegarUrl').addEventListener('click', function () {
+  const url = prompt('Pega la URL de la imagen:');
+  if (url && url.trim()) {
+    pintarImagen(url.trim());
+    mostrar('URL cargada', 'ok');
+  }
+});
+
+// ---------- Quitar imagen ----------
+$('btnQuitarFoto').addEventListener('click', function () {
+  if (!confirm('¿Quitar la imagen del producto?')) return;
+  pintarImagen('');
+  mostrar('Imagen quitada', 'aviso');
+});
+
+// ---------- Comprimir imagen ----------
+function comprimirImagen(archivo, maxAncho, calidad, callback) {
+  const reader = new FileReader();
+  reader.onload = function (ev) {
+    const img = new Image();
+    img.onload = function () {
+      let w = img.width;
+      let h = img.height;
+      if (w > maxAncho) {
+        h = Math.round(h * maxAncho / w);
+        w = maxAncho;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', calidad);
+      const base64 = dataUrl.split(',')[1];
+      callback(base64, 'image/jpeg');
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(archivo);
+}
+
+// ---------- Auto-generar ID al elegir categoría ----------
 $('fCategoria').addEventListener('change', async function () {
   if (modoForm !== 'crear') return;
   const cat = $('fCategoria').value;
@@ -442,7 +650,8 @@ $('btnGuardar').addEventListener('click', async function () {
         costo: costo,
         upp: upp,
         codigo: codigo,
-        nota: nota
+        nota: nota,
+        imagen_url: imagenUrlActual
       });
     } else {
       r = await post({
@@ -457,7 +666,8 @@ $('btnGuardar').addEventListener('click', async function () {
         costo: costo,
         upp: upp,
         codigo: codigo,
-        nota: nota
+        nota: nota,
+        imagen_url: imagenUrlActual
       });
     }
 
@@ -481,6 +691,7 @@ $('btnGuardar').addEventListener('click', async function () {
 $('btnCancelarForm').addEventListener('click', function () {
   $('formPanel').style.display = 'none';
   productoEditando = null;
+  imagenUrlActual = '';
   mostrar('Cancelado', 'aviso');
 });
 
@@ -513,7 +724,7 @@ $('btnEliminar').addEventListener('click', async function () {
   }
 });
 
-// ---------- Desactivar / Reactivar (doble click en el badge) ----------
+// ---------- Desactivar / Reactivar ----------
 document.addEventListener('dblclick', async function (e) {
   if (!e.target.classList.contains('badge-activo') && !e.target.classList.contains('badge-inactivo')) return;
   const itemPadre = e.target.closest('.prod-item');

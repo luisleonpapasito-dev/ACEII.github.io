@@ -18,6 +18,31 @@
     </div>
   </div>
 </header>
+<!-- Banner de info del turno -->
+<div id="bannerTurno" class="caja" style="display:none; margin-top:12px;">
+  <div id="bannerMiTurno" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+      <div style="flex:1;">
+        <div style="font-size:12px; color:var(--texto-suave); font-weight:600;">💰 Tu turno está abierto</div>
+        <div style="font-size:24px; color:var(--azul); font-weight:700;" id="bannerSaldo">$0</div>
+        <div style="font-size:11px; color:var(--texto-claro); margin-top:2px;" id="bannerTurnoId"></div>
+      </div>
+      <a href="caja.html" class="main" style="padding:10px 14px; border-radius:10px; color:#fff; text-decoration:none; font-weight:600; font-size:13px;">Ver caja →</a>
+    </div>
+  </div>
+  <div id="bannerOtroTurno" style="display:none;">
+    <div style="display:flex; gap:10px; align-items:flex-start;">
+      <div style="font-size:22px;">⚠️</div>
+      <div style="flex:1;">
+        <div style="font-weight:700; color:var(--naranja); font-size:14px;">Hay un turno abierto por otro usuario</div>
+        <div id="bannerOtroTexto" style="font-size:13px; color:var(--texto-suave); margin-top:4px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 
 <div id="estado">ACEII</div>
 
@@ -158,7 +183,12 @@ async function pintar() {
   $('abrirTurno').style.display = 'none';
   $('menu').style.display = (hayToken && hayUsuario && hayTurno) ? 'grid' : 'none';
 
-  if (hayToken && hayUsuario && hayTurno) pintarUsuarioTurno();
+  if (hayToken && hayUsuario && hayTurno) {
+    pintarUsuarioTurno();
+    await cargarBannerTurno();
+  } else {
+    $('bannerTurno').style.display = 'none';
+  }
 }
 
 async function entrar() {
@@ -331,6 +361,43 @@ function cerrarSesion() {
 
 pintar();
 if (getToken() && !getUsuarioTurno()) cargarUsuarios();
+// ---------- Banner con el saldo del turno ----------
+async function cargarBannerTurno() {
+  const u = getUsuarioTurno();
+  if (!u) { $('bannerTurno').style.display = 'none'; return; }
+
+  try {
+    const r = await jsonp({ accion: 'info_turno_actual', id_usuario: u.id }, 15000);
+    if (!r || !r.ok) { $('bannerTurno').style.display = 'none'; return; }
+
+    // Mostrar banner principal
+    $('bannerTurno').style.display = 'block';
+
+    // Si tengo turno
+    if (r.mi_turno) {
+      $('bannerMiTurno').style.display = 'block';
+      $('bannerOtroTurno').style.display = 'none';
+      $('bannerSaldo').textContent = '$' + Number(r.saldo_esperado || 0).toLocaleString('es-CO');
+      $('bannerTurnoId').textContent = 'Turno ' + r.mi_turno.id + ' · Base $' + Number(r.mi_turno.base || 0).toLocaleString('es-CO');
+    } else if (r.otro_turno) {
+      // No tengo turno, pero otro sí
+      $('bannerMiTurno').style.display = 'none';
+      $('bannerOtroTurno').style.display = 'block';
+      $('bannerOtroTexto').textContent = 'Turno abierto por ' + r.otro_turno.responsable + ' desde ' + r.otro_turno.fecha_apertura + '. No puedes abrir turno hasta que lo cierre.';
+    } else {
+      $('bannerTurno').style.display = 'none';
+    }
+  } catch (e) {
+    $('bannerTurno').style.display = 'none';
+  }
+}
+
+// Actualizar el banner al volver a la pestaña
+document.addEventListener('visibilitychange', function () {
+  if (!document.hidden && getUsuarioTurno() && getTurnoActual()) {
+    cargarBannerTurno();
+  }
+});
 </script>
 </body>
 </html>

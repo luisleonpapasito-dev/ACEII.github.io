@@ -392,6 +392,15 @@ $('btnMov').addEventListener('click', async function () {
 
 $('btnCerrar').addEventListener('click', async function () {
   if (!turno) return;
+
+  // Verificar si hay cola pendiente en este celular
+  const colaReceps = JSON.parse(localStorage.getItem('caf_cola_recepciones') || '[]');
+  if (colaReceps.length > 0) {
+    if (!confirm('⚠️ Hay ' + colaReceps.length + ' recepción(es) pendiente(s) de enviar al servidor.\n\nSi cierras el turno ahora, podrían perderse.\n\n¿Seguro quieres cerrar de todas formas?')) {
+      return;
+    }
+  }
+
   const u = getUsuarioTurno();
   const saldoEsperadoTexto = $('saldoEsperado').textContent;
   const saldoRealStr = prompt('Cuenta el efectivo físico real en la caja.\n\nSaldo esperado: ' + saldoEsperadoTexto + '\n\nEscribe el efectivo contado:');

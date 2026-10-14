@@ -513,7 +513,14 @@ function pintarImagen(url) {
   $('fImagenUrl').value = imagenUrlActual;
   const prev = $('imagenPreview');
   if (imagenUrlActual) {
-    prev.innerHTML = '<img src="' + imagenUrlActual + '">';
+    prev.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = imagenUrlActual;
+    img.alt = '';
+    img.onerror = function () {
+      prev.innerHTML = '<div style="text-align:center; padding:6px; font-size:11px; color:var(--alerta);">No se pudo cargar</div>';
+    };
+    prev.appendChild(img);
     $('btnQuitarFoto').style.display = 'block';
   } else {
     prev.textContent = 'Sin imagen';
@@ -556,12 +563,43 @@ $('inputFoto').addEventListener('change', function (e) {
 
 // ---------- Pegar URL ----------
 $('btnPegarUrl').addEventListener('click', function () {
-  const url = prompt('Pega la URL de la imagen:');
-  if (url && url.trim()) {
-    pintarImagen(url.trim());
-    mostrar('URL cargada', 'ok');
-  }
+  const urlOriginal = prompt('Pega la URL DIRECTA de la imagen (debe terminar en .jpg, .png, .webp o ser un link de Drive):');
+  if (!urlOriginal || !urlOriginal.trim()) return;
+
+  const urlLimpia = convertirUrlImagen_(urlOriginal.trim());
+  pintarImagen(urlLimpia);
+  verificarUrlImagen(urlLimpia);
 });
+
+// Convierte links de Drive al formato directo para <img>
+function convertirUrlImagen_(url) {
+  // Link tipo: https://drive.google.com/file/d/XXXXX/view?...
+  let m = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return 'https://lh3.googleusercontent.com/d/' + m[1];
+
+  // Link tipo: https://drive.google.com/open?id=XXXXX
+  m = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+  if (m) return 'https://lh3.googleusercontent.com/d/' + m[1];
+
+  // Link tipo: https://drive.google.com/uc?id=XXXXX
+  m = url.match(/drive\.google\.com\/uc\?.*id=([a-zA-Z0-9_-]+)/);
+  if (m) return 'https://lh3.googleusercontent.com/d/' + m[1];
+
+  // Cualquier otro link: se deja igual
+  return url;
+}
+
+// Verifica que la imagen cargue de verdad
+function verificarUrlImagen(url) {
+  const img = new Image();
+  img.onload = function () {
+    mostrar('URL cargada ✓', 'ok');
+  };
+  img.onerror = function () {
+    mostrar('⚠️ La imagen no cargó. Verifica que sea un link directo (termina en .jpg/.png) o sube la foto.', 'error');
+  };
+  img.src = url;
+}
 
 // ---------- Quitar imagen ----------
 $('btnQuitarFoto').addEventListener('click', function () {

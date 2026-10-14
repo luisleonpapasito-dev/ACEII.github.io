@@ -43,7 +43,7 @@
 }
 
 /* ============================================================
-   TEMA OSCURO (aplicado por clase manual)
+   TEMA OSCURO
    ============================================================ */
 html.tema-oscuro {
   --fondo: #0F1419;
@@ -155,6 +155,11 @@ body {
 #estado.ok { background: var(--exito); color: #fff; }
 #estado.error { background: var(--alerta); color: #fff; }
 #estado.aviso { background: var(--aviso); color: #fff; }
+
+/* Ocultar la barra cuando no hay nada que decir */
+#estado.estado-vacio {
+  display: none;
+}
 
 /* ============================================================
    Header con onda azul
@@ -341,7 +346,7 @@ html.tema-oscuro .app-header {
 }
 
 /* ============================================================
-   Iconos de las tarjetas (filled con gradiente + sombra)
+   Iconos de las tarjetas
    ============================================================ */
 .card-icono {
   width: 52px;
@@ -364,7 +369,7 @@ html.tema-oscuro .app-header {
   stroke: none;
 }
 
-/* ---- 11 colores únicos, vivos y llamativos ---- */
+/* ---- 11 colores únicos ---- */
 .card-icono.azul {
   background: linear-gradient(135deg, #4A7DE0 0%, #1B4DB1 100%);
   --icono-sombra: rgba(27, 77, 177, 0.40);
@@ -419,6 +424,13 @@ html.tema-oscuro .card-icono {
   }
 }
 
+/* Contraste: icono oscuro en fondos claros */
+.card-icono.naranja svg,
+.card-icono.cyan svg,
+.card-icono.amarillo svg {
+  fill: #1A1C1E;
+}
+
 .card-titulo {
   font-size: 15px;
   font-weight: 600;
@@ -455,62 +467,14 @@ html.tema-oscuro .card-icono {
 }
 
 /* ============================================================
-   SECCIONES DEL MENÚ (agrupación)
+   Cerrar sesión discreto al final
    ============================================================ */
-.seccion {
-  margin-bottom: 18px;
-}
-.seccion-titulo {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--texto);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin: 4px 4px 12px;
-  padding-left: 4px;
-}
-html.tema-oscuro .seccion-titulo {
-  color: var(--texto-suave);
-}
-
-.seccion .grid-menu {
-  margin: 0;
-  padding: 0;
-  gap: 10px;
-}
-
-.seccion .card {
-  min-height: 108px;
-  padding: 14px;
-  gap: 8px;
-}
-.seccion .card .card-titulo {
-  font-size: 14px;
-  line-height: 1.25;
-}
-.seccion .card .card-icono {
-  width: 50px;
-  height: 50px;
-}
-.seccion .card .card-icono svg {
-  width: 26px;
-  height: 26px;
-}
-
-/* Contraste: icono oscuro en fondos claros */
-.card-icono.naranja svg,
-.card-icono.cyan svg,
-.card-icono.amarillo svg {
-  fill: #1A1C1E;
-}
-
-/* Cerrar sesión discreto al final */
 .cerrar-sesion-box {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 24px auto 0;
+  margin: 24px auto 40px;
   padding: 12px 16px;
   max-width: 300px;
   color: var(--texto-suave);
@@ -669,9 +633,7 @@ a {
 #estado.ok, .estado-ok { background: var(--exito) !important; color: #fff !important; }
 #estado.error, .estado-error { background: var(--alerta) !important; color: #fff !important; }
 #estado.aviso, .estado-aviso { background: var(--aviso) !important; color: #fff !important; }
-#estado.estado-vacio {
-  display: none;
-}
+
 a.op {
   display: block;
   padding: 14px;

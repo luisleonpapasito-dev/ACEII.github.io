@@ -8,6 +8,7 @@
   --fondo: #EEF2F7;
   --superficie: #FFFFFF;
   --superficie-2: #F0F4FF;
+  --panel: #F8FAFC;
 
   --texto: #1A1C1E;
   --texto-suave: #5A6072;
@@ -45,6 +46,7 @@ html.tema-oscuro {
   --fondo: #0F1419;
   --superficie: #1A1F2E;
   --superficie-2: #232A3D;
+  --panel: #151A24;
 
   --texto: #E8ECF4;
   --texto-suave: #A8B0C0;
@@ -78,6 +80,7 @@ html.tema-oscuro {
     --fondo: #0F1419;
     --superficie: #1A1F2E;
     --superficie-2: #232A3D;
+    --panel: #151A24;
 
     --texto: #E8ECF4;
     --texto-suave: #A8B0C0;
@@ -279,19 +282,42 @@ html.tema-oscuro .app-header {
 }
 
 /* ============================================================
-   Grid de tarjetas del menú
+   PANEL COMÚN (envuelve las tarjetas)
    ============================================================ */
-.grid-menu {
+.panel-menu {
   max-width: 480px;
   margin: 16px auto 24px;
-  padding: 0 12px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  padding: 12px;
+  background: var(--panel);
+  border-radius: 24px;
+  border: 1px solid rgba(27, 77, 177, 0.06);
+  box-shadow: 0 2px 12px rgba(27, 77, 177, 0.06);
+  animation: aparecerCaja 0.4s ease-out;
+  transition: background 0.2s, border-color 0.2s;
+}
+html.tema-oscuro .panel-menu {
+  border-color: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+@media (prefers-color-scheme: dark) {
+  html.tema-auto .panel-menu {
+    border-color: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  }
 }
 
+.grid-menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* ============================================================
+   TARJETAS
+   ============================================================ */
 .card {
-  border-radius: var(--radio);
+  background: var(--superficie);
+  border-radius: 14px;
   padding: 14px;
   text-decoration: none;
   color: var(--texto);
@@ -299,17 +325,30 @@ html.tema-oscuro .app-header {
   flex-direction: column;
   gap: 10px;
   position: relative;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
   overflow: hidden;
-  min-height: 130px;
+  min-height: 118px;
   cursor: pointer;
-  border: 1.5px solid transparent;
+  box-shadow: 0 1px 3px rgba(27, 77, 177, 0.06), 0 1px 2px rgba(27, 77, 177, 0.04);
+  border: 1px solid rgba(27, 77, 177, 0.04);
 }
 .card:active {
   transform: scale(0.97);
 }
 .card:hover {
   transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(27, 77, 177, 0.12);
+}
+
+html.tema-oscuro .card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+@media (prefers-color-scheme: dark) {
+  html.tema-auto .card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.05);
+  }
 }
 
 .grid-menu .card {
@@ -332,116 +371,40 @@ html.tema-oscuro .app-header {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ============================================================
-   FONDOS PASTEL POR TARJETA (integración visual)
-   ============================================================ */
-.card.azul {
+/* ---- Tarjetas destacadas (Caja y Ventas) ---- */
+.card.destacada {
+  border-width: 1.5px;
+}
+
+/* Caja del turno - fondo pastel azul */
+.card.destacada.azul {
   background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
-  border-color: #DBEAFE;
+  border-color: #BFDBFE;
 }
-.card.azul:hover {
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.20);
-}
-
-.card.verde {
-  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
-  border-color: #D1FAE5;
-}
-.card.verde:hover {
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.20);
+.card.destacada.azul:hover {
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.20);
 }
 
-.card.naranja {
-  background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
-  border-color: #FFEDD5;
+/* Ventas - fondo pastel azul cielo (familia con Caja) */
+.card.destacada.cielo {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border-color: #BAE6FD;
 }
-.card.naranja:hover {
-  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.20);
-}
-
-.card.morado {
-  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
-  border-color: #EDE9FE;
-}
-.card.morado:hover {
-  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.20);
+.card.destacada.cielo:hover {
+  box-shadow: 0 6px 16px rgba(14, 165, 233, 0.20);
 }
 
-.card.rosa {
-  background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
-  border-color: #FCE7F3;
-}
-.card.rosa:hover {
-  box-shadow: 0 8px 20px rgba(236, 72, 153, 0.20);
-}
-
-.card.cyan {
-  background: linear-gradient(135deg, #ECFEFF 0%, #CFFAFE 100%);
-  border-color: #CFFAFE;
-}
-.card.cyan:hover {
-  box-shadow: 0 8px 20px rgba(6, 182, 212, 0.20);
-}
-
-.card.amarillo {
-  background: linear-gradient(135deg, #FEFCE8 0%, #FEF9C3 100%);
-  border-color: #FEF9C3;
-}
-.card.amarillo:hover {
-  box-shadow: 0 8px 20px rgba(234, 179, 8, 0.20);
-}
-
-.card.violeta {
-  background: linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%);
-  border-color: #F3E8FF;
-}
-.card.violeta:hover {
-  box-shadow: 0 8px 20px rgba(147, 51, 234, 0.20);
-}
-
-.card.coral {
-  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%);
-  border-color: #FFE4E6;
-}
-.card.coral:hover {
-  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.20);
-}
-
-.card.turquesa {
-  background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
-  border-color: #CCFBF1;
-}
-.card.turquesa:hover {
-  box-shadow: 0 8px 20px rgba(13, 148, 136, 0.20);
-}
-
-/* En modo oscuro los fondos pastel se vuelven oscuros */
-html.tema-oscuro .card.azul,
-html.tema-oscuro .card.verde,
-html.tema-oscuro .card.naranja,
-html.tema-oscuro .card.morado,
-html.tema-oscuro .card.rosa,
-html.tema-oscuro .card.cyan,
-html.tema-oscuro .card.amarillo,
-html.tema-oscuro .card.violeta,
-html.tema-oscuro .card.coral,
-html.tema-oscuro .card.turquesa {
+/* En modo oscuro las destacadas pierden el pastel */
+html.tema-oscuro .card.destacada.azul,
+html.tema-oscuro .card.destacada.cielo {
   background: var(--superficie);
-  border-color: transparent;
+  border-color: rgba(255, 255, 255, 0.08);
 }
 @media (prefers-color-scheme: dark) {
-  html.tema-auto .card.azul,
-  html.tema-auto .card.verde,
-  html.tema-auto .card.naranja,
-  html.tema-auto .card.morado,
-  html.tema-auto .card.rosa,
-  html.tema-auto .card.cyan,
-  html.tema-auto .card.amarillo,
-  html.tema-auto .card.violeta,
-  html.tema-auto .card.coral,
-  html.tema-auto .card.turquesa {
+  html.tema-auto .card.destacada.azul,
+  html.tema-auto .card.destacada.cielo {
     background: var(--superficie);
-    border-color: transparent;
+    border-color: rgba(255, 255, 255, 0.08);
   }
 }
 
@@ -469,46 +432,58 @@ html.tema-oscuro .card.turquesa {
   stroke: none;
 }
 
-/* ---- Paleta nueva viva ---- */
+/* ---- Colores vivos ---- */
 .card-icono.azul {
-  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
-  --icono-sombra: rgba(37, 99, 235, 0.45);
+  background: linear-gradient(135deg, #4A7DE0 0%, #1B4DB1 100%);
+  --icono-sombra: rgba(27, 77, 177, 0.40);
+}
+.card-icono.cielo {
+  background: linear-gradient(135deg, #38BDF8 0%, #0369A1 100%);
+  --icono-sombra: rgba(3, 105, 161, 0.40);
 }
 .card-icono.verde {
   background: linear-gradient(135deg, #34D399 0%, #059669 100%);
-  --icono-sombra: rgba(16, 185, 129, 0.45);
+  --icono-sombra: rgba(5, 150, 105, 0.40);
 }
 .card-icono.naranja {
-  background: linear-gradient(135deg, #FB923C 0%, #EA580C 100%);
-  --icono-sombra: rgba(249, 115, 22, 0.45);
+  background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+  --icono-sombra: rgba(245, 158, 11, 0.40);
 }
 .card-icono.morado {
   background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%);
-  --icono-sombra: rgba(139, 92, 246, 0.45);
+  --icono-sombra: rgba(124, 58, 237, 0.40);
 }
 .card-icono.rosa {
   background: linear-gradient(135deg, #F472B6 0%, #DB2777 100%);
-  --icono-sombra: rgba(236, 72, 153, 0.45);
+  --icono-sombra: rgba(219, 39, 119, 0.40);
 }
 .card-icono.cyan {
   background: linear-gradient(135deg, #22D3EE 0%, #0891B2 100%);
-  --icono-sombra: rgba(6, 182, 212, 0.45);
+  --icono-sombra: rgba(8, 145, 178, 0.40);
 }
 .card-icono.amarillo {
-  background: linear-gradient(135deg, #FACC15 0%, #CA8A04 100%);
-  --icono-sombra: rgba(234, 179, 8, 0.45);
+  background: linear-gradient(135deg, #FDE047 0%, #F59E0B 100%);
+  --icono-sombra: rgba(245, 158, 11, 0.40);
+}
+.card-icono.marino {
+  background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
+  --icono-sombra: rgba(30, 58, 138, 0.40);
 }
 .card-icono.violeta {
   background: linear-gradient(135deg, #C084FC 0%, #9333EA 100%);
-  --icono-sombra: rgba(147, 51, 234, 0.45);
+  --icono-sombra: rgba(147, 51, 234, 0.40);
 }
 .card-icono.coral {
   background: linear-gradient(135deg, #FB7185 0%, #DC2626 100%);
-  --icono-sombra: rgba(220, 38, 38, 0.45);
+  --icono-sombra: rgba(220, 38, 38, 0.40);
 }
 .card-icono.turquesa {
   background: linear-gradient(135deg, #2DD4BF 0%, #0D9488 100%);
-  --icono-sombra: rgba(13, 148, 136, 0.45);
+  --icono-sombra: rgba(13, 148, 136, 0.40);
+}
+.card-icono.gris {
+  background: linear-gradient(135deg, #94A3B8 0%, #475569 100%);
+  --icono-sombra: rgba(71, 85, 105, 0.40);
 }
 
 html.tema-oscuro .card-icono {
@@ -528,7 +503,7 @@ html.tema-oscuro .card-icono {
 }
 
 .card-titulo {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   line-height: 1.2;
   color: var(--texto);
@@ -538,43 +513,35 @@ html.tema-oscuro .card-icono {
   color: var(--texto-suave);
   line-height: 1.3;
 }
-.card-flecha {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  color: var(--texto-claro);
-  font-size: 18px;
-  font-weight: 600;
-}
 
 /* ============================================================
-   Cerrar sesión
+   Cerrar sesión (dentro del panel)
    ============================================================ */
 .cerrar-sesion-box {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 24px auto 40px;
+  margin: 14px auto 4px;
   padding: 12px 16px;
-  max-width: 300px;
+  max-width: 240px;
   color: var(--texto-suave);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   border-radius: var(--radio-sm);
   transition: background 0.15s, color 0.15s;
 }
 .cerrar-sesion-box:hover {
-  background: var(--superficie-2);
+  background: rgba(230, 57, 70, 0.08);
   color: var(--alerta);
 }
 .cerrar-sesion-box:active {
   transform: scale(0.97);
 }
 .cerrar-sesion-icono {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   fill: currentColor;
   flex-shrink: 0;
 }
@@ -766,18 +733,18 @@ html.tema-oscuro .linea { border-bottom-color: #2A3348; }
   .app-header-titulo { font-size: 38px; }
   .app-header-sub { font-size: 14px; }
 
-  #estado, .grid-menu, .caja {
+  #estado, .panel-menu, .caja {
     width: 100%;
     max-width: 640px;
     margin-left: auto;
     margin-right: auto;
   }
-  .grid-menu { padding: 0; gap: 16px; }
-  .card { padding: 18px; min-height: 150px; }
+  .panel-menu { padding: 16px; }
+  .grid-menu { gap: 14px; }
+  .card { padding: 18px; min-height: 140px; }
   .card-icono { width: 58px; height: 58px; }
   .card-icono svg { width: 30px; height: 30px; }
-  .card-titulo { font-size: 16px; }
-  .card-sub { font-size: 13px; }
+  .card-titulo { font-size: 15px; }
   .caja { padding: 24px; }
 }
 

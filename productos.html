@@ -364,10 +364,9 @@ async function cargarTodo() {
 function llenarSelectsForm() {
   const selCat = $('fCategoria');
   selCat.innerHTML = '<option value="">Elige la categoría...</option>';
-  // Las categorías ahora vienen como objetos {nombre, prefijo}
   categorias.forEach(function (c) {
-    const nombre = (typeof c === 'string') ? c : c.nombre;
-    const prefijo = (typeof c === 'string') ? '' : c.prefijo;
+    const nombre = (typeof c === 'string') ? c : (c.nombre || '');
+    const prefijo = (typeof c === 'string') ? '' : (c.prefijo || '');
     const etiqueta = prefijo ? (nombre + ' (' + prefijo + ')') : nombre;
     selCat.appendChild(new Option(etiqueta, nombre));
   });

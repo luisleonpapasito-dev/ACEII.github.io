@@ -736,9 +736,9 @@ textarea {
   font-family: var(--fuente);
   font-size: 15px;
   border-radius: 12px;
-  background: var(--fondo);
+  background: var(--superficie);
   color: var(--texto);
-  border: 1.5px solid #dfe5ef;
+  border: 1.5px solid var(--azul-borde);
   box-sizing: border-box;
   transition:
     border-color 0.15s,
@@ -746,18 +746,26 @@ textarea {
     box-shadow 0.15s;
 }
 
-html.tema-oscuro input,
+html.tema-oscuro input[type=text],
+html.tema-oscuro input[type=password],
+html.tema-oscuro input[type=number],
+html.tema-oscuro input[type=range],
 html.tema-oscuro select,
 html.tema-oscuro textarea {
   background: var(--superficie-2);
+  color: var(--texto);
   border-color: #303b50;
 }
 
 @media (prefers-color-scheme: dark) {
-  html.tema-auto input,
+  html.tema-auto input[type=text],
+  html.tema-auto input[type=password],
+  html.tema-auto input[type=number],
+  html.tema-auto input[type=range],
   html.tema-auto select,
   html.tema-auto textarea {
     background: var(--superficie-2);
+    color: var(--texto);
     border-color: #303b50;
   }
 }
@@ -769,12 +777,11 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-label {
-  display: block;
-  margin-top: 8px;
-  font-size: 13px;
-  color: var(--texto-suave);
-  font-weight: 500;
+html.tema-oscuro input:focus,
+html.tema-oscuro select:focus,
+html.tema-oscuro textarea:focus {
+  background: var(--superficie-2);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25);
 }
 
 

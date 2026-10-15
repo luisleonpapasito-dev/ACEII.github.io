@@ -705,19 +705,7 @@ html.tema-oscuro .btn-rapido .pre {
 html.tema-oscuro .btn-rapido .icono {
   background: var(--superficie-2);
 }
-html.tema-oscuro .btn-rapido.grupo {
-  background: rgba(251, 191, 36, 0.12);
-  border-color: rgba(251, 191, 36, 0.4);
-}
-html.tema-oscuro .btn-rapido.grupo .nom {
-  color: #fbbf24;
-}
-html.tema-oscuro .btn-rapido.grupo .pre {
-  color: #fbbf24;
-}
-html.tema-oscuro .btn-rapido.grupo .icono {
-  background: rgba(251, 191, 36, 0.1);
-}
+
 
 @media (prefers-color-scheme: dark) {
   html.tema-auto .btn-rapido {
@@ -728,13 +716,7 @@ html.tema-oscuro .btn-rapido.grupo .icono {
   html.tema-auto .btn-rapido .nom { color: var(--texto); }
   html.tema-auto .btn-rapido .pre { color: var(--azul-claro); }
   html.tema-auto .btn-rapido .icono { background: var(--superficie-2); }
-  html.tema-auto .btn-rapido.grupo {
-    background: rgba(251, 191, 36, 0.12);
-    border-color: rgba(251, 191, 36, 0.4);
-  }
-  html.tema-auto .btn-rapido.grupo .nom,
-  html.tema-auto .btn-rapido.grupo .pre { color: #fbbf24; }
-  html.tema-auto .btn-rapido.grupo .icono { background: rgba(251, 191, 36, 0.1); }
+ 
 }
 
 /* Variantes en dark */
@@ -1095,6 +1077,7 @@ let carrito = [];
 let rapidos = [];
 let seleccionConfig = [];
 let categoriaFiltro = ''; // '' = todas
+let categoriaConfigFiltro = '';
 let ultimoMedioPago = 'Efectivo';
 
 // Variables cámara
@@ -1937,8 +1920,6 @@ $('btnConfigurar').addEventListener('click', function () {
 $('btnCerrarConfig').addEventListener('click', function () {
   $('modalConfig').classList.remove('abierto');
 });
-
-let categoriaConfigFiltro = '';
 
 function pintarListaConfig() {
   const cont = $('listaConfig');

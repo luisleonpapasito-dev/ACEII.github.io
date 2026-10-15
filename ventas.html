@@ -206,7 +206,7 @@
     border-color: var(--azul);
   }
 
-  /* Barra lateral izquierda (indica categoría) */
+  /* Barra lateral izquierda azul (indica card interactiva) */
   .btn-rapido::before {
     content: '';
     position: absolute;
@@ -216,32 +216,10 @@
     width: 4px;
     border-radius: 0 4px 4px 0;
     background: var(--azul);
-    opacity: 0.7;
+    opacity: 0.75;
     transition: opacity 0.15s, width 0.15s;
   }
   .btn-rapido:active::before { width: 6px; opacity: 1; }
-
-  /* Fondos pastel por categoría */
-  .btn-rapido.cat-empanada   { background: linear-gradient(135deg, #FBF5FF 0%, #F5EFFF 100%); border-color: #D9C7FF; }
-  .btn-rapido.cat-empanada::before { background: #A78BFA; }
-
-  .btn-rapido.cat-bebida     { background: linear-gradient(135deg, #F5FAFF 0%, #EFF6FF 100%); border-color: #BFDBFE; }
-  .btn-rapido.cat-bebida::before { background: #3B82F6; }
-
-  .btn-rapido.cat-combo      { background: linear-gradient(135deg, #F2FDF5 0%, #F0FDF4 100%); border-color: #BBF7D0; }
-  .btn-rapido.cat-combo::before { background: #22C55E; }
-
-  .btn-rapido.cat-dulce      { background: linear-gradient(135deg, #FFFBF3 0%, #FFF7ED 100%); border-color: #FED7AA; }
-  .btn-rapido.cat-dulce::before { background: #F59E0B; }
-
-  .btn-rapido.cat-preparado  { background: linear-gradient(135deg, #FFF7F6 0%, #FEF3F2 100%); border-color: #FECACA; }
-  .btn-rapido.cat-preparado::before { background: #EF4444; }
-
-  .btn-rapido.cat-snack      { background: linear-gradient(135deg, #FFFEF0 0%, #FEFCE8 100%); border-color: #FEF08A; }
-  .btn-rapido.cat-snack::before { background: #EAB308; }
-
-  .btn-rapido.cat-lacteo     { background: linear-gradient(135deg, #F5FCFF 0%, #F0F9FF 100%); border-color: #BAE6FD; }
-  .btn-rapido.cat-lacteo::before { background: #0EA5E9; }
 
   /* Animación de "agregado" */
   .btn-rapido.agregado {
@@ -261,10 +239,10 @@
     justify-content: center;
     overflow: hidden;
     border-radius: 12px;
-    background: rgba(255,255,255,0.6);
+    background: var(--superficie-2);
     flex-shrink: 0;
   }
-  .btn-rapido .icono svg { width: 80%; height: 80%; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.08)); }
+  .btn-rapido .icono svg { width: 80%; height: 80%; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.10)); }
   .btn-rapido .icono img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
 
   .btn-rapido .nom {
@@ -508,6 +486,7 @@
   #panelEscaneo #codigoDetectado { color: var(--azul); font-size: 16px; font-weight: 700; margin-bottom: 12px; word-break: break-all; }
   #panelEscaneo #nombreDetectado { color: var(--texto); font-size: 18px; font-weight: 700; margin-bottom: 16px; }
 
+  /* ===== Modal Configurar ===== */
   #modalConfig {
     display: none;
     position: fixed;
@@ -515,21 +494,24 @@
     width: 100%; height: 100%;
     background: rgba(0,0,0,0.6);
     z-index: 200;
-    padding: 20px;
+    padding: 12px;
     box-sizing: border-box;
-    overflow-y: auto;
+    overflow: hidden;
   }
   #modalConfig.abierto { display: block; }
   #modalConfig .contenido {
     max-width: 520px;
-    margin: 20px auto;
+    margin: 0 auto;
     background: var(--superficie);
     color: var(--texto);
     border-radius: 16px;
-    padding: 20px;
+    padding: 18px;
+    height: 92vh;
     max-height: 92vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
   }
 
   .mc-header {
@@ -537,12 +519,14 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 6px;
+    flex-shrink: 0;
   }
   .mc-header strong { font-size: 17px; }
   .mc-contador {
     font-size: 13px;
     color: var(--texto-suave);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+    flex-shrink: 0;
   }
   .mc-contador b { color: var(--azul); font-weight: 700; }
 
@@ -553,6 +537,7 @@
     padding: 4px 0 10px;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    flex-shrink: 0;
   }
   .mc-pills::-webkit-scrollbar { display: none; }
   .mc-pill {
@@ -576,12 +561,12 @@
   }
 
   #listaConfig {
-    flex: 1;
+    flex: 1 1 0;
+    min-height: 0;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     margin: 0 -8px;
-    padding: 0 8px;
-    min-height: 200px;
-    max-height: 55vh;
+    padding: 0 8px 8px;
   }
 
   .mc-item {
@@ -658,6 +643,7 @@
     padding-top: 12px;
     border-top: 1px solid #E8ECF4;
     margin-top: 8px;
+    flex-shrink: 0;
   }
   html.tema-oscuro .mc-footer { border-top-color: #303b50; }
   .mc-footer button {
@@ -861,7 +847,7 @@
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    padding: 4px 4px;
+    padding: 4px;
     user-select: none;
     -webkit-user-select: none;
     transition: opacity 0.15s;
@@ -990,24 +976,16 @@
   /* Espacio extra al final para que la barra flotante no tape contenido */
   body { padding-bottom: 130px; }
 
-  /* ===== Dark mode rápidos ===== */
+  /* ===== Dark mode ===== */
   html.tema-oscuro .btn-rapido {
     background: var(--superficie);
     border-color: var(--azul-borde);
     color: var(--texto);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   }
-  html.tema-oscuro .btn-rapido.cat-empanada { background: linear-gradient(135deg, #1f1a2e 0%, #251d3a 100%); border-color: #4c3a6e; }
-  html.tema-oscuro .btn-rapido.cat-bebida    { background: linear-gradient(135deg, #16243b 0%, #1a2b45 100%); border-color: #2a4a7a; }
-  html.tema-oscuro .btn-rapido.cat-combo     { background: linear-gradient(135deg, #16281e 0%, #1a3024 100%); border-color: #2a5e3c; }
-  html.tema-oscuro .btn-rapido.cat-dulce     { background: linear-gradient(135deg, #2e2416 0%, #382c1a 100%); border-color: #6e4a1a; }
-  html.tema-oscuro .btn-rapido.cat-preparado { background: linear-gradient(135deg, #2e1a1a 0%, #3a1f1f 100%); border-color: #7a2a2a; }
-  html.tema-oscuro .btn-rapido.cat-snack     { background: linear-gradient(135deg, #2e2a16 0%, #38331a 100%); border-color: #6e601a; }
-  html.tema-oscuro .btn-rapido.cat-lacteo    { background: linear-gradient(135deg, #16283a 0%, #1a3044 100%); border-color: #2a5a7a; }
-
   html.tema-oscuro .btn-rapido .nom { color: var(--texto); }
   html.tema-oscuro .btn-rapido .pre { color: var(--azul-claro); }
-  html.tema-oscuro .btn-rapido .icono { background: rgba(255,255,255,0.04); }
+  html.tema-oscuro .btn-rapido .icono { background: var(--superficie-2); }
 
   html.tema-oscuro .btn-variante {
     background: var(--superficie);
@@ -1128,7 +1106,7 @@
     <div class="mc-contador">
       <b id="mcContador">0</b> de 8 seleccionados
     </div>
-    <input type="text" id="buscarConfig" placeholder="🔎 Buscar producto o categoría..." style="margin-bottom:8px;">
+    <input type="text" id="buscarConfig" placeholder="🔎 Buscar producto o categoría..." style="margin-bottom:8px; flex-shrink:0;">
     <div class="mc-pills" id="mcPillsConfig"></div>
     <div id="listaConfig"></div>
     <div class="mc-footer">
@@ -1253,18 +1231,18 @@ function urlImagenOk(url) {
   return url;
 }
 
-// ===== SVG con gradientes =====
+// ===== SVG 3D con gradientes =====
 const SVG_ICONOS = {
-  empanada: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gEmp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4B942"/><stop offset="1" stop-color="#D18B22"/></linearGradient></defs><ellipse cx="32" cy="54" rx="22" ry="3.5" fill="rgba(0,0,0,0.14)"/><path d="M9 36 Q9 17 32 17 Q55 17 55 36 Q55 47 32 47 Q9 47 9 36 Z" fill="url(#gEmp)" stroke="#9C6817" stroke-width="2" stroke-linejoin="round"/><path d="M9 36 Q13 32 17 36 Q21 32 25 36 Q29 32 33 36 Q37 32 41 36 Q45 32 49 36 Q53 32 55 36" fill="none" stroke="#9C6817" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="24" cy="27" rx="7" ry="3" fill="rgba(255,255,255,0.55)"/></svg>',
-  gaseosa: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gGas" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EF5350"/><stop offset="1" stop-color="#C62828"/></linearGradient></defs><ellipse cx="32" cy="58" rx="14" ry="3" fill="rgba(0,0,0,0.14)"/><path d="M22 16 L26 54 Q26 57 32 57 Q38 57 38 54 L42 16 Z" fill="url(#gGas)" stroke="#8E1B1B" stroke-width="2"/><rect x="20" y="11" width="24" height="6" rx="2" fill="#C62828"/><rect x="27" y="3" width="10" height="9" rx="1.5" fill="#8E1B1B"/><path d="M26 28 Q32 24 38 28 L38 42 Q32 46 26 42 Z" fill="#fff" opacity="0.9"/><ellipse cx="27" cy="20" rx="2" ry="6" fill="rgba(255,255,255,0.35)"/></svg>',
-  jugo: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gJug" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFA726"/><stop offset="1" stop-color="#EF6C00"/></linearGradient></defs><ellipse cx="32" cy="58" rx="14" ry="3" fill="rgba(0,0,0,0.14)"/><path d="M20 18 L24 54 Q24 57 32 57 Q40 57 40 54 L44 18 Z" fill="url(#gJug)" stroke="#B35100" stroke-width="2"/><rect x="18" y="13" width="28" height="6" rx="2" fill="#EF6C00"/><path d="M25 30 Q32 26 39 30 L39 44 Q32 48 25 44 Z" fill="#fff" opacity="0.9"/><ellipse cx="26" cy="22" rx="2" ry="5" fill="rgba(255,255,255,0.35)"/></svg>',
-  agua: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gAgu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B3E5FC"/><stop offset="1" stop-color="#4FC3F7"/></linearGradient></defs><ellipse cx="32" cy="58" rx="12" ry="3" fill="rgba(0,0,0,0.14)"/><path d="M24 16 L26 54 Q26 57 32 57 Q38 57 38 54 L40 16 Z" fill="url(#gAgu)" stroke="#0288D1" stroke-width="2"/><rect x="23" y="11" width="18" height="6" rx="2" fill="#0288D1"/><rect x="29" y="4" width="6" height="8" rx="1" fill="#01579B"/><path d="M27 30 Q32 27 37 30 L37 42 Q32 45 27 42 Z" fill="#fff" opacity="0.7"/><ellipse cx="28" cy="22" rx="1.5" ry="5" fill="rgba(255,255,255,0.5)"/></svg>',
-  combo: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gCom" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A1887F"/><stop offset="1" stop-color="#6D4C41"/></linearGradient></defs><ellipse cx="32" cy="56" rx="22" ry="3.5" fill="rgba(0,0,0,0.14)"/><rect x="10" y="26" width="44" height="26" rx="4" fill="url(#gCom)" stroke="#3E2723" stroke-width="2"/><rect x="10" y="21" width="44" height="6" rx="2" fill="#8D6E63"/><circle cx="24" cy="40" r="7" fill="#F4B942" stroke="#9C6817" stroke-width="1.5"/><rect x="34" y="33" width="15" height="16" rx="2" fill="#E53935"/><rect x="36" y="28" width="11" height="6" rx="1" fill="#C62828"/><ellipse cx="42" cy="42" rx="2" ry="4" fill="rgba(255,255,255,0.3)"/></svg>',
-  snack: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gSna" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFEE58"/><stop offset="1" stop-color="#F9A825"/></linearGradient></defs><ellipse cx="32" cy="56" rx="20" ry="3.5" fill="rgba(0,0,0,0.14)"/><path d="M14 22 L50 22 L46 54 Q46 56 42 56 L22 56 Q18 56 18 54 Z" fill="url(#gSna)" stroke="#C17900" stroke-width="2"/><path d="M14 22 L50 22 L49 30 L15 30 Z" fill="#FBC02D"/><path d="M20 38 Q32 34 44 38" fill="none" stroke="#C17900" stroke-width="2" stroke-linecap="round"/><path d="M20 45 Q32 41 44 45" fill="none" stroke="#C17900" stroke-width="2" stroke-linecap="round"/><ellipse cx="22" cy="26" rx="4" ry="1.5" fill="rgba(255,255,255,0.5)"/></svg>',
-  dulce: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gDul" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8D6E63"/><stop offset="1" stop-color="#4E342E"/></linearGradient></defs><ellipse cx="32" cy="56" rx="18" ry="3.5" fill="rgba(0,0,0,0.14)"/><rect x="14" y="20" width="36" height="34" rx="4" fill="url(#gDul)" stroke="#2D1B14" stroke-width="2"/><rect x="14" y="16" width="36" height="6" rx="2" fill="#A1887F"/><path d="M18 26 L46 26 L46 48 Q46 50 44 50 L20 50 Q18 50 18 48 Z" fill="#5D4037"/><circle cx="26" cy="34" r="3" fill="#FFD54F"/><circle cx="36" cy="38" r="3" fill="#FFD54F"/><circle cx="30" cy="44" r="3" fill="#FFD54F"/><ellipse cx="22" cy="23" rx="5" ry="1.5" fill="rgba(255,255,255,0.4)"/></svg>',
-  preparado: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gPre" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#CFD8DC"/></linearGradient></defs><ellipse cx="32" cy="56" rx="22" ry="3.5" fill="rgba(0,0,0,0.14)"/><path d="M10 32 Q10 24 32 24 Q54 24 54 32 Q54 42 32 42 Q10 42 10 32 Z" fill="url(#gPre)" stroke="#90A4AE" stroke-width="2"/><path d="M14 32 Q14 28 32 28 Q50 28 50 32" fill="none" stroke="#90A4AE" stroke-width="1.5"/><rect x="8" y="42" width="48" height="6" rx="2" fill="#B0BEC5" stroke="#78909C" stroke-width="1.5"/><circle cx="24" cy="36" r="3.5" fill="#FF7043"/><circle cx="34" cy="35" r="3.5" fill="#66BB6A"/><circle cx="43" cy="36" r="3" fill="#FFCA28"/><ellipse cx="22" cy="30" rx="4" ry="1.5" fill="rgba(255,255,255,0.7)"/></svg>',
-  lacteo: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gLac" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAFAFA"/><stop offset="1" stop-color="#E0E0E0"/></linearGradient></defs><ellipse cx="32" cy="58" rx="12" ry="3" fill="rgba(0,0,0,0.14)"/><path d="M22 20 L22 54 Q22 56 24 56 L40 56 Q42 56 42 54 L42 20 Z" fill="url(#gLac)" stroke="#90A4AE" stroke-width="2"/><path d="M22 20 L32 8 L42 20 Z" fill="#ECEFF1" stroke="#90A4AE" stroke-width="2" stroke-linejoin="round"/><path d="M26 30 Q32 27 38 30 L38 42 Q32 45 26 42 Z" fill="#BBDEFB" opacity="0.8"/></svg>',
-  default: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gDef" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFD8DC"/><stop offset="1" stop-color="#90A4AE"/></linearGradient></defs><ellipse cx="32" cy="56" rx="20" ry="3.5" fill="rgba(0,0,0,0.14)"/><path d="M14 22 L50 22 L46 54 Q46 56 42 56 L22 56 Q18 56 18 54 Z" fill="url(#gDef)" stroke="#607D8B" stroke-width="2"/><path d="M14 22 L50 22 L49 30 L15 30 Z" fill="#B0BEC5"/><rect x="26" y="14" width="12" height="8" rx="1.5" fill="#78909C"/><ellipse cx="22" cy="26" rx="4" ry="1.5" fill="rgba(255,255,255,0.4)"/></svg>'
+  empanada: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gEmp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7C948"/><stop offset="0.6" stop-color="#E8A33D"/><stop offset="1" stop-color="#C77E19"/></linearGradient></defs><ellipse cx="32" cy="55" rx="22" ry="4" fill="rgba(0,0,0,0.18)"/><path d="M9 36 Q9 17 32 17 Q55 17 55 36 Q55 47 32 47 Q9 47 9 36 Z" fill="url(#gEmp)" stroke="#8C5A12" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 36 Q13 32 17 36 Q21 32 25 36 Q29 32 33 36 Q37 32 41 36 Q45 32 49 36 Q53 32 55 36" fill="none" stroke="#8C5A12" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="22" cy="26" rx="8" ry="4" fill="rgba(255,255,255,0.55)"/><ellipse cx="40" cy="30" rx="5" ry="2" fill="rgba(255,255,255,0.3)"/></svg>',
+  gaseosa: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gGas" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF6B6B"/><stop offset="0.5" stop-color="#E53935"/><stop offset="1" stop-color="#A31B1B"/></linearGradient></defs><ellipse cx="32" cy="59" rx="14" ry="3.5" fill="rgba(0,0,0,0.18)"/><path d="M22 16 L26 54 Q26 57 32 57 Q38 57 38 54 L42 16 Z" fill="url(#gGas)" stroke="#7A1414" stroke-width="1.8"/><rect x="20" y="11" width="24" height="6" rx="2" fill="#C62828"/><rect x="27" y="3" width="10" height="9" rx="1.5" fill="#8E1B1B"/><path d="M26 28 Q32 24 38 28 L38 42 Q32 46 26 42 Z" fill="#fff" opacity="0.92"/><text x="32" y="40" font-size="7" font-weight="800" text-anchor="middle" fill="#C62828">COLA</text><ellipse cx="26" cy="20" rx="2" ry="6" fill="rgba(255,255,255,0.4)"/></svg>',
+  jugo: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gJug" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB74D"/><stop offset="0.5" stop-color="#FB8C00"/><stop offset="1" stop-color="#C25E00"/></linearGradient></defs><ellipse cx="32" cy="59" rx="14" ry="3.5" fill="rgba(0,0,0,0.18)"/><path d="M20 18 L24 54 Q24 57 32 57 Q40 57 40 54 L44 18 Z" fill="url(#gJug)" stroke="#8C4500" stroke-width="1.8"/><rect x="18" y="13" width="28" height="6" rx="2" fill="#EF6C00"/><path d="M25 30 Q32 26 39 30 L39 44 Q32 48 25 44 Z" fill="#fff" opacity="0.9"/><text x="32" y="42" font-size="7" font-weight="800" text-anchor="middle" fill="#FB8C00">JUGO</text><ellipse cx="25" cy="22" rx="2" ry="5" fill="rgba(255,255,255,0.4)"/></svg>',
+  agua: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gAgu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E1F5FE"/><stop offset="0.5" stop-color="#81D4FA"/><stop offset="1" stop-color="#0288D1"/></linearGradient></defs><ellipse cx="32" cy="59" rx="12" ry="3" fill="rgba(0,0,0,0.18)"/><path d="M24 16 L26 54 Q26 57 32 57 Q38 57 38 54 L40 16 Z" fill="url(#gAgu)" stroke="#01579B" stroke-width="1.8"/><rect x="23" y="11" width="18" height="6" rx="2" fill="#0288D1"/><rect x="29" y="4" width="6" height="8" rx="1" fill="#01579B"/><path d="M27 30 Q32 27 37 30 L37 42 Q32 45 27 42 Z" fill="#fff" opacity="0.75"/><ellipse cx="28" cy="22" rx="1.5" ry="5" fill="rgba(255,255,255,0.6)"/></svg>',
+  combo: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gCom" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A1887F"/><stop offset="0.5" stop-color="#795548"/><stop offset="1" stop-color="#3E2723"/></linearGradient></defs><ellipse cx="32" cy="56" rx="23" ry="4" fill="rgba(0,0,0,0.18)"/><rect x="10" y="26" width="44" height="26" rx="4" fill="url(#gCom)" stroke="#2D1B14" stroke-width="1.8"/><rect x="10" y="21" width="44" height="6" rx="2" fill="#8D6E63"/><circle cx="24" cy="40" r="7.5" fill="#F7C948" stroke="#8C5A12" stroke-width="1.5"/><path d="M19 38 Q24 34 29 38" fill="none" stroke="#8C5A12" stroke-width="1" opacity="0.6"/><rect x="34" y="33" width="15" height="16" rx="2" fill="#E53935"/><rect x="36" y="28" width="11" height="6" rx="1" fill="#C62828"/><ellipse cx="42" cy="42" rx="2" ry="4" fill="rgba(255,255,255,0.35)"/></svg>',
+  snack: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gSna" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFEE58"/><stop offset="0.6" stop-color="#FDD835"/><stop offset="1" stop-color="#C17900"/></linearGradient></defs><ellipse cx="32" cy="56" rx="20" ry="4" fill="rgba(0,0,0,0.18)"/><path d="M14 22 L50 22 L46 54 Q46 56 42 56 L22 56 Q18 56 18 54 Z" fill="url(#gSna)" stroke="#8C5A12" stroke-width="1.8"/><path d="M14 22 L50 22 L49 30 L15 30 Z" fill="#FBC02D"/><path d="M20 38 Q32 34 44 38" fill="none" stroke="#8C5A12" stroke-width="2" stroke-linecap="round"/><path d="M20 45 Q32 41 44 45" fill="none" stroke="#8C5A12" stroke-width="2" stroke-linecap="round"/><ellipse cx="22" cy="26" rx="4" ry="1.5" fill="rgba(255,255,255,0.6)"/></svg>',
+  dulce: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gDul" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A1887F"/><stop offset="0.5" stop-color="#6D4C41"/><stop offset="1" stop-color="#2D1B14"/></linearGradient></defs><ellipse cx="32" cy="56" rx="18" ry="4" fill="rgba(0,0,0,0.18)"/><rect x="14" y="20" width="36" height="34" rx="4" fill="url(#gDul)" stroke="#1E0F0A" stroke-width="1.8"/><rect x="14" y="16" width="36" height="6" rx="2" fill="#A1887F"/><path d="M18 26 L46 26 L46 48 Q46 50 44 50 L20 50 Q18 50 18 48 Z" fill="#5D4037"/><circle cx="26" cy="34" r="3.5" fill="#FFD54F"/><circle cx="36" cy="38" r="3.5" fill="#FFD54F"/><circle cx="30" cy="45" r="3.5" fill="#FFD54F"/><ellipse cx="22" cy="23" rx="5" ry="1.5" fill="rgba(255,255,255,0.4)"/></svg>',
+  preparado: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gPre" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="0.6" stop-color="#ECEFF1"/><stop offset="1" stop-color="#B0BEC5"/></linearGradient></defs><ellipse cx="32" cy="56" rx="23" ry="4" fill="rgba(0,0,0,0.18)"/><path d="M10 32 Q10 24 32 24 Q54 24 54 32 Q54 42 32 42 Q10 42 10 32 Z" fill="url(#gPre)" stroke="#78909C" stroke-width="1.8"/><path d="M14 32 Q14 28 32 28 Q50 28 50 32" fill="none" stroke="#90A4AE" stroke-width="1.5"/><rect x="8" y="42" width="48" height="6" rx="2" fill="#B0BEC5" stroke="#607D8B" stroke-width="1.5"/><circle cx="24" cy="36" r="4" fill="#FF7043"/><circle cx="34" cy="35" r="4" fill="#66BB6A"/><circle cx="43" cy="36" r="3.5" fill="#FFCA28"/><ellipse cx="22" cy="30" rx="4" ry="1.5" fill="rgba(255,255,255,0.8)"/></svg>',
+  lacteo: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gLac" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="0.6" stop-color="#ECEFF1"/><stop offset="1" stop-color="#90A4AE"/></linearGradient></defs><ellipse cx="32" cy="58" rx="12" ry="3" fill="rgba(0,0,0,0.18)"/><path d="M22 20 L22 54 Q22 56 24 56 L40 56 Q42 56 42 54 L42 20 Z" fill="url(#gLac)" stroke="#607D8B" stroke-width="1.8"/><path d="M22 20 L32 8 L42 20 Z" fill="#ECEFF1" stroke="#607D8B" stroke-width="1.8" stroke-linejoin="round"/><path d="M26 30 Q32 27 38 30 L38 42 Q32 45 26 42 Z" fill="#BBDEFB" opacity="0.85"/><text x="32" y="40" font-size="6" font-weight="800" text-anchor="middle" fill="#0288D1">LECHE</text></svg>',
+  default: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="gDef" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFD8DC"/><stop offset="0.6" stop-color="#90A4AE"/><stop offset="1" stop-color="#546E7A"/></linearGradient></defs><ellipse cx="32" cy="56" rx="20" ry="4" fill="rgba(0,0,0,0.18)"/><path d="M14 22 L50 22 L46 54 Q46 56 42 56 L22 56 Q18 56 18 54 Z" fill="url(#gDef)" stroke="#37474F" stroke-width="1.8"/><path d="M14 22 L50 22 L49 30 L15 30 Z" fill="#B0BEC5"/><rect x="26" y="14" width="12" height="8" rx="1.5" fill="#78909C"/><ellipse cx="22" cy="26" rx="4" ry="1.5" fill="rgba(255,255,255,0.5)"/></svg>'
 };
 
 function norm_(s) {
@@ -1333,18 +1311,6 @@ function iconoPill(cat) {
   if (c.indexOf('papeleria') >= 0) return '📄';
   if (c.indexOf('higiene') >= 0) return '🧼';
   return '📁';
-}
-
-function claseCategoria(cat) {
-  const c = norm_(cat);
-  if (c.indexOf('empanada') >= 0) return 'cat-empanada';
-  if (c.indexOf('combo') >= 0) return 'cat-combo';
-  if (c.indexOf('bebida') >= 0) return 'cat-bebida';
-  if (c.indexOf('dulce') >= 0 || c.indexOf('confiteria') >= 0 || c.indexOf('galleta') >= 0 || c.indexOf('ponque') >= 0) return 'cat-dulce';
-  if (c.indexOf('preparado') >= 0 || c.indexOf('instantanea') >= 0) return 'cat-preparado';
-  if (c.indexOf('pasaboca') >= 0) return 'cat-snack';
-  if (c.indexOf('lacteo') >= 0 || c.indexOf('avena') >= 0) return 'cat-lacteo';
-  return '';
 }
 
 // ===== Detector tap / scroll =====
@@ -1651,13 +1617,7 @@ function setRapidosDeCategoria(cat, arr) {
 
 function crearBotonRapido(p, esGrupo, itemsGrupo) {
   const btn = document.createElement('button');
-  let clases = 'btn-rapido';
-  if (esGrupo) clases += ' grupo';
-
-  const catKey = esGrupo ? p : (p.categoria || '');
-  const claseCat = claseCategoria(catKey);
-  if (claseCat) clases += ' ' + claseCat;
-  btn.className = clases;
+  btn.className = 'btn-rapido' + (esGrupo ? ' grupo' : '');
 
   if (esGrupo) {
     btn.innerHTML =

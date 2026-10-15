@@ -27,7 +27,6 @@
     letter-spacing: -0.5px;
   }
 
-  /* Contador carrito en header */
   .carrito-badge {
     display: inline-block;
     background: rgba(255,255,255,0.2);
@@ -135,7 +134,6 @@
     background: #FFF8E8;
   }
 
-  /* Toggle de rápidos */
   #btnToggleRapidos {
     background: var(--azul-suave);
     color: var(--azul);
@@ -232,7 +230,6 @@
   .btn-variante .nom-v { display: block; font-size: 13px; }
   .btn-variante .pre-v { display: block; font-size: 12px; color: var(--azul); font-weight: 700; margin-top: 2px; }
 
-  /* Estado presionado (mantener para cobro rápido) */
   .btn-rapido.presionado,
   .btn-variante.presionado {
     background: var(--exito) !important;
@@ -247,23 +244,42 @@
     color: #fff !important;
   }
 
-
   /* ===== Buscador ===== */
   #resultados { max-height: 340px; overflow-y: auto; margin-top: 8px; }
 
   .resultado {
-    padding: 14px 12px;
+    padding: 10px 12px;
     border-bottom: 1px solid #E8ECF4;
     cursor: pointer;
     transition: background 0.15s;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
   .resultado:last-child { border-bottom: none; }
   .resultado:hover { background: var(--superficie-2); }
   .resultado.agotado { opacity: 0.5; cursor: not-allowed; }
+
+  .resultado .icono-res {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 10px;
+    background: var(--superficie-2);
+  }
+  .resultado .icono-res svg {
+    width: 100%;
+    height: 100%;
+  }
+  .resultado .icono-res img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
   .resultado .info { flex: 1; min-width: 0; }
   .resultado .nombre {
@@ -362,7 +378,6 @@
     border-radius: 8px;
   }
 
-  /* ===== Panel cantidad ===== */
   #panelCantidad {
     margin-top: 10px;
     padding: 14px;
@@ -392,7 +407,6 @@
     background: #fff;
   }
 
-  /* ===== Botones de cobro ===== */
   .cobro-fila {
     display: flex;
     gap: 8px;
@@ -528,7 +542,6 @@
     margin-bottom: 16px;
   }
 
-  /* ===== Modal configuración rápidos ===== */
   #modalConfig {
     display: none;
     position: fixed;
@@ -551,7 +564,6 @@
     padding: 20px;
   }
 
-  /* ===== Modal cobro rápido (tap largo) ===== */
   #modalCobro {
     display: none;
     position: fixed;
@@ -747,7 +759,7 @@
 <div class="caja">
   <div id="zonaRapidos">
     <div class="titulo-fila">
-      <h4>⚡ Rápidos <small style="font-weight:400;color:var(--texto-claro);font-size:11px;">(mantén para cobrar)</small></h4>
+      <h4>⚡ Rápidos</h4>
       <div style="display:flex; gap:6px;">
         <button id="btnToggleRapidos" type="button">▼ Mostrar</button>
         <button id="btnConfigurar" type="button">⚙️</button>
@@ -901,9 +913,29 @@ if ('BarcodeDetector' in window) {
 function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
 
 // =====================================================================
+// Helper: convierte URL de Drive al formato que sí carga en <img>
+// Si no es de Drive, la devuelve igual.
+// =====================================================================
+function urlImagenOk(url) {
+  if (!url) return '';
+  url = String(url).trim();
+  // Formato viejo: https://lh3.googleusercontent.com/d/XXXXX
+  let m = url.match(/lh3\.googleusercontent\.com\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w400';
+  // Formato: https://drive.google.com/file/d/XXXXX/view
+  m = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w400';
+  // Formato: https://drive.google.com/open?id=XXXXX
+  m = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+  if (m) return 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w400';
+  // Formato: https://drive.google.com/uc?id=XXXXX
+  m = url.match(/drive\.google\.com\/uc\?.*id=([a-zA-Z0-9_-]+)/);
+  if (m) return 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w400';
+  return url;
+}
+
+// =====================================================================
 // ICONOS SVG POR CATEGORÍA
-// Si el producto tiene imagen_url, se usa la imagen real.
-// Si no, se usa el SVG según categoría/nombre.
 // =====================================================================
 const SVG_ICONOS = {
   empanada: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="54" rx="22" ry="3" fill="rgba(0,0,0,0.12)"/><path d="M9 36 Q9 17 32 17 Q55 17 55 36 Q55 47 32 47 Q9 47 9 36 Z" fill="#E8A33D" stroke="#B87A1F" stroke-width="2.2" stroke-linejoin="round"/><path d="M9 36 Q13 32 17 36 Q21 32 25 36 Q29 32 33 36 Q37 32 41 36 Q45 32 49 36 Q53 32 55 36" fill="none" stroke="#B87A1F" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="23" cy="27" rx="6" ry="2.8" fill="rgba(255,255,255,0.45)"/></svg>',
@@ -914,7 +946,7 @@ const SVG_ICONOS = {
   snack: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="56" rx="20" ry="3" fill="rgba(0,0,0,0.12)"/><path d="M14 22 L50 22 L46 54 Q46 56 42 56 L22 56 Q18 56 18 54 Z" fill="#FDD835" stroke="#F9A825" stroke-width="2"/><path d="M14 22 L50 22 L49 30 L15 30 Z" fill="#FBC02D"/><path d="M20 38 Q32 34 44 38" fill="none" stroke="#F9A825" stroke-width="2" stroke-linecap="round"/><path d="M20 45 Q32 41 44 45" fill="none" stroke="#F9A825" stroke-width="2" stroke-linecap="round"/></svg>',
   dulce: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="56" rx="18" ry="3" fill="rgba(0,0,0,0.12)"/><rect x="14" y="20" width="36" height="34" rx="4" fill="#8D6E63" stroke="#5D4037" stroke-width="2"/><rect x="14" y="16" width="36" height="6" rx="2" fill="#A1887F"/><path d="M18 26 L46 26 L46 48 Q46 50 44 50 L20 50 Q18 50 18 48 Z" fill="#6D4C41"/><circle cx="26" cy="34" r="2.5" fill="#FFD54F"/><circle cx="36" cy="38" r="2.5" fill="#FFD54F"/><circle cx="30" cy="44" r="2.5" fill="#FFD54F"/></svg>',
   preparado: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="56" rx="22" ry="3" fill="rgba(0,0,0,0.12)"/><path d="M10 32 Q10 24 32 24 Q54 24 54 32 Q54 42 32 42 Q10 42 10 32 Z" fill="#fff" stroke="#B0BEC5" stroke-width="2"/><path d="M14 32 Q14 28 32 28 Q50 28 50 32" fill="none" stroke="#90A4AE" stroke-width="1.5"/><rect x="8" y="42" width="48" height="6" rx="2" fill="#CFD8DC" stroke="#90A4AE" stroke-width="1.5"/><circle cx="24" cy="36" r="3" fill="#FF7043"/><circle cx="34" cy="35" r="3" fill="#66BB6A"/><circle cx="43" cy="36" r="2.5" fill="#FFCA28"/></svg>',
-  lacteo: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="58" rx="12" ry="2.5" fill="rgba(0,0,0,0.12)"/><path d="M22 20 L22 54 Q22 56 24 56 L40 56 Q42 56 42 54 L42 20 Z" fill="#FAFAFA" stroke="#90A4AE" stroke-width="2"/><path d="M22 20 L32 8 L42 20 Z" fill="#ECEFF1" stroke="#90A4AE" stroke-width="2" stroke-linejoin="round"/><path d="M26 30 Q32 27 38 30 L38 42 Q32 45 26 42 Z" fill="#BBDEFB" opacity="0.7"/><text x="32" y="40" font-size="6" font-weight="700" text-anchor="middle" fill="#0288D1">LECHE</text></svg>',
+  lacteo: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="58" rx="12" ry="2.5" fill="rgba(0,0,0,0.12)"/><path d="M22 20 L22 54 Q22 56 24 56 L40 56 Q42 56 42 54 L42 20 Z" fill="#FAFAFA" stroke="#90A4AE" stroke-width="2"/><path d="M22 20 L32 8 L42 20 Z" fill="#ECEFF1" stroke="#90A4AE" stroke-width="2" stroke-linejoin="round"/><path d="M26 30 Q32 27 38 30 L38 42 Q32 45 26 42 Z" fill="#BBDEFB" opacity="0.7"/></svg>',
   default: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="56" rx="20" ry="3" fill="rgba(0,0,0,0.12)"/><path d="M14 22 L50 22 L46 54 Q46 56 42 56 L22 56 Q18 56 18 54 Z" fill="#CFD8DC" stroke="#90A4AE" stroke-width="2"/><path d="M14 22 L50 22 L49 30 L15 30 Z" fill="#B0BEC5"/><rect x="26" y="14" width="12" height="8" rx="1.5" fill="#90A4AE"/></svg>'
 };
 
@@ -943,13 +975,12 @@ function svgPorCategoria(p) {
 
 function iconoParaProducto(p) {
   if (p && p.imagen_url) {
-    return '<img src="' + p.imagen_url + '" alt="" loading="lazy">';
+    return '<img src="' + urlImagenOk(p.imagen_url) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'; this.parentNode.innerHTML=\'' + svgPorCategoria(p).replace(/'/g, "\\'") + '\';">';
   }
   return svgPorCategoria(p || {});
 }
 
 function iconoParaGrupo(nombreCategoria) {
-  // Para grupos usamos el SVG según el nombre de la categoría
   return svgPorCategoria({ nombre: '', categoria: nombreCategoria });
 }
 
@@ -1062,7 +1093,7 @@ function pintarUltimoMedio() {
 
 // ---------- Buscador ----------
 function pintarResultados() {
-  const q = norm($('buscar').value);
+  const q = norm_($('buscar').value);
   const cont = $('resultados');
   cont.innerHTML = '';
   $('panelCantidad').style.display = 'none';
@@ -1071,7 +1102,7 @@ function pintarResultados() {
   let n = 0;
   const coincidencias = [];
   productos.forEach(function (p) {
-    if (norm(p.id + ' ' + p.nombre).indexOf(q) < 0) return;
+    if (norm_(p.id + ' ' + p.nombre).indexOf(q) < 0) return;
     coincidencias.push(p);
   });
 
@@ -1088,6 +1119,7 @@ function pintarResultados() {
     const cantEnCarrito = enCarrito ? enCarrito.cantidad : 0;
 
     d.innerHTML =
+      '<div class="icono-res">' + iconoParaProducto(p) + '</div>' +
       '<div class="info">' +
         '<span class="nombre">' + p.nombre + '</span>' +
         '<span class="meta">' +
@@ -1280,7 +1312,7 @@ function pintarRapidos() {
 }
 
 // =====================================================================
-// Mostrar variantes con tap corto / tap largo
+// Mostrar variantes
 // =====================================================================
 function mostrarVariantes(nombre, items) {
   $('tituloVariantes').textContent = nombre;
@@ -1914,7 +1946,7 @@ $('escAgregar').addEventListener('click', function () {
 });
 
 // =====================================================================
-// Toggle de botones rápidos (mostrar / ocultar)
+// Toggle de botones rápidos
 // =====================================================================
 const RAPIDOS_VISIBLES_KEY = 'caf_rapidos_visibles';
 

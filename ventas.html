@@ -72,18 +72,18 @@
     background: #fff;
     border: 2px solid var(--azul-suave);
     border-radius: var(--radio);
-    padding: 10px 6px;
+    padding: 12px 8px;
     text-align: center;
     cursor: pointer;
     transition: transform 0.1s, background 0.15s, border-color 0.15s;
     color: var(--texto);
     font-family: var(--fuente);
-    min-height: 80px;
+    min-height: 120px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
@@ -93,22 +93,30 @@
     transform: scale(0.95);
     background: var(--azul-suave);
   }
-  .btn-rapido.presionado {
-    background: var(--exito) !important;
-    color: #fff !important;
-    border-color: var(--exito) !important;
-    transform: scale(1.05);
+
+  .btn-rapido .icono {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
   }
-  .btn-rapido.presionado .nom,
-  .btn-rapido.presionado .pre {
-    color: #fff !important;
+  .btn-rapido .icono svg {
+    width: 100%;
+    height: 100%;
+    display: block;
   }
-  .btn-rapido .emoji {
-    font-size: 24px;
-    line-height: 1;
+  .btn-rapido .icono img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
   }
   .btn-rapido .nom {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     line-height: 1.15;
     overflow: hidden;
@@ -118,7 +126,7 @@
     -webkit-box-orient: vertical;
   }
   .btn-rapido .pre {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--azul);
     font-weight: 700;
   }
@@ -128,28 +136,28 @@
   }
 
   /* Toggle de rápidos */
-#btnToggleRapidos {
-  background: var(--azul-suave);
-  color: var(--azul);
-  font-weight: 600;
-  font-size: 13px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: none;
-  transition: background 0.15s, color 0.15s;
-}
-#btnToggleRapidos:active {
-  background: var(--azul-claro);
-  color: #fff;
-}
+  #btnToggleRapidos {
+    background: var(--azul-suave);
+    color: var(--azul);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    transition: background 0.15s, color 0.15s;
+  }
+  #btnToggleRapidos:active {
+    background: var(--azul-claro);
+    color: #fff;
+  }
 
-#botonesRapidos {
-  animation: fadeInRapidos 0.2s ease-out;
-}
-@keyframes fadeInRapidos {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+  #botonesRapidos {
+    animation: fadeInRapidos 0.2s ease-out;
+  }
+  @keyframes fadeInRapidos {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
   #panelVariantes {
     display: none;
@@ -180,38 +188,64 @@
     grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
-  
-.btn-variante {
-  background: #fff;
-  border: 2px solid transparent;
-  border-radius: 10px;
-  padding: 10px;
-  text-align: left;
-  cursor: pointer;
-  font-family: var(--fuente);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--texto);
-  transition: transform 0.1s, background 0.15s, border-color 0.15s;
-}
+
+  .btn-variante {
+    background: #fff;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--fuente);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--texto);
+    transition: transform 0.1s, background 0.15s, border-color 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
   .btn-variante:active { transform: scale(0.95); }
+  .btn-variante .icono-v {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .btn-variante .icono-v svg {
+    width: 100%;
+    height: 100%;
+  }
+  .btn-variante .icono-v img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  .btn-variante .texto-v {
+    flex: 1;
+    min-width: 0;
+  }
   .btn-variante .nom-v { display: block; font-size: 13px; }
   .btn-variante .pre-v { display: block; font-size: 12px; color: var(--azul); font-weight: 700; margin-top: 2px; }
 
-/* Estado presionado (mantener para cobro rápido) */
-.btn-rapido.presionado,
-.btn-variante.presionado {
-  background: var(--exito) !important;
-  color: #fff !important;
-  border-color: var(--exito) !important;
-  transform: scale(1.05);
-}
-.btn-rapido.presionado .nom,
-.btn-rapido.presionado .pre,
-.btn-variante.presionado .nom-v,
-.btn-variante.presionado .pre-v {
-  color: #fff !important;
-}
+  /* Estado presionado (mantener para cobro rápido) */
+  .btn-rapido.presionado,
+  .btn-variante.presionado {
+    background: var(--exito) !important;
+    color: #fff !important;
+    border-color: var(--exito) !important;
+    transform: scale(1.05);
+  }
+  .btn-rapido.presionado .nom,
+  .btn-rapido.presionado .pre,
+  .btn-variante.presionado .nom-v,
+  .btn-variante.presionado .pre-v {
+    color: #fff !important;
+  }
 
 
   /* ===== Buscador ===== */
@@ -552,6 +586,30 @@
     color: var(--texto-suave);
     text-align: center;
     margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  #modalCobro .prod .icono-mc {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 10px;
+    background: var(--superficie-2);
+  }
+  #modalCobro .prod .icono-mc svg {
+    width: 100%;
+    height: 100%;
+  }
+  #modalCobro .prod .icono-mc img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   #modalCobro .total-box {
     background: var(--azul-suave);
@@ -843,10 +901,62 @@ if ('BarcodeDetector' in window) {
 function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
 
 // =====================================================================
-// Helper: detecta si fue un tap o un scroll
-// Si el dedo se movió más de THRESHOLD px → es scroll, no tap
+// ICONOS SVG POR CATEGORÍA
+// Si el producto tiene imagen_url, se usa la imagen real.
+// Si no, se usa el SVG según categoría/nombre.
 // =====================================================================
-const TAP_THRESHOLD = 10; // píxeles de tolerancia
+const SVG_ICONOS = {
+  empanada: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="54" rx="22" ry="3" fill="rgba(0,0,0,0.12)"/><path d="M9 36 Q9 17 32 17 Q55 17 55 36 Q55 47 32 47 Q9 47 9 36 Z" fill="#E8A33D" stroke="#B87A1F" stroke-width="2.2" stroke-linejoin="round"/><path d="M9 36 Q13 32 17 36 Q21 32 25 36 Q29 32 33 36 Q37 32 41 36 Q45 32 49 36 Q53 32 55 36" fill="none" stroke="#B87A1F" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="23" cy="27" rx="6" ry="2.8" fill="rgba(255,255,255,0.45)"/></svg>',
+  gaseosa: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="58" rx="14" ry="2.5" fill="rgba(0,0,0,0.12)"/><path d="M22 16 L26 54 Q26 57 32 57 Q38 57 38 54 L42 16 Z" fill="#E53935" stroke="#B71C1C" stroke-width="2"/><rect x="20" y="11" width="24" height="6" rx="2" fill="#C62828"/><rect x="27" y="3" width="10" height="9" rx="1.5" fill="#B71C1C"/><path d="M26 28 Q32 24 38 28 L38 42 Q32 46 26 42 Z" fill="#fff" opacity="0.85"/><text x="32" y="40" font-size="7" font-weight="700" text-anchor="middle" fill="#E53935">COLA</text></svg>',
+  jugo: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="58" rx="14" ry="2.5" fill="rgba(0,0,0,0.12)"/><path d="M20 18 L24 54 Q24 57 32 57 Q40 57 40 54 L44 18 Z" fill="#FB8C00" stroke="#E65100" stroke-width="2"/><rect x="18" y="13" width="28" height="6" rx="2" fill="#EF6C00"/><path d="M25 30 Q32 26 39 30 L39 44 Q32 48 25 44 Z" fill="#fff" opacity="0.85"/><text x="32" y="42" font-size="7" font-weight="700" text-anchor="middle" fill="#FB8C00">JUGO</text></svg>',
+  agua: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="58" rx="12" ry="2.5" fill="rgba(0,0,0,0.12)"/><path d="M24 16 L26 54 Q26 57 32 57 Q38 57 38 54 L40 16 Z" fill="#B3E5FC" stroke="#0288D1" stroke-width="2"/><rect x="23" y="11" width="18" height="6" rx="2" fill="#0288D1"/><rect x="29" y="4" width="6" height="8" rx="1" fill="#01579B"/><path d="M27 30 Q32 27 37 30 L37 42 Q32 45 27 42 Z" fill="#fff" opacity="0.7"/></svg>',
+  combo: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="56" rx="22" ry="3" fill="rgba(0,0,0,0.12)"/><rect x="10" y="26" width="44" height="26" rx="4" fill="#8D6E63" stroke="#5D4037" stroke-width="2"/><rect x="10" y="21" width="44" height="6" rx="2" fill="#A1887F"/><circle cx="24" cy="40" r="6" fill="#E8A33D" stroke="#B87A1F" stroke-width="1.5"/><rect x="36" y="33" width="13" height="15" rx="2" fill="#E53935"/><rect x="38" y="28" width="9" height="6" rx="1" fill="#C62828"/></svg>',
+  snack: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="56" rx="20" ry="3" fill="rgba(0,0,0,0.12)"/><path d="M14 22 L50 22 L46 54 Q46 56 42 56 L22 56 Q18 56 18 54 Z" fill="#FDD835" stroke="#F9A825" stroke-width="2"/><path d="M14 22 L50 22 L49 30 L15 30 Z" fill="#FBC02D"/><path d="M20 38 Q32 34 44 38" fill="none" stroke="#F9A825" stroke-width="2" stroke-linecap="round"/><path d="M20 45 Q32 41 44 45" fill="none" stroke="#F9A825" stroke-width="2" stroke-linecap="round"/></svg>',
+  dulce: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="56" rx="18" ry="3" fill="rgba(0,0,0,0.12)"/><rect x="14" y="20" width="36" height="34" rx="4" fill="#8D6E63" stroke="#5D4037" stroke-width="2"/><rect x="14" y="16" width="36" height="6" rx="2" fill="#A1887F"/><path d="M18 26 L46 26 L46 48 Q46 50 44 50 L20 50 Q18 50 18 48 Z" fill="#6D4C41"/><circle cx="26" cy="34" r="2.5" fill="#FFD54F"/><circle cx="36" cy="38" r="2.5" fill="#FFD54F"/><circle cx="30" cy="44" r="2.5" fill="#FFD54F"/></svg>',
+  preparado: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="56" rx="22" ry="3" fill="rgba(0,0,0,0.12)"/><path d="M10 32 Q10 24 32 24 Q54 24 54 32 Q54 42 32 42 Q10 42 10 32 Z" fill="#fff" stroke="#B0BEC5" stroke-width="2"/><path d="M14 32 Q14 28 32 28 Q50 28 50 32" fill="none" stroke="#90A4AE" stroke-width="1.5"/><rect x="8" y="42" width="48" height="6" rx="2" fill="#CFD8DC" stroke="#90A4AE" stroke-width="1.5"/><circle cx="24" cy="36" r="3" fill="#FF7043"/><circle cx="34" cy="35" r="3" fill="#66BB6A"/><circle cx="43" cy="36" r="2.5" fill="#FFCA28"/></svg>',
+  lacteo: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="58" rx="12" ry="2.5" fill="rgba(0,0,0,0.12)"/><path d="M22 20 L22 54 Q22 56 24 56 L40 56 Q42 56 42 54 L42 20 Z" fill="#FAFAFA" stroke="#90A4AE" stroke-width="2"/><path d="M22 20 L32 8 L42 20 Z" fill="#ECEFF1" stroke="#90A4AE" stroke-width="2" stroke-linejoin="round"/><path d="M26 30 Q32 27 38 30 L38 42 Q32 45 26 42 Z" fill="#BBDEFB" opacity="0.7"/><text x="32" y="40" font-size="6" font-weight="700" text-anchor="middle" fill="#0288D1">LECHE</text></svg>',
+  default: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="56" rx="20" ry="3" fill="rgba(0,0,0,0.12)"/><path d="M14 22 L50 22 L46 54 Q46 56 42 56 L22 56 Q18 56 18 54 Z" fill="#CFD8DC" stroke="#90A4AE" stroke-width="2"/><path d="M14 22 L50 22 L49 30 L15 30 Z" fill="#B0BEC5"/><rect x="26" y="14" width="12" height="8" rx="1.5" fill="#90A4AE"/></svg>'
+};
+
+function norm_(s) {
+  return String(s === null || s === undefined ? '' : s).trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function svgPorCategoria(p) {
+  const n = norm_(p.nombre || '');
+  const c = norm_(p.categoria || '');
+
+  if (c.indexOf('empanada') >= 0 || n.indexOf('empanada') >= 0) return SVG_ICONOS.empanada;
+  if (c.indexOf('combo') >= 0 || n.indexOf('combo') >= 0) return SVG_ICONOS.combo;
+  if (n.indexOf('jugo') >= 0 || n.indexOf('hit') >= 0 || n.indexOf('malta') >= 0) return SVG_ICONOS.jugo;
+  if (n.indexOf('agua') >= 0) return SVG_ICONOS.agua;
+  if (n.indexOf('gaseosa') >= 0 || n.indexOf('coca') >= 0 || n.indexOf('pepsi') >= 0 || n.indexOf('cola') >= 0 || n.indexOf('sprite') >= 0 || n.indexOf('fanta') >= 0) return SVG_ICONOS.gaseosa;
+  if (c.indexOf('bebida') >= 0) return SVG_ICONOS.gaseosa;
+  if (c.indexOf('pasaboca') >= 0 || n.indexOf('papas') >= 0 || n.indexOf('snack') >= 0) return SVG_ICONOS.snack;
+  if (c.indexOf('dulce') >= 0 || c.indexOf('galleta') >= 0 || c.indexOf('confiteria') >= 0) return SVG_ICONOS.dulce;
+  if (c.indexOf('preparado') >= 0 || c.indexOf('instantanea') >= 0) return SVG_ICONOS.preparado;
+  if (c.indexOf('lacteo') >= 0 || c.indexOf('avena') >= 0) return SVG_ICONOS.lacteo;
+
+  return SVG_ICONOS.default;
+}
+
+function iconoParaProducto(p) {
+  if (p && p.imagen_url) {
+    return '<img src="' + p.imagen_url + '" alt="" loading="lazy">';
+  }
+  return svgPorCategoria(p || {});
+}
+
+function iconoParaGrupo(nombreCategoria) {
+  // Para grupos usamos el SVG según el nombre de la categoría
+  return svgPorCategoria({ nombre: '', categoria: nombreCategoria });
+}
+
+// =====================================================================
+// Helper: detecta si fue un tap o un scroll
+// =====================================================================
+const TAP_THRESHOLD = 10;
 
 function crearDetectorTap(elemento, onTap, onLongPress) {
   let startX = 0, startY = 0;
@@ -872,14 +982,13 @@ function crearDetectorTap(elemento, onTap, onLongPress) {
   }, { passive: true });
 
   elemento.addEventListener('touchmove', function (e) {
-    // Si se mueve mucho, cancelar el timer (era scroll)
     const touch = e.touches[0];
     const dx = Math.abs(touch.clientX - startX);
     const dy = Math.abs(touch.clientY - startY);
     if (dx > TAP_THRESHOLD || dy > TAP_THRESHOLD) {
       clearTimeout(timer);
       fueLargo = false;
-      touchActivo = false;  // marcar como scroll
+      touchActivo = false;
       elemento.classList.remove('presionado');
     }
   }, { passive: true });
@@ -888,17 +997,14 @@ function crearDetectorTap(elemento, onTap, onLongPress) {
     clearTimeout(timer);
     elemento.classList.remove('presionado');
 
-    // Si fue scroll, no hacer nada
     if (!touchActivo) return;
     touchActivo = false;
 
-    // Verificar que no se haya movido al final también
     const touch = e.changedTouches[0];
     const dx = Math.abs(touch.clientX - startX);
     const dy = Math.abs(touch.clientY - startY);
     if (dx > TAP_THRESHOLD || dy > TAP_THRESHOLD) return;
 
-    // Marcar click reciente para bloquear el "click fantasma"
     clickReciente = true;
     setTimeout(function () { clickReciente = false; }, 500);
 
@@ -916,7 +1022,6 @@ function crearDetectorTap(elemento, onTap, onLongPress) {
     elemento.classList.remove('presionado');
   });
 
-  // Fallback para PC (mouse)
   elemento.addEventListener('click', function () {
     if (clickReciente) return;
     onTap();
@@ -997,7 +1102,7 @@ function pintarResultados() {
         (cantEnCarrito ? '<br><span class="en-carrito">' + cantEnCarrito + ' en carrito</span>' : '') +
       '</div>';
 
-      if (p.stock > 0) {
+    if (p.stock > 0) {
       crearDetectorTap(d, function () { mostrarPanelCantidad(p); }, null);
     }
     cont.appendChild(d);
@@ -1070,7 +1175,7 @@ function cargarRapidosGuardados() {
       const validos = arr.filter(function (rid) {
         if (rid.startsWith('GRUPO_')) {
           const cat = rid.replace('GRUPO_', '');
-          return productos.some(function (p) { return norm(p.categoria) === norm(cat); });
+          return productos.some(function (p) { return norm_(p.categoria) === norm_(cat); });
         }
         return productos.some(function (p) { return p.id === rid; });
       });
@@ -1096,7 +1201,7 @@ function cargarRapidosGuardados() {
   ['chocoramo', 'gansito', 'jugo hit', 'agua pequeña'].forEach(function (nombre) {
     if (defaults.length >= 6) return;
     const p = productos.find(function (x) {
-      return norm(x.nombre).indexOf(nombre) >= 0 && defaults.indexOf(x.id) < 0;
+      return norm_(x.nombre).indexOf(nombre) >= 0 && defaults.indexOf(x.id) < 0;
     });
     if (p) defaults.push(p.id);
   });
@@ -1109,30 +1214,24 @@ function guardarRapidos() {
 }
 
 // =====================================================================
-// Sistema de tap corto / tap largo (VERSIÓN ÚNICA Y CORREGIDA)
+// Sistema de tap corto / tap largo
 // =====================================================================
-let tapTimer = null;
-let tapFueLargo = false;
-let touchIniciado = false;
-let touchReciente = false;
-
 function crearBotonRapido(p, esGrupo, itemsGrupo) {
   const btn = document.createElement('button');
   btn.className = 'btn-rapido' + (esGrupo ? ' grupo' : '');
 
   if (esGrupo) {
     btn.innerHTML =
-      '<span class="emoji">🥟</span>' +
+      '<span class="icono">' + iconoParaGrupo(p) + '</span>' +
       '<span class="nom">' + p + '</span>' +
       '<span class="pre">' + itemsGrupo.length + ' opciones</span>';
   } else {
     btn.innerHTML =
-      '<span class="emoji">📦</span>' +
+      '<span class="icono">' + iconoParaProducto(p) + '</span>' +
       '<span class="nom">' + p.nombre + '</span>' +
       '<span class="pre">' + fmt(p.precio) + '</span>';
   }
 
-  // Definir qué hace el tap corto y el tap largo
   const onTap = function () {
     if (esGrupo) {
       mostrarVariantes(p, itemsGrupo);
@@ -1167,7 +1266,7 @@ function pintarRapidos() {
     if (rid.startsWith('GRUPO_')) {
       const nombreGrupo = rid.replace('GRUPO_', '');
       const itemsGrupo = productos.filter(function (p) {
-        return norm(p.categoria) === norm(nombreGrupo);
+        return norm_(p.categoria) === norm_(nombreGrupo);
       });
       if (itemsGrupo.length === 0) return;
       cont.appendChild(crearBotonRapido(nombreGrupo, true, itemsGrupo));
@@ -1192,8 +1291,11 @@ function mostrarVariantes(nombre, items) {
     const btn = document.createElement('button');
     btn.className = 'btn-variante';
     btn.innerHTML =
-      '<span class="nom-v">' + p.nombre + '</span>' +
-      '<span class="pre-v">' + fmt(p.precio) + '</span>';
+      '<span class="icono-v">' + iconoParaProducto(p) + '</span>' +
+      '<span class="texto-v">' +
+        '<span class="nom-v">' + p.nombre + '</span>' +
+        '<span class="pre-v">' + fmt(p.precio) + '</span>' +
+      '</span>';
 
     const onTap = function () {
       agregarProductoAlCarrito(p, 1);
@@ -1359,7 +1461,7 @@ async function cobrar(medio, opts) {
     const total = carrito.reduce(function (s, it) { return s + it.precio * it.cantidad; }, 0);
     const resp = prompt('Cliente paga con efectivo.\nTotal: ' + fmt(total) + '\n\n¿Con cuánto paga? (deja vacío o escribe "exacto"):', '');
     if (resp === null) return;
-    if (resp.trim() !== '' && norm(resp.trim()) !== 'exacto') {
+    if (resp.trim() !== '' && norm_(resp.trim()) !== 'exacto') {
       const recibido = Number(resp.trim());
       if (!isNaN(recibido) && recibido >= total) {
         cambio = recibido - total;
@@ -1423,7 +1525,9 @@ function abrirCobroRapido(p, cant) {
   mcMedio = null;
   mcTotal = p.precio * cant;
 
-  $('mcProducto').textContent = cant + '× ' + p.nombre;
+  $('mcProducto').innerHTML =
+    '<span class="icono-mc">' + iconoParaProducto(p) + '</span>' +
+    '<span>' + cant + '× ' + p.nombre + '</span>';
   $('mcTotal').textContent = fmt(mcTotal);
   $('mcPago').value = '';
   $('mcCambioCalc').textContent = '';
@@ -1538,7 +1642,7 @@ $('btnCerrarConfig').addEventListener('click', function () {
 
 function pintarListaConfig() {
   const cont = $('listaConfig');
-  const q = norm($('buscarConfig').value);
+  const q = norm_($('buscarConfig').value);
   cont.innerHTML = '';
 
   const conteoCategorias = {};
@@ -1550,12 +1654,12 @@ function pintarListaConfig() {
 
   Object.keys(conteoCategorias).forEach(function (cat) {
     if (conteoCategorias[cat] < 2) return;
-    if (q && norm(cat).indexOf(q) < 0) return;
+    if (q && norm_(cat).indexOf(q) < 0) return;
     const grupoId = 'GRUPO_' + cat;
     const sel = seleccionConfig.indexOf(grupoId) >= 0;
     const d = document.createElement('div');
     d.style.cssText = 'padding:10px; border-bottom:1px solid #E8ECF4; cursor:pointer; display:flex; justify-content:space-between; align-items:center;' + (sel ? ' background:#E3ECFF;' : '');
-    d.innerHTML = '<div><strong>🥟 ' + cat + '</strong><br><small style="color:var(--texto-suave);">' + conteoCategorias[cat] + ' opciones</small></div>' + (sel ? '✓' : '○');
+    d.innerHTML = '<div><strong>📁 ' + cat + '</strong><br><small style="color:var(--texto-suave);">' + conteoCategorias[cat] + ' opciones</small></div>' + (sel ? '✓' : '○');
     d.addEventListener('click', function () {
       const idx = seleccionConfig.indexOf(grupoId);
       if (idx >= 0) seleccionConfig.splice(idx, 1);
@@ -1567,7 +1671,7 @@ function pintarListaConfig() {
   });
 
   const filtrados = productos.filter(function (p) {
-    if (q && norm(p.id + ' ' + p.nombre).indexOf(q) < 0) return false;
+    if (q && norm_(p.id + ' ' + p.nombre).indexOf(q) < 0) return false;
     return true;
   }).sort(function (a, b) { return a.nombre.localeCompare(b.nombre); });
 

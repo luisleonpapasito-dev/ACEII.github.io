@@ -5,13 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ventas · ACEII</title>
 <link rel="stylesheet" href="estilos.css">
-<!-- Favicons -->
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
 <link rel="icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-<!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1B4DB1" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
@@ -154,11 +152,6 @@
     font-weight: 700;
     color: var(--texto);
   }
-  #zonaRapidos .titulo-fila button {
-    padding: 6px 10px;
-    margin: 0;
-    font-size: 13px;
-  }
 
   #botonesRapidos {
     display: grid;
@@ -169,18 +162,18 @@
     #botonesRapidos { grid-template-columns: 1fr 1fr 1fr; }
   }
 
-    .btn-rapido {
+  .btn-rapido {
     position: relative;
     background: var(--superficie);
     border: 2px solid var(--azul-borde);
     border-radius: 16px;
-    padding: 10px 10px 8px;
-    text-align: center;
+    padding: 10px;
+    text-align: left;
     cursor: pointer;
-    transition: transform 0.1s, border-color 0.15s, box-shadow 0.15s, background 0.2s;
+    transition: transform 0.12s, border-color 0.15s, box-shadow 0.15s, background 0.2s;
     color: var(--texto);
     font-family: var(--fuente);
-    min-height: 165px;
+    min-height: 120px;
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -192,13 +185,23 @@
     overflow: hidden;
   }
   .btn-rapido:active {
-    transform: scale(0.97);
+    transform: scale(0.96);
     border-color: var(--azul);
+  }
+
+  /* Animación de "agregado" */
+  .btn-rapido.agregado {
+    animation: pulsoAgregar 0.4s ease;
+  }
+  @keyframes pulsoAgregar {
+    0%   { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+    50%  { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+    100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
   }
 
   .btn-rapido .icono {
     width: 100%;
-    height: 80px;
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -211,7 +214,7 @@
   .btn-rapido .icono img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
 
   .btn-rapido .nom {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     line-height: 1.2;
     overflow: hidden;
@@ -220,31 +223,30 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     color: var(--texto);
-    margin-top: 2px;
-    padding-right: 30px;
+    padding-right: 26px;
     text-align: left;
   }
   .btn-rapido .pre {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--azul);
     font-weight: 800;
     text-align: left;
-    padding-right: 30px;
+    padding-right: 26px;
   }
 
   .btn-rapido .plus {
     position: absolute;
-    bottom: 8px;
-    right: 8px;
-    width: 28px;
-    height: 28px;
+    bottom: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background: var(--azul);
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     box-shadow: 0 3px 8px rgba(37, 99, 235, 0.35);
     pointer-events: none;
@@ -252,7 +254,6 @@
   }
   .btn-rapido:active .plus { transform: scale(0.9); }
 
-  /* Grupo: mismo look azul, ya no amarillo */
   .btn-rapido.grupo {
     border-color: var(--azul-borde);
     background: var(--superficie);
@@ -261,7 +262,6 @@
     background: var(--azul);
     box-shadow: 0 3px 8px rgba(37, 99, 235, 0.35);
   }
-
 
   /* Estado presionado (mantener para cobro rápido) */
   .btn-rapido.presionado,
@@ -343,71 +343,6 @@
   .btn-variante .nom-v { display: block; font-size: 13px; }
   .btn-variante .pre-v { display: block; font-size: 12px; color: var(--azul); font-weight: 700; margin-top: 2px; }
 
-  /* ===== Carrito ===== */
-  #total {
-    font-size: 28px;
-    color: var(--azul);
-    font-weight: 800;
-    margin: 12px 0;
-    text-align: center;
-    letter-spacing: -0.5px;
-  }
-
-  .carrito-badge {
-    display: inline-block;
-    background: rgba(255,255,255,0.2);
-    color: #fff;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 14px;
-    margin-left: 8px;
-  }
-
-  .item-carrito {
-    border-bottom: 1px solid #E8ECF4;
-    padding: 10px 0;
-  }
-  html.tema-oscuro .item-carrito { border-bottom-color: #303b50; }
-  .item-carrito:last-child { border-bottom: none; }
-  .item-fila {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-  }
-  .item-fila button {
-    padding: 6px 12px;
-    margin: 0;
-    font-size: 14px;
-    border-radius: 8px;
-  }
-  .item-fila .flecha {
-    padding: 6px 10px;
-    background: var(--azul-suave);
-    color: var(--azul);
-    font-weight: 700;
-    min-width: 36px;
-  }
-  html.tema-oscuro .item-fila .flecha { background: rgba(96, 165, 250, 0.2); }
-  .item-detalle { display: none; padding: 8px 0 0 12px; }
-  .item-detalle.abierto { display: block; }
-  .unidad {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 0;
-    font-size: 14px;
-    color: var(--texto-suave);
-  }
-  .unidad button {
-    padding: 4px 10px;
-    margin: 0;
-    font-size: 13px;
-    background: var(--superficie-2);
-    border-radius: 8px;
-  }
-
   /* ===== Panel cantidad ===== */
   #panelCantidad {
     margin-top: 10px;
@@ -436,27 +371,6 @@
     font-size: 18px;
     font-weight: 700;
   }
-
-  /* ===== Botones de cobro ===== */
-  .cobro-fila {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .cobro-fila button {
-    flex: 1;
-    margin: 0;
-    padding: 18px 10px;
-    font-size: 15px;
-    font-weight: 700;
-    border-radius: var(--radio);
-    color: #fff;
-    border: none;
-  }
-  #btnEfectivo { background: var(--exito); }
-  #btnTransferencia { background: var(--azul); }
-  .cobro-fila button:disabled { opacity: 0.4; }
-  .cobro-fila button:active { transform: scale(0.98); }
 
   /* ===== Modales ===== */
   #modalCam {
@@ -556,14 +470,177 @@
   }
   #modalConfig.abierto { display: block; }
   #modalConfig .contenido {
-    max-width: 480px;
+    max-width: 520px;
     margin: 20px auto;
     background: var(--superficie);
     color: var(--texto);
     border-radius: 16px;
     padding: 20px;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
   }
 
+  .mc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .mc-header strong { font-size: 17px; }
+  .mc-contador {
+    font-size: 13px;
+    color: var(--texto-suave);
+    margin-bottom: 12px;
+  }
+  .mc-contador b { color: var(--azul); font-weight: 700; }
+
+  .mc-pills {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 4px 0 10px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .mc-pills::-webkit-scrollbar { display: none; }
+  .mc-pill {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border-radius: 16px;
+    background: var(--superficie-2);
+    color: var(--texto-suave);
+    font-size: 12px;
+    font-weight: 600;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .mc-pill.activa {
+    background: var(--azul);
+    color: #fff;
+    border-color: var(--azul-claro);
+  }
+
+  #listaConfig {
+    flex: 1;
+    overflow-y: auto;
+    margin: 0 -8px;
+    padding: 0 8px;
+    min-height: 200px;
+    max-height: 55vh;
+  }
+
+  .mc-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-bottom: 4px;
+  }
+  .mc-item:hover { background: var(--superficie-2); }
+  .mc-item.seleccionado {
+    background: rgba(37, 99, 235, 0.10);
+  }
+  html.tema-oscuro .mc-item.seleccionado {
+    background: rgba(96, 165, 250, 0.15);
+  }
+
+  .mc-item .icono-mc-item {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--superficie-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mc-item .icono-mc-item svg { width: 80%; height: 80%; }
+  .mc-item .icono-mc-item img { width: 100%; height: 100%; object-fit: cover; }
+
+  .mc-item .texto-mc-item {
+    flex: 1;
+    min-width: 0;
+  }
+  .mc-item .texto-mc-item strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--texto);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mc-item .texto-mc-item small {
+    color: var(--texto-suave);
+    font-size: 12px;
+  }
+
+  .mc-check {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--azul-borde);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    background: transparent;
+  }
+  .mc-check svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 3; fill: none; opacity: 0; }
+  .mc-item.seleccionado .mc-check {
+    background: var(--exito);
+    border-color: var(--exito);
+    transform: scale(1.1);
+  }
+  .mc-item.seleccionado .mc-check svg { opacity: 1; }
+
+  .mc-footer {
+    padding-top: 12px;
+    border-top: 1px solid #E8ECF4;
+    margin-top: 8px;
+  }
+  html.tema-oscuro .mc-footer { border-top-color: #303b50; }
+  .mc-footer button {
+    width: 100%;
+    margin: 0;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  #btnConfigurar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 10px;
+    background: var(--superficie-2);
+    color: var(--azul);
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
+    transition: background 0.15s;
+  }
+  #btnConfigurar svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+  }
+  #btnConfigurar:active { transform: scale(0.95); }
+
+  /* ===== Modal cobro rápido (tap largo) ===== */
   #modalCobro {
     display: none;
     position: fixed;
@@ -690,218 +767,182 @@
   #modalCobro #mcConfirmar { background: var(--azul); color: #fff; }
   #modalCobro #mcConfirmar:disabled { opacity: 0.4; }
   #modalCobro #mcCancelar { background: var(--superficie-2); color: var(--texto-suave); }
-/* ===== DARK MODE: Rápidos ===== */
-html.tema-oscuro .btn-rapido {
-  background: var(--superficie);
-  border-color: var(--azul-borde);
-  color: var(--texto);
-}
-html.tema-oscuro .btn-rapido .nom {
-  color: var(--texto);
-}
-html.tema-oscuro .btn-rapido .pre {
-  color: var(--azul-claro);
-}
-html.tema-oscuro .btn-rapido .icono {
-  background: var(--superficie-2);
-}
 
+  /* ===== Barra flotante del carrito ===== */
+  #barraFlotante {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    bottom: 12px;
+    width: calc(100% - 24px);
+    max-width: 480px;
+    z-index: 90;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+  #barraFlotante.visible {
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
 
-@media (prefers-color-scheme: dark) {
-  html.tema-auto .btn-rapido {
+  .bf-contenido {
+    background: var(--superficie);
+    border: 1px solid var(--azul-borde);
+    border-radius: 18px;
+    padding: 10px 12px;
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.25), 0 4px 12px rgba(50, 72, 110, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  html.tema-oscuro .bf-contenido {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .bf-resumen {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 4px 4px;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: opacity 0.15s;
+  }
+  .bf-resumen:active { opacity: 0.7; }
+
+  .bf-resumen .bf-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .bf-resumen .bf-info .bf-label {
+    font-size: 11px;
+    color: var(--texto-suave);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .bf-resumen .bf-info .bf-total {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--azul);
+    letter-spacing: -0.5px;
+  }
+
+  .bf-resumen .bf-chevron {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--superficie-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--azul);
+    font-size: 14px;
+    font-weight: 700;
+    transition: transform 0.2s;
+  }
+  #barraFlotante.expandido .bf-chevron { transform: rotate(180deg); }
+
+  .bf-detalle {
+    display: none;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 8px 4px 4px;
+    border-top: 1px solid #E8ECF4;
+    margin-top: 2px;
+  }
+  html.tema-oscuro .bf-detalle { border-top-color: #303b50; }
+  #barraFlotante.expandido .bf-detalle { display: block; }
+
+  .bf-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 13px;
+    border-bottom: 1px solid #F0F3FA;
+    gap: 8px;
+  }
+  html.tema-oscuro .bf-item { border-bottom-color: #2a3448; }
+  .bf-item:last-child { border-bottom: none; }
+
+  .bf-item .bf-nom {
+    flex: 1;
+    min-width: 0;
+    color: var(--texto);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .bf-item .bf-cant {
+    color: var(--texto-suave);
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .bf-item .bf-precio {
+    color: var(--azul);
+    font-weight: 700;
+    min-width: 70px;
+    text-align: right;
+  }
+  .bf-item .bf-quitar {
+    background: rgba(220, 38, 38, 0.12);
+    color: var(--alerta);
+    border: none;
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .bf-cobro {
+    display: flex;
+    gap: 8px;
+  }
+  .bf-cobro button {
+    flex: 1;
+    margin: 0;
+    padding: 14px 8px;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 12px;
+    color: #fff;
+    border: none;
+    transition: transform 0.1s;
+  }
+  .bf-cobro button:active { transform: scale(0.97); }
+  .bf-cobro #bfEfectivo { background: var(--exito); }
+  .bf-cobro #bfTransferencia { background: var(--azul); }
+
+  /* Espacio extra al final para que la barra flotante no tape contenido */
+  body { padding-bottom: 130px; }
+
+  /* ===== Dark mode rápidos ===== */
+  html.tema-oscuro .btn-rapido {
     background: var(--superficie);
     border-color: var(--azul-borde);
     color: var(--texto);
   }
-  html.tema-auto .btn-rapido .nom { color: var(--texto); }
-  html.tema-auto .btn-rapido .pre { color: var(--azul-claro); }
-  html.tema-auto .btn-rapido .icono { background: var(--superficie-2); }
- 
-}
+  html.tema-oscuro .btn-rapido .nom { color: var(--texto); }
+  html.tema-oscuro .btn-rapido .pre { color: var(--azul-claro); }
+  html.tema-oscuro .btn-rapido .icono { background: var(--superficie-2); }
 
-/* Variantes en dark */
-html.tema-oscuro .btn-variante {
-  background: var(--superficie);
-  color: var(--texto);
-}
-html.tema-oscuro .btn-variante .icono-v { background: var(--superficie-2); }
+  html.tema-oscuro .btn-variante {
+    background: var(--superficie);
+    color: var(--texto);
+  }
+  html.tema-oscuro .btn-variante .icono-v { background: var(--superficie-2); }
 
-/* Buscador en dark */
-html.tema-oscuro .resultado .icono-res { background: var(--superficie-2); }
-html.tema-oscuro .resultado .nombre { color: var(--texto); }
-html.tema-oscuro .resultado .meta { color: var(--texto-suave); }
-html.tema-oscuro .resultado .meta .precio { color: var(--azul-claro); }
-/* ===== Modal config mejorado ===== */
-#modalConfig .contenido {
-  max-width: 520px;
-  margin: 20px auto;
-  background: var(--superficie);
-  color: var(--texto);
-  border-radius: 16px;
-  padding: 20px;
-  max-height: 92vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.mc-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
-}
-.mc-header strong { font-size: 17px; }
-.mc-contador {
-  font-size: 13px;
-  color: var(--texto-suave);
-  margin-bottom: 12px;
-}
-.mc-contador b { color: var(--azul); font-weight: 700; }
-
-.mc-pills {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding: 4px 0 10px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.mc-pills::-webkit-scrollbar { display: none; }
-.mc-pill {
-  flex-shrink: 0;
-  padding: 6px 12px;
-  border-radius: 16px;
-  background: var(--superficie-2);
-  color: var(--texto-suave);
-  font-size: 12px;
-  font-weight: 600;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
-  user-select: none;
-}
-.mc-pill.activa {
-  background: var(--azul);
-  color: #fff;
-  border-color: var(--azul-claro);
-}
-
-#listaConfig {
-  flex: 1;
-  overflow-y: auto;
-  margin: 0 -8px;
-  padding: 0 8px;
-  min-height: 200px;
-}
-
-.mc-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 8px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.15s;
-  margin-bottom: 4px;
-}
-.mc-item:hover { background: var(--superficie-2); }
-.mc-item.seleccionado {
-  background: rgba(37, 99, 235, 0.10);
-}
-html.tema-oscuro .mc-item.seleccionado {
-  background: rgba(96, 165, 250, 0.15);
-}
-
-.mc-item .icono-mc-item {
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--superficie-2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.mc-item .icono-mc-item svg { width: 80%; height: 80%; }
-.mc-item .icono-mc-item img { width: 100%; height: 100%; object-fit: cover; }
-
-.mc-item .texto-mc-item {
-  flex: 1;
-  min-width: 0;
-}
-.mc-item .texto-mc-item strong {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--texto);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.mc-item .texto-mc-item small {
-  color: var(--texto-suave);
-  font-size: 12px;
-}
-
-.mc-check {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 2px solid var(--azul-borde);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-  background: transparent;
-}
-.mc-check svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 3; fill: none; opacity: 0; }
-.mc-item.seleccionado .mc-check {
-  background: var(--exito);
-  border-color: var(--exito);
-  transform: scale(1.1);
-}
-.mc-item.seleccionado .mc-check svg { opacity: 1; }
-
-.mc-footer {
-  padding-top: 12px;
-  border-top: 1px solid #E8ECF4;
-  margin-top: 8px;
-}
-html.tema-oscuro .mc-footer { border-top-color: #303b50; }
-.mc-footer button {
-  width: 100%;
-  margin: 0;
-  padding: 14px;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-/* Botón Configurar del header */
-#btnConfigurar {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 12px;
-  border-radius: 10px;
-  background: var(--superficie-2);
-  color: var(--azul);
-  border: none;
-  font-size: 13px;
-  font-weight: 600;
-  margin: 0;
-  transition: background 0.15s;
-}
-#btnConfigurar svg {
-  width: 15px;
-  height: 15px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 2;
-}
-#btnConfigurar:active { transform: scale(0.95); }
+  html.tema-oscuro .resultado .icono-res { background: var(--superficie-2); }
+  html.tema-oscuro .resultado .nombre { color: var(--texto); }
+  html.tema-oscuro .resultado .meta { color: var(--texto-suave); }
+  html.tema-oscuro .resultado .meta .precio { color: var(--azul-claro); }
 </style>
 </head>
 <body>
@@ -944,12 +985,12 @@ html.tema-oscuro .mc-footer { border-top-color: #303b50; }
     <div class="titulo-fila">
       <h4>⚡ Rápidos</h4>
       <button id="btnConfigurar" type="button">
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="3"/>
-    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-  </svg>
-  Configurar
-</button>
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        Configurar
+      </button>
     </div>
     <div id="pillsCategorias"></div>
     <div id="botonesRapidos"></div>
@@ -962,22 +1003,6 @@ html.tema-oscuro .mc-footer { border-top-color: #303b50; }
     </div>
     <div id="listaVariantes"></div>
   </div>
-</div>
-
-<div class="caja">
-  <h4 style="margin:0 0 12px; font-size:15px; font-weight:700;">Carrito</h4>
-  <div id="carrito" style="color:var(--texto-suave); font-size:14px;">(vacío)</div>
-  <div id="total">Total: $0</div>
-
-  <label>Observaciones (opcional)</label>
-  <input type="text" id="obs" maxlength="200">
-
-  <div class="cobro-fila">
-    <button id="btnEfectivo" disabled>💵 EFECTIVO</button>
-    <button id="btnTransferencia" disabled>📱 TRANSFERENCIA</button>
-  </div>
-
-  <button id="btnVaciar" style="width:100%; margin-top:10px;">🗑️ Vaciar carrito</button>
 </div>
 
 <!-- Modal de cámara -->
@@ -1018,7 +1043,7 @@ html.tema-oscuro .mc-footer { border-top-color: #303b50; }
 <div id="modalConfig">
   <div class="contenido">
     <div class="mc-header">
-      <strong>Configurar rápidos</strong>
+      <strong id="mcTitulo">Configurar rápidos</strong>
       <button id="btnCerrarConfig" style="padding:6px 12px; margin:0;">✕</button>
     </div>
     <div class="mc-contador">
@@ -1065,22 +1090,41 @@ html.tema-oscuro .mc-footer { border-top-color: #303b50; }
   </div>
 </div>
 
+<!-- Barra flotante del carrito -->
+<div id="barraFlotante">
+  <div class="bf-contenido">
+    <div class="bf-resumen" id="bfResumen">
+      <div class="bf-info">
+        <span class="bf-label" id="bfLabel">0 productos</span>
+        <span class="bf-total" id="bfTotal">$0</span>
+      </div>
+      <div class="bf-chevron">▾</div>
+    </div>
+    <div class="bf-detalle" id="bfDetalle"></div>
+    <div class="bf-cobro">
+      <button id="bfEfectivo">💵 EFECTIVO</button>
+      <button id="bfTransferencia">📱 TRANSFERENCIA</button>
+    </div>
+  </div>
+</div>
+
 <script>
 exigirSesion();
 pintarUsuarioTurno();
 
-const RAPIDOS_KEY = 'caf_rapidos_v3';
+const RAPIDOS_KEY = 'caf_rapidos_v4';
 const CARRITO_KEY = 'caf_carrito';
 
 let productos = [];
 let carrito = [];
-let rapidos = [];
+let rapidos = {};           // { "GLOBAL": [...], "Bebidas": [...], ... }
+let categoriaFiltro = '';   // '' = todas
 let seleccionConfig = [];
-let categoriaFiltro = ''; // '' = todas
 let categoriaConfigFiltro = '';
+let categoriaConfigEditando = ''; // la categoría que se está editando en el modal
 let ultimoMedioPago = 'Efectivo';
 
-// Variables cámara
+// Cámara
 let lectorZxing = null;
 let stream = null;
 let cicloActivo = false;
@@ -1106,7 +1150,7 @@ if ('BarcodeDetector' in window) {
 function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
 
 // =====================================================================
-// Convierte URL de Drive al formato que sí carga en <img>
+// URL de Drive → formato que carga en <img>
 // =====================================================================
 function urlImagenOk(url) {
   if (!url) return '';
@@ -1123,7 +1167,7 @@ function urlImagenOk(url) {
 }
 
 // =====================================================================
-// ICONOS SVG POR CATEGORÍA
+// SVG por categoría
 // =====================================================================
 const SVG_ICONOS = {
   empanada: '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="54" rx="22" ry="3" fill="rgba(0,0,0,0.12)"/><path d="M9 36 Q9 17 32 17 Q55 17 55 36 Q55 47 32 47 Q9 47 9 36 Z" fill="#E8A33D" stroke="#B87A1F" stroke-width="2.2" stroke-linejoin="round"/><path d="M9 36 Q13 32 17 36 Q21 32 25 36 Q29 32 33 36 Q37 32 41 36 Q45 32 49 36 Q53 32 55 36" fill="none" stroke="#B87A1F" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="23" cy="27" rx="6" ry="2.8" fill="rgba(255,255,255,0.45)"/></svg>',
@@ -1146,9 +1190,7 @@ function norm_(s) {
 function svgPorCategoria(p) {
   const n = norm_(p.nombre || '');
   const c = norm_(p.categoria || '');
-  const todo = c + ' ' + n;
 
-  // ===== CATEGORÍA MANDA PRIMERO =====
   if (c.indexOf('empanada') >= 0) return SVG_ICONOS.empanada;
   if (c.indexOf('combo') >= 0) return SVG_ICONOS.combo;
   if (c.indexOf('pasaboca') >= 0) return SVG_ICONOS.snack;
@@ -1157,14 +1199,12 @@ function svgPorCategoria(p) {
   if (c.indexOf('galleta') >= 0 || c.indexOf('ponque') >= 0) return SVG_ICONOS.dulce;
   if (c.indexOf('preparado') >= 0 || c.indexOf('instantanea') >= 0) return SVG_ICONOS.preparado;
   if (c.indexOf('bebida') >= 0) {
-    // Dentro de bebidas, diferenciar
     if (n.indexOf('agua') >= 0) return SVG_ICONOS.agua;
     if (n.indexOf('jugo') >= 0 || n.indexOf('hit') >= 0 || n.indexOf('malta') >= 0) return SVG_ICONOS.jugo;
     return SVG_ICONOS.gaseosa;
   }
   if (c.indexOf('papeleria') >= 0 || c.indexOf('higiene') >= 0) return SVG_ICONOS.default;
 
-  // ===== POR NOMBRE =====
   if (n.indexOf('empanada') >= 0) return SVG_ICONOS.empanada;
   if (n.indexOf('combo') >= 0) return SVG_ICONOS.combo;
   if (n.indexOf('agua') >= 0) return SVG_ICONOS.agua;
@@ -1180,10 +1220,6 @@ function svgPorCategoria(p) {
   return SVG_ICONOS.default;
 }
 
-// =====================================================================
-// Devuelve el icono del producto: foto si existe, SVG si no
-// Usa base64 para evitar problemas de escape en el onerror
-// =====================================================================
 function iconoParaProducto(p) {
   if (p && p.imagen_url) {
     const svg = svgPorCategoria(p);
@@ -1241,23 +1277,16 @@ function crearDetectorTap(elemento, onTap, onLongPress) {
   elemento.addEventListener('touchend', function (e) {
     clearTimeout(timer);
     elemento.classList.remove('presionado');
-
     if (!touchActivo) return;
     touchActivo = false;
-
     const touch = e.changedTouches[0];
     const dx = Math.abs(touch.clientX - startX);
     const dy = Math.abs(touch.clientY - startY);
     if (dx > TAP_THRESHOLD || dy > TAP_THRESHOLD) return;
-
     clickReciente = true;
     setTimeout(function () { clickReciente = false; }, 500);
-
-    if (fueLargo && onLongPress) {
-      onLongPress();
-    } else {
-      onTap();
-    }
+    if (fueLargo && onLongPress) onLongPress();
+    else onTap();
   });
 
   elemento.addEventListener('touchcancel', function () {
@@ -1273,7 +1302,9 @@ function crearDetectorTap(elemento, onTap, onLongPress) {
   });
 }
 
-// ---------- Arranque ----------
+// =====================================================================
+// Arranque
+// =====================================================================
 (async function () {
   const ok = await exigirTurnoCajaAbierto();
   if (!ok) return;
@@ -1282,7 +1313,7 @@ function crearDetectorTap(elemento, onTap, onLongPress) {
   cargarCarritoGuardado();
   pintarPillsCategorias();
   pintarRapidos();
-  pintarCarrito();
+  pintarBarraFlotante();
 })();
 
 async function cargarProductos() {
@@ -1298,7 +1329,9 @@ async function cargarProductos() {
   }
 }
 
-// ---------- Pills de categorías ----------
+// =====================================================================
+// Pills de categorías
+// =====================================================================
 function pintarPillsCategorias() {
   const cont = $('pillsCategorias');
   cont.innerHTML = '';
@@ -1331,7 +1364,9 @@ function pintarPillsCategorias() {
   });
 }
 
-// ---------- Buscador ----------
+// =====================================================================
+// Buscador (VENTAS NORMALES)
+// =====================================================================
 function pintarResultados() {
   const q = norm_($('buscar').value);
   const cont = $('resultados');
@@ -1439,25 +1474,36 @@ $('btnAgregarCantidad').addEventListener('click', function () {
 
 $('buscar').addEventListener('input', pintarResultados);
 
-// ---------- Rápidos ----------
+// =====================================================================
+// RÁPIDOS POR CATEGORÍA
+// Estructura: rapidos = { "GLOBAL": [...], "Bebidas": [...], ... }
+// =====================================================================
 function cargarRapidosGuardados() {
+  let data = null;
   try {
-    const arr = JSON.parse(localStorage.getItem(RAPIDOS_KEY) || 'null');
-    if (Array.isArray(arr) && arr.length > 0) {
-      const validos = arr.filter(function (rid) {
-        if (rid.startsWith('GRUPO_')) {
-          const cat = rid.replace('GRUPO_', '');
-          return productos.some(function (p) { return norm_(p.categoria) === norm_(cat); });
-        }
-        return productos.some(function (p) { return p.id === rid; });
-      });
-      if (validos.length > 0) {
-        rapidos = validos;
-        return;
-      }
-    }
+    data = JSON.parse(localStorage.getItem(RAPIDOS_KEY) || 'null');
   } catch (e) {}
 
+  // Migración desde formato viejo (array plano)
+  if (Array.isArray(data)) {
+    rapidos = { 'GLOBAL': data.slice(0, 8) };
+    guardarRapidos();
+    return;
+  }
+
+  if (data && typeof data === 'object') {
+    rapidos = data;
+    // Limpiar ids inválidos
+    Object.keys(rapidos).forEach(function (cat) {
+      rapidos[cat] = (rapidos[cat] || []).filter(function (rid) {
+        return idRapidoEsValido(rid);
+      }).slice(0, 8);
+    });
+    return;
+  }
+
+  // Default: 8 globales
+  rapidos = { 'GLOBAL': [] };
   const defaults = [];
   const conteoCategorias = {};
   productos.forEach(function (p) {
@@ -1478,13 +1524,36 @@ function cargarRapidosGuardados() {
     if (p) defaults.push(p.id);
   });
 
-  rapidos = defaults.slice(0, 8);
+  rapidos['GLOBAL'] = defaults.slice(0, 8);
+  guardarRapidos();
+}
+
+function idRapidoEsValido(rid) {
+  if (!rid) return false;
+  if (rid.startsWith('GRUPO_')) {
+    const cat = rid.replace('GRUPO_', '');
+    return productos.some(function (p) { return norm_(p.categoria) === norm_(cat); });
+  }
+  return productos.some(function (p) { return p.id === rid; });
 }
 
 function guardarRapidos() {
   try { localStorage.setItem(RAPIDOS_KEY, JSON.stringify(rapidos)); } catch (e) {}
 }
 
+function getRapidosDeCategoria(cat) {
+  const key = cat || 'GLOBAL';
+  return rapidos[key] || [];
+}
+
+function setRapidosDeCategoria(cat, arr) {
+  const key = cat || 'GLOBAL';
+  rapidos[key] = arr.slice(0, 8);
+}
+
+// =====================================================================
+// Botones rápidos
+// =====================================================================
 function crearBotonRapido(p, esGrupo, itemsGrupo) {
   const btn = document.createElement('button');
   btn.className = 'btn-rapido' + (esGrupo ? ' grupo' : '');
@@ -1508,6 +1577,8 @@ function crearBotonRapido(p, esGrupo, itemsGrupo) {
       mostrarVariantes(p, itemsGrupo);
     } else {
       agregarProductoAlCarrito(p, 1);
+      btn.classList.add('agregado');
+      setTimeout(function () { btn.classList.remove('agregado'); }, 400);
     }
   };
 
@@ -1528,22 +1599,15 @@ function pintarRapidos() {
   const cont = $('botonesRapidos');
   cont.innerHTML = '';
 
-  let lista = rapidos.slice();
-
-  // Si hay filtro de categoría, filtrar
-  if (categoriaFiltro) {
-    lista = lista.filter(function (rid) {
-      if (rid.startsWith('GRUPO_')) {
-        return norm_(rid.replace('GRUPO_', '')) === norm_(categoriaFiltro);
-      }
-      const p = productos.find(function (x) { return x.id === rid; });
-      return p && norm_(p.categoria) === norm_(categoriaFiltro);
-    });
-  }
+  // Los rápidos de la categoría activa (o GLOBAL si está en "Todas")
+  const lista = getRapidosDeCategoria(categoriaFiltro);
 
   if (lista.length === 0) {
-    cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--texto-suave); font-size:13px; padding:20px;">' +
-      (categoriaFiltro ? 'No hay rápidos en esta categoría.' : 'Sin botones rápidos. Toca ⚙️ Configurar.') +
+    cont.innerHTML =
+      '<div style="grid-column: span 2; text-align:center; color:var(--texto-suave); font-size:13px; padding:20px;">' +
+      (categoriaFiltro
+        ? 'No hay rápidos en <b>' + categoriaFiltro + '</b>. Toca ⚙️ Configurar.'
+        : 'Sin botones rápidos. Toca ⚙️ Configurar.') +
       '</div>';
     return;
   }
@@ -1603,7 +1667,9 @@ $('btnCerrarVariantes').addEventListener('click', function () {
   $('panelVariantes').classList.remove('abierto');
 });
 
-// ---------- Agregar al carrito ----------
+// =====================================================================
+// Carrito
+// =====================================================================
 function agregarProductoAlCarrito(p, cant) {
   const enCarrito = carrito.find(function (x) { return x.id === p.id; });
   const yaEnCarrito = enCarrito ? enCarrito.cantidad : 0;
@@ -1614,100 +1680,63 @@ function agregarProductoAlCarrito(p, cant) {
   if (enCarrito) {
     enCarrito.cantidad += cant;
   } else {
-    carrito.push({ id: p.id, nombre: p.nombre, precio: p.precio, cantidad: cant, expandido: false, stock: p.stock });
+    carrito.push({ id: p.id, nombre: p.nombre, precio: p.precio, cantidad: cant, stock: p.stock });
   }
   if (navigator.vibrate) navigator.vibrate(40);
-  pintarCarrito();
+  pintarBarraFlotante();
   guardarCarrito();
 }
 
-// ---------- Carrito ----------
-function pintarCarrito() {
-  const c = $('carrito');
-  const badge = $('badgeCarrito');
+function totalCarrito() {
+  return carrito.reduce(function (s, it) { return s + it.precio * it.cantidad; }, 0);
+}
 
-  if (!carrito.length) {
-    c.textContent = '(vacío)';
-    c.style.color = 'var(--texto-suave)';
-    $('total').textContent = 'Total: $0';
-    $('btnEfectivo').disabled = true;
-    $('btnTransferencia').disabled = true;
-    badge.style.display = 'none';
+function cantidadTotalCarrito() {
+  return carrito.reduce(function (s, it) { return s + it.cantidad; }, 0);
+}
+
+function pintarBarraFlotante() {
+  const barra = $('barraFlotante');
+  const cant = cantidadTotalCarrito();
+  const total = totalCarrito();
+
+  if (cant === 0) {
+    barra.classList.remove('visible', 'expandido');
     return;
   }
-  c.innerHTML = '';
-  c.style.color = 'var(--texto)';
-  let total = 0;
-  let totalItems = 0;
+
+  $('bfLabel').textContent = cant + ' producto' + (cant === 1 ? '' : 's');
+  $('bfTotal').textContent = fmt(total);
+
+  // Detalle
+  const det = $('bfDetalle');
+  det.innerHTML = '';
   carrito.forEach(function (it, i) {
-    total += it.precio * it.cantidad;
-    totalItems += it.cantidad;
-    const cont = document.createElement('div');
-    cont.className = 'item-carrito';
-
-    const fila = document.createElement('div');
-    fila.className = 'item-fila';
-
-    const flecha = document.createElement('button');
-    flecha.className = 'flecha';
-    flecha.textContent = it.expandido ? '▼' : '▶';
-    flecha.addEventListener('click', function () {
-      it.expandido = !it.expandido;
-      pintarCarrito();
-    });
-
-    const info = document.createElement('span');
-    info.style.flex = '1';
-    info.innerHTML = '<b>' + it.cantidad + '×</b> ' + it.nombre + '<br><small style="color:var(--texto-suave);">' + fmt(it.precio * it.cantidad) + '</small>';
-
-    const quitar = document.createElement('button');
-    quitar.textContent = '✕';
-    quitar.style.background = 'rgba(220, 38, 38, 0.12)';
-    quitar.style.color = 'var(--alerta)';
-    quitar.addEventListener('click', function () {
+    const row = document.createElement('div');
+    row.className = 'bf-item';
+    row.innerHTML =
+      '<span class="bf-nom">' + it.nombre + '</span>' +
+      '<span class="bf-cant">×' + it.cantidad + '</span>' +
+      '<span class="bf-precio">' + fmt(it.precio * it.cantidad) + '</span>' +
+      '<button class="bf-quitar">✕</button>';
+    row.querySelector('.bf-quitar').addEventListener('click', function (e) {
+      e.stopPropagation();
       carrito.splice(i, 1);
-      pintarCarrito();
+      pintarBarraFlotante();
       guardarCarrito();
     });
-
-    fila.appendChild(flecha);
-    fila.appendChild(info);
-    fila.appendChild(quitar);
-    cont.appendChild(fila);
-
-    if (it.expandido) {
-      const det = document.createElement('div');
-      det.className = 'item-detalle abierto';
-      for (let u = 1; u <= it.cantidad; u++) {
-        const fila2 = document.createElement('div');
-        fila2.className = 'unidad';
-        const etiqueta = document.createElement('span');
-        etiqueta.textContent = 'Unidad ' + u;
-        const menos = document.createElement('button');
-        menos.textContent = '−';
-        menos.addEventListener('click', function () {
-          if (it.cantidad > 1) {
-            it.cantidad--;
-          } else {
-            carrito.splice(i, 1);
-          }
-          pintarCarrito();
-          guardarCarrito();
-        });
-        fila2.appendChild(etiqueta);
-        fila2.appendChild(menos);
-        det.appendChild(fila2);
-      }
-      cont.appendChild(det);
-    }
-    c.appendChild(cont);
+    det.appendChild(row);
   });
-  $('total').textContent = 'Total: ' + fmt(total);
-  $('btnEfectivo').disabled = false;
-  $('btnTransferencia').disabled = false;
-  badge.textContent = '🛒 ' + totalItems;
-  badge.style.display = 'inline-block';
+
+  barra.classList.add('visible');
 }
+
+$('bfResumen').addEventListener('click', function () {
+  $('barraFlotante').classList.toggle('expandido');
+});
+
+$('bfEfectivo').addEventListener('click', function () { cobrar('Efectivo'); });
+$('bfTransferencia').addEventListener('click', function () { cobrar('Transferencia'); });
 
 function guardarCarrito() {
   try { localStorage.setItem(CARRITO_KEY, JSON.stringify(carrito)); } catch (e) {}
@@ -1719,42 +1748,34 @@ function cargarCarritoGuardado() {
   } catch (e) { carrito = []; }
 }
 
-$('btnVaciar').addEventListener('click', function () {
-  if (carrito.length && !confirm('¿Vaciar el carrito?')) return;
-  carrito = [];
-  pintarCarrito();
-  guardarCarrito();
-});
-
-// ---------- Cobro normal ----------
+// =====================================================================
+// Cobro
+// =====================================================================
 function nuevoIdVenta() {
   const d = new Date();
   const p = function (n) { return ('0' + n).slice(-2); };
   return 'VEN-' + String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
 }
 
-async function cobrar(medio, opts) {
-  opts = opts || {};
+async function cobrar(medio) {
   if (!carrito.length) return;
   const u = getUsuarioTurno();
   if (!u) { mostrar('No hay turno iniciado', 'error'); return; }
 
   let cambio = null;
-  if (medio === 'Efectivo' && !opts.saltarCambio) {
-    const total = carrito.reduce(function (s, it) { return s + it.precio * it.cantidad; }, 0);
+  if (medio === 'Efectivo') {
+    const total = totalCarrito();
     const resp = prompt('Cliente paga con efectivo.\nTotal: ' + fmt(total) + '\n\n¿Con cuánto paga? (deja vacío o escribe "exacto"):', '');
     if (resp === null) return;
     if (resp.trim() !== '' && norm_(resp.trim()) !== 'exacto') {
       const recibido = Number(resp.trim());
-      if (!isNaN(recibido) && recibido >= total) {
-        cambio = recibido - total;
-      }
+      if (!isNaN(recibido) && recibido >= total) cambio = recibido - total;
     }
   }
 
   const idVenta = nuevoIdVenta();
-  $('btnEfectivo').disabled = true;
-  $('btnTransferencia').disabled = true;
+  $('bfEfectivo').disabled = true;
+  $('bfTransferencia').disabled = true;
   mostrar('Guardando venta...', 'aviso');
 
   try {
@@ -1764,7 +1785,7 @@ async function cobrar(medio, opts) {
       id_usuario: u.id,
       id_turno: (getTurnoActual() ? getTurnoActual().id : ''),
       medio_pago: medio,
-      observaciones: $('obs').value.trim(),
+      observaciones: '',
       items: carrito.map(function (it) { return { id_producto: it.id, cantidad: it.cantidad }; })
     });
     if (r.ok) {
@@ -1774,27 +1795,25 @@ async function cobrar(medio, opts) {
       if (navigator.vibrate) navigator.vibrate(200);
       if (cambio !== null && cambio > 0) alert('Cambio: ' + fmt(cambio));
       carrito = [];
-      $('obs').value = '';
-      pintarCarrito();
+      pintarBarraFlotante();
       guardarCarrito();
     } else if (r.error === 'Token inválido') {
       borrarToken(); location.href = 'index.html';
     } else {
       mostrar(r.error || 'Error desconocido', 'error');
-      $('btnEfectivo').disabled = false;
-      $('btnTransferencia').disabled = false;
+      $('bfEfectivo').disabled = false;
+      $('bfTransferencia').disabled = false;
     }
   } catch (err) {
     mostrar('Sin conexión. Revisa internet.', 'error');
-    $('btnEfectivo').disabled = false;
-    $('btnTransferencia').disabled = false;
+    $('bfEfectivo').disabled = false;
+    $('bfTransferencia').disabled = false;
   }
 }
 
-$('btnEfectivo').addEventListener('click', function () { cobrar('Efectivo'); });
-$('btnTransferencia').addEventListener('click', function () { cobrar('Transferencia'); });
-
-// ---------- Cobro rápido (tap largo) ----------
+// =====================================================================
+// Cobro rápido (tap largo)
+// =====================================================================
 let mcProducto = null;
 let mcCantidad = 1;
 let mcMedio = null;
@@ -1848,10 +1867,7 @@ $('mcPago').addEventListener('input', recalcularCambioMC);
 
 function recalcularCambioMC() {
   const pago = Number($('mcPago').value) || 0;
-  if (pago <= 0) {
-    $('mcCambioCalc').textContent = '';
-    return;
-  }
+  if (pago <= 0) { $('mcCambioCalc').textContent = ''; return; }
   if (pago < mcTotal) {
     $('mcCambioCalc').style.color = 'var(--alerta)';
     $('mcCambioCalc').textContent = '⚠️ Falta ' + fmt(mcTotal - pago);
@@ -1909,10 +1925,16 @@ $('mcConfirmar').addEventListener('click', async function () {
   }
 });
 
-// ---------- Configuración rápidos ----------
+// =====================================================================
+// Configuración de rápidos POR CATEGORÍA
+// =====================================================================
 $('btnConfigurar').addEventListener('click', function () {
-  seleccionConfig = rapidos.slice();
-  categoriaConfigFiltro = '';
+  // La categoría que se va a editar es la que está activa
+  categoriaConfigEditando = categoriaFiltro;
+  seleccionConfig = getRapidosDeCategoria(categoriaFiltro).slice();
+  categoriaConfigFiltro = categoriaFiltro; // el filtro de pills arranca con la activa
+
+  $('mcTitulo').textContent = 'Configurar: ' + (categoriaFiltro || 'Todas');
   $('modalConfig').classList.add('abierto');
   pintarListaConfig();
 });
@@ -1926,12 +1948,10 @@ function pintarListaConfig() {
   const q = norm_($('buscarConfig').value);
   cont.innerHTML = '';
 
-  // Contador
   $('mcContador').textContent = seleccionConfig.length;
-
-  // Pills de categorías
   pintarPillsConfig();
 
+  // ===== GRUPOS (categorías) =====
   const conteoCategorias = {};
   productos.forEach(function (p) {
     const cat = p.categoria || '';
@@ -1939,7 +1959,6 @@ function pintarListaConfig() {
     conteoCategorias[cat] = (conteoCategorias[cat] || 0) + 1;
   });
 
-  // ===== GRUPOS (categorías con 2+ productos) =====
   Object.keys(conteoCategorias).sort().forEach(function (cat) {
     if (conteoCategorias[cat] < 2) return;
     if (categoriaConfigFiltro && norm_(cat) !== norm_(categoriaConfigFiltro)) return;
@@ -1968,7 +1987,7 @@ function pintarListaConfig() {
     cont.appendChild(d);
   });
 
-  // ===== PRODUCTOS INDIVIDUALES =====
+  // ===== PRODUCTOS =====
   const filtrados = productos.filter(function (p) {
     if (categoriaConfigFiltro && norm_(p.categoria) !== norm_(categoriaConfigFiltro)) return false;
     if (q && norm_(p.id + ' ' + p.nombre).indexOf(q) < 0) return false;
@@ -1997,7 +2016,6 @@ function pintarListaConfig() {
     cont.appendChild(d);
   });
 
-  // Si no hay nada
   if (!cont.children.length) {
     cont.innerHTML = '<div style="padding:20px; text-align:center; color:var(--texto-suave); font-size:13px;">No se encontraron productos.</div>';
   }
@@ -2037,14 +2055,17 @@ function pintarPillsConfig() {
 $('buscarConfig').addEventListener('input', pintarListaConfig);
 
 $('btnGuardarConfig').addEventListener('click', function () {
-  rapidos = seleccionConfig.slice(0, 8);
+  // Guarda SOLO en la categoría que se estaba editando
+  setRapidosDeCategoria(categoriaConfigEditando, seleccionConfig);
   guardarRapidos();
   pintarRapidos();
   $('modalConfig').classList.remove('abierto');
-  mostrar('Botones rápidos actualizados ✓', 'ok');
+  mostrar('Rápidos de ' + (categoriaConfigEditando || 'Todas') + ' actualizados ✓', 'ok');
 });
 
-// ---------- Cámara ----------
+// =====================================================================
+// Cámara
+// =====================================================================
 $('btnCam').addEventListener('click', async function () {
   $('modalCam').classList.add('abierto');
   await iniciarCamara();
@@ -2256,7 +2277,9 @@ $('escAgregar').addEventListener('click', function () {
   setTimeout(function () { pausaLectura = false; }, 800);
 });
 
-// ---------- Confirmar salida ----------
+// =====================================================================
+// Confirmar salida
+// =====================================================================
 function hayCarrito() { return carrito && carrito.length > 0; }
 
 $('linkMenu').addEventListener('click', function (e) {

@@ -169,7 +169,7 @@
     #botonesRapidos { grid-template-columns: 1fr 1fr 1fr; }
   }
 
-  .btn-rapido {
+    .btn-rapido {
     position: relative;
     background: var(--superficie);
     border: 2px solid var(--azul-borde);
@@ -177,7 +177,7 @@
     padding: 10px 10px 8px;
     text-align: center;
     cursor: pointer;
-    transition: transform 0.1s, border-color 0.15s, box-shadow 0.15s;
+    transition: transform 0.1s, border-color 0.15s, box-shadow 0.15s, background 0.2s;
     color: var(--texto);
     font-family: var(--fuente);
     min-height: 165px;
@@ -221,36 +221,47 @@
     -webkit-box-orient: vertical;
     color: var(--texto);
     margin-top: 2px;
+    padding-right: 30px;
+    text-align: left;
   }
   .btn-rapido .pre {
     font-size: 14px;
     color: var(--azul);
     font-weight: 800;
+    text-align: left;
+    padding-right: 30px;
   }
 
   .btn-rapido .plus {
     position: absolute;
     bottom: 8px;
     right: 8px;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: var(--azul);
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 700;
     box-shadow: 0 3px 8px rgba(37, 99, 235, 0.35);
     pointer-events: none;
+    transition: transform 0.15s ease;
+  }
+  .btn-rapido:active .plus { transform: scale(0.9); }
+
+  /* Grupo: mismo look azul, ya no amarillo */
+  .btn-rapido.grupo {
+    border-color: var(--azul-borde);
+    background: var(--superficie);
+  }
+  .btn-rapido.grupo .plus {
+    background: var(--azul);
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.35);
   }
 
-  .btn-rapido.grupo {
-    border-color: var(--aviso);
-    background: rgba(251, 191, 36, 0.08);
-  }
-  .btn-rapido.grupo .plus { background: var(--aviso); box-shadow: 0 3px 8px rgba(217, 119, 6, 0.35); }
 
   /* Estado presionado (mantener para cobro rápido) */
   .btn-rapido.presionado,
@@ -738,6 +749,177 @@ html.tema-oscuro .resultado .icono-res { background: var(--superficie-2); }
 html.tema-oscuro .resultado .nombre { color: var(--texto); }
 html.tema-oscuro .resultado .meta { color: var(--texto-suave); }
 html.tema-oscuro .resultado .meta .precio { color: var(--azul-claro); }
+/* ===== Modal config mejorado ===== */
+#modalConfig .contenido {
+  max-width: 520px;
+  margin: 20px auto;
+  background: var(--superficie);
+  color: var(--texto);
+  border-radius: 16px;
+  padding: 20px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.mc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.mc-header strong { font-size: 17px; }
+.mc-contador {
+  font-size: 13px;
+  color: var(--texto-suave);
+  margin-bottom: 12px;
+}
+.mc-contador b { color: var(--azul); font-weight: 700; }
+
+.mc-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0 10px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.mc-pills::-webkit-scrollbar { display: none; }
+.mc-pill {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: var(--superficie-2);
+  color: var(--texto-suave);
+  font-size: 12px;
+  font-weight: 600;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  user-select: none;
+}
+.mc-pill.activa {
+  background: var(--azul);
+  color: #fff;
+  border-color: var(--azul-claro);
+}
+
+#listaConfig {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0 -8px;
+  padding: 0 8px;
+  min-height: 200px;
+}
+
+.mc-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-bottom: 4px;
+}
+.mc-item:hover { background: var(--superficie-2); }
+.mc-item.seleccionado {
+  background: rgba(37, 99, 235, 0.10);
+}
+html.tema-oscuro .mc-item.seleccionado {
+  background: rgba(96, 165, 250, 0.15);
+}
+
+.mc-item .icono-mc-item {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--superficie-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mc-item .icono-mc-item svg { width: 80%; height: 80%; }
+.mc-item .icono-mc-item img { width: 100%; height: 100%; object-fit: cover; }
+
+.mc-item .texto-mc-item {
+  flex: 1;
+  min-width: 0;
+}
+.mc-item .texto-mc-item strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texto);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mc-item .texto-mc-item small {
+  color: var(--texto-suave);
+  font-size: 12px;
+}
+
+.mc-check {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--azul-borde);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+.mc-check svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 3; fill: none; opacity: 0; }
+.mc-item.seleccionado .mc-check {
+  background: var(--exito);
+  border-color: var(--exito);
+  transform: scale(1.1);
+}
+.mc-item.seleccionado .mc-check svg { opacity: 1; }
+
+.mc-footer {
+  padding-top: 12px;
+  border-top: 1px solid #E8ECF4;
+  margin-top: 8px;
+}
+html.tema-oscuro .mc-footer { border-top-color: #303b50; }
+.mc-footer button {
+  width: 100%;
+  margin: 0;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* Botón Configurar del header */
+#btnConfigurar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: var(--superficie-2);
+  color: var(--azul);
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+  transition: background 0.15s;
+}
+#btnConfigurar svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+#btnConfigurar:active { transform: scale(0.95); }
 </style>
 </head>
 <body>
@@ -779,7 +961,13 @@ html.tema-oscuro .resultado .meta .precio { color: var(--azul-claro); }
   <div id="zonaRapidos">
     <div class="titulo-fila">
       <h4>⚡ Rápidos</h4>
-      <button id="btnConfigurar" type="button">⚙️ Configurar</button>
+      <button id="btnConfigurar" type="button">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+  </svg>
+  Configurar
+</button>
     </div>
     <div id="pillsCategorias"></div>
     <div id="botonesRapidos"></div>
@@ -847,14 +1035,19 @@ html.tema-oscuro .resultado .meta .precio { color: var(--azul-claro); }
 <!-- Modal configuración rápidos -->
 <div id="modalConfig">
   <div class="contenido">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <strong style="font-size:16px;">Configurar botones rápidos</strong>
-      <button id="btnCerrarConfig" style="padding:6px 10px; margin:0;">✕</button>
+    <div class="mc-header">
+      <strong>Configurar rápidos</strong>
+      <button id="btnCerrarConfig" style="padding:6px 12px; margin:0;">✕</button>
     </div>
-    <p style="font-size:13px; color:var(--texto-suave); margin-bottom:12px;">Elige hasta 8 productos o grupos.</p>
-    <input type="text" id="buscarConfig" placeholder="Buscar producto..." style="margin-bottom:8px;">
-    <div id="listaConfig" style="max-height:400px; overflow-y:auto;"></div>
-    <button class="main" id="btnGuardarConfig" style="width:100%; margin-top:12px;">Guardar configuración</button>
+    <div class="mc-contador">
+      <b id="mcContador">0</b> de 8 seleccionados
+    </div>
+    <input type="text" id="buscarConfig" placeholder="🔎 Buscar producto o categoría..." style="margin-bottom:8px;">
+    <div class="mc-pills" id="mcPillsConfig"></div>
+    <div id="listaConfig"></div>
+    <div class="mc-footer">
+      <button class="main" id="btnGuardarConfig">Guardar configuración</button>
+    </div>
   </div>
 </div>
 
@@ -1736,6 +1929,7 @@ $('mcConfirmar').addEventListener('click', async function () {
 // ---------- Configuración rápidos ----------
 $('btnConfigurar').addEventListener('click', function () {
   seleccionConfig = rapidos.slice();
+  categoriaConfigFiltro = '';
   $('modalConfig').classList.add('abierto');
   pintarListaConfig();
 });
@@ -1744,10 +1938,18 @@ $('btnCerrarConfig').addEventListener('click', function () {
   $('modalConfig').classList.remove('abierto');
 });
 
+let categoriaConfigFiltro = '';
+
 function pintarListaConfig() {
   const cont = $('listaConfig');
   const q = norm_($('buscarConfig').value);
   cont.innerHTML = '';
+
+  // Contador
+  $('mcContador').textContent = seleccionConfig.length;
+
+  // Pills de categorías
+  pintarPillsConfig();
 
   const conteoCategorias = {};
   productos.forEach(function (p) {
@@ -1756,14 +1958,25 @@ function pintarListaConfig() {
     conteoCategorias[cat] = (conteoCategorias[cat] || 0) + 1;
   });
 
-  Object.keys(conteoCategorias).forEach(function (cat) {
+  // ===== GRUPOS (categorías con 2+ productos) =====
+  Object.keys(conteoCategorias).sort().forEach(function (cat) {
     if (conteoCategorias[cat] < 2) return;
+    if (categoriaConfigFiltro && norm_(cat) !== norm_(categoriaConfigFiltro)) return;
     if (q && norm_(cat).indexOf(q) < 0) return;
+
     const grupoId = 'GRUPO_' + cat;
     const sel = seleccionConfig.indexOf(grupoId) >= 0;
+
     const d = document.createElement('div');
-    d.style.cssText = 'padding:10px; border-bottom:1px solid #E8ECF4; cursor:pointer; display:flex; justify-content:space-between; align-items:center;' + (sel ? ' background:rgba(96, 165, 250, 0.15);' : '');
-    d.innerHTML = '<div><strong>📁 ' + cat + '</strong><br><small style="color:var(--texto-suave);">' + conteoCategorias[cat] + ' opciones</small></div>' + (sel ? '✓' : '○');
+    d.className = 'mc-item' + (sel ? ' seleccionado' : '');
+    d.innerHTML =
+      '<div class="icono-mc-item">' + iconoParaGrupo(cat) + '</div>' +
+      '<div class="texto-mc-item">' +
+        '<strong>' + cat + '</strong>' +
+        '<small>' + conteoCategorias[cat] + ' opciones · tocar agrega todas</small>' +
+      '</div>' +
+      '<div class="mc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>';
+
     d.addEventListener('click', function () {
       const idx = seleccionConfig.indexOf(grupoId);
       if (idx >= 0) seleccionConfig.splice(idx, 1);
@@ -1774,21 +1987,66 @@ function pintarListaConfig() {
     cont.appendChild(d);
   });
 
+  // ===== PRODUCTOS INDIVIDUALES =====
   const filtrados = productos.filter(function (p) {
+    if (categoriaConfigFiltro && norm_(p.categoria) !== norm_(categoriaConfigFiltro)) return false;
     if (q && norm_(p.id + ' ' + p.nombre).indexOf(q) < 0) return false;
     return true;
   }).sort(function (a, b) { return a.nombre.localeCompare(b.nombre); });
 
-  filtrados.slice(0, 60).forEach(function (p) {
-    const d = document.createElement('div');
+  filtrados.slice(0, 80).forEach(function (p) {
     const sel = seleccionConfig.indexOf(p.id) >= 0;
-    d.style.cssText = 'padding:10px; border-bottom:1px solid #E8ECF4; cursor:pointer; display:flex; justify-content:space-between; align-items:center;' + (sel ? ' background:rgba(96, 165, 250, 0.15);' : '');
-    d.innerHTML = '<div><strong>' + p.nombre + '</strong><br><small style="color:var(--texto-suave);">' + p.id + ' · ' + fmt(p.precio) + '</small></div>' + (sel ? '✓' : '○');
+    const d = document.createElement('div');
+    d.className = 'mc-item' + (sel ? ' seleccionado' : '');
+    d.innerHTML =
+      '<div class="icono-mc-item">' + iconoParaProducto(p) + '</div>' +
+      '<div class="texto-mc-item">' +
+        '<strong>' + p.nombre + '</strong>' +
+        '<small>' + p.id + ' · ' + fmt(p.precio) + '</small>' +
+      '</div>' +
+      '<div class="mc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>';
+
     d.addEventListener('click', function () {
       const idx = seleccionConfig.indexOf(p.id);
       if (idx >= 0) seleccionConfig.splice(idx, 1);
       else if (seleccionConfig.length < 8) seleccionConfig.push(p.id);
       else alert('Máximo 8 botones');
+      pintarListaConfig();
+    });
+    cont.appendChild(d);
+  });
+
+  // Si no hay nada
+  if (!cont.children.length) {
+    cont.innerHTML = '<div style="padding:20px; text-align:center; color:var(--texto-suave); font-size:13px;">No se encontraron productos.</div>';
+  }
+}
+
+function pintarPillsConfig() {
+  const cont = $('mcPillsConfig');
+  if (!cont) return;
+  cont.innerHTML = '';
+
+  const cats = {};
+  productos.forEach(function (p) {
+    if (p.categoria) cats[p.categoria] = true;
+  });
+
+  const todas = document.createElement('div');
+  todas.className = 'mc-pill' + (categoriaConfigFiltro === '' ? ' activa' : '');
+  todas.textContent = 'Todas';
+  todas.addEventListener('click', function () {
+    categoriaConfigFiltro = '';
+    pintarListaConfig();
+  });
+  cont.appendChild(todas);
+
+  Object.keys(cats).sort().forEach(function (cat) {
+    const d = document.createElement('div');
+    d.className = 'mc-pill' + (categoriaConfigFiltro === cat ? ' activa' : '');
+    d.textContent = cat;
+    d.addEventListener('click', function () {
+      categoriaConfigFiltro = (categoriaConfigFiltro === cat) ? '' : cat;
       pintarListaConfig();
     });
     cont.appendChild(d);

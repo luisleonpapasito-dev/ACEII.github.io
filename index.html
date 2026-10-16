@@ -257,21 +257,21 @@
      PALETA POR MÓDULO
      ============================================ */
 
-  /* OPERACIÓN · familia azul */
-  .ico-caja       { --g1: #1E40AF; --g2: #0F1F5C; }
-  .ico-ventas     { --g1: #2563EB; --g2: #1D4ED8; }
-  .ico-recepcion  { --g1: #3B82F6; --g2: #1E40AF; }
-  .ico-devol      { --g1: #60A5FA; --g2: #2563EB; }
+  /* OPERACIÓN · familia azul (4 tonos bien diferenciados) */
+  .ico-caja       { --g1: #0C4A9E; --g2: #062B5C; }  /* Azul marino oscuro */
+  .ico-ventas     { --g1: #2563EB; --g2: #1E40AF; }  /* Azul rey */
+  .ico-recepcion  { --g1: #00A6E0; --g2: #0284C7; }  /* Azul cielo */
+  .ico-devol      { --g1: #38BDF8; --g2: #0EA5E9; }  /* Celeste brillante */
 
   /* CATÁLOGO · familia cálida */
-  .ico-inventario { --g1: #F59E0B; --g2: #B45309; }
-  .ico-productos  { --g1: #FB923C; --g2: #EA580C; }
-  .ico-categorias { --g1: #FB7185; --g2: #E11D48; }
-  .ico-codigos    { --g1: #F87171; --g2: #DC2626; }
+  .ico-inventario { --g1: #F59E0B; --g2: #B45309; }  /* Ámbar */
+  .ico-productos  { --g1: #FB923C; --g2: #EA580C; }  /* Naranja */
+  .ico-categorias { --g1: #FB7185; --g2: #E11D48; }  /* Coral */
+  .ico-codigos    { --g1: #F87171; --g2: #DC2626; }  /* Rojo suave */
 
-  /* ANÁLISIS · familia verde */
-  .ico-historial  { --g1: #34D399; --g2: #059669; }
-  .ico-dashboard  { --g1: #6EE7B7; --g2: #10B981; }
+  /* ANÁLISIS · familia verde (2 tonos bien diferenciados) */
+  .ico-historial  { --g1: #258D19; --g2: #005C00; }  /* Verde bosque */
+  .ico-dashboard  { --g1: #B4FF9A; --g2: #71C55B; }  /* Verde menta claro */
 
   /* Animación de entrada */
   @keyframes ac-subir {
@@ -286,37 +286,56 @@
     #bannerMiTurno, .panel-menu .card { animation: none !important; }
   }
 
-  /* ---------- Cerrar sesión ---------- */
+  /* ---------- Cerrar sesión (nuevo diseño llamativo) ---------- */
   .cerrar-sesion-box {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    margin: 26px 0 8px;
-    padding: 14px 20px;
-    min-height: 52px;
+    gap: 12px;
+    margin: 32px 0 8px;
+    padding: 16px 22px;
+    min-height: 56px;
     width: 100%;
     max-width: none;
-    color: var(--ac-danger);
+    color: #fff;
     font-size: 15px;
     font-weight: 700;
+    letter-spacing: 0.02em;
     cursor: pointer;
-    border-radius: 999px;
-    background: var(--ac-danger-bg);
-    border: 1.5px solid var(--ac-danger-borde);
-    box-shadow: none;
-    transition: transform 0.12s ease, box-shadow 0.18s ease;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
+    border: 0;
+    box-shadow: 0 8px 22px rgba(220, 38, 38, 0.35);
+    transition: transform 0.12s ease, box-shadow 0.2s ease, filter 0.18s ease;
+    overflow: hidden;
   }
-  .cerrar-sesion-box:hover { box-shadow: 0 4px 14px rgba(220, 38, 38, 0.15); }
+  .cerrar-sesion-box::before {
+    content: "";
+    position: absolute;
+    left: -40%;
+    top: 0;
+    bottom: 0;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.45s ease;
+  }
+  .cerrar-sesion-box:hover::before { left: 120%; }
+  .cerrar-sesion-box:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 12px 28px rgba(220, 38, 38, 0.45);
+  }
   .cerrar-sesion-box:active { transform: scale(0.98); }
+
   .cerrar-sesion-box .cerrar-sesion-icono {
     width: 20px;
     height: 20px;
-    fill: currentColor;
+    fill: #fff;
     flex-shrink: 0;
     transition: transform 0.18s ease;
   }
-  .cerrar-sesion-box:hover .cerrar-sesion-icono { transform: translateX(2px); }
+  .cerrar-sesion-box:hover .cerrar-sesion-icono { transform: translateX(3px); }
 
   /* ---------- Pantallas muy pequeñas ---------- */
   @media (max-width: 340px) {

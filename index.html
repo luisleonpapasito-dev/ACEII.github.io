@@ -19,7 +19,6 @@
 <style>
   /* =====================================================
      REDISEÑO VISUAL - Menú agrupado por secciones
-     Paleta: 3 colores (Azul / Violeta / Cian) para 3 grupos
      ===================================================== */
 
   /* ---------- Variables propias (claro) ---------- */
@@ -176,8 +175,8 @@
     background: var(--grupo-color, var(--azul));
   }
   .grupo-operacion { --grupo-color: #2563EB; }
-  .grupo-catalogo  { --grupo-color: #7C3AED; }
-  .grupo-analisis  { --grupo-color: #0891B2; }
+  .grupo-catalogo  { --grupo-color: #EA580C; }
+  .grupo-analisis  { --grupo-color: #059669; }
 
   /* Cuadrícula */
   .panel-menu .grid-menu {
@@ -219,10 +218,13 @@
     font-weight: 700;
     line-height: 1.25;
     color: var(--ac-texto);
-    padding-right: 22px;
+    padding-right: 24px;
     margin: 0;
   }
-  .panel-menu .card .chev {
+
+  /* Flecha única generada por CSS (sin span) */
+  .panel-menu .card .card-titulo::after {
+    content: "›";
     position: absolute;
     right: 14px;
     bottom: 14px;
@@ -232,7 +234,7 @@
     opacity: 0.9;
   }
 
-  /* Iconos: cuadro con degradado de color de sección + símbolo blanco */
+  /* Iconos: cuadro con degradado por módulo */
   .panel-menu .card .card-icono {
     width: 48px;
     height: 48px;
@@ -251,10 +253,25 @@
     color: #fff;
   }
 
-  /* 3 colores para 3 secciones */
-  .ico-operacion { --g1: #3B82F6; --g2: #1D4ED8; }  /* Azul */
-  .ico-catalogo  { --g1: #8B5CF6; --g2: #6D3FE0; }  /* Violeta */
-  .ico-analisis  { --g1: #06B6D4; --g2: #0E7490; }  /* Cian */
+  /* ============================================
+     PALETA POR MÓDULO
+     ============================================ */
+
+  /* OPERACIÓN · familia azul */
+  .ico-caja       { --g1: #1E40AF; --g2: #0F1F5C; }
+  .ico-ventas     { --g1: #2563EB; --g2: #1D4ED8; }
+  .ico-recepcion  { --g1: #3B82F6; --g2: #1E40AF; }
+  .ico-devol      { --g1: #60A5FA; --g2: #2563EB; }
+
+  /* CATÁLOGO · familia cálida */
+  .ico-inventario { --g1: #F59E0B; --g2: #B45309; }
+  .ico-productos  { --g1: #FB923C; --g2: #EA580C; }
+  .ico-categorias { --g1: #FB7185; --g2: #E11D48; }
+  .ico-codigos    { --g1: #F87171; --g2: #DC2626; }
+
+  /* ANÁLISIS · familia verde */
+  .ico-historial  { --g1: #34D399; --g2: #059669; }
+  .ico-dashboard  { --g1: #6EE7B7; --g2: #10B981; }
 
   /* Animación de entrada */
   @keyframes ac-subir {
@@ -394,104 +411,94 @@
 
     <!-- Caja del turno -->
     <a class="card" href="caja.html">
-      <div class="card-icono ico-operacion">
+      <div class="card-icono ico-caja">
         <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
       </div>
       <div class="card-titulo">Caja del turno</div>
-      <span class="chev">›</span>
     </a>
 
     <!-- Ventas -->
     <a class="card" href="ventas.html">
-      <div class="card-icono ico-operacion">
+      <div class="card-icono ico-ventas">
         <svg viewBox="0 0 24 24"><path d="M3 4h2l2.4 10.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.76L20 8H6.2" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.5" cy="19" r="1.6" fill="#ffffff"/><circle cx="17" cy="19" r="1.6" fill="#ffffff"/></svg>
       </div>
       <div class="card-titulo">Ventas</div>
-      <span class="chev">›</span>
     </a>
 
     <!-- Recepción -->
     <a class="card" href="recepcion.html">
-      <div class="card-icono ico-operacion">
+      <div class="card-icono ico-recepcion">
         <svg viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-120H640q-30 38-71.5 59T480-240q-47 0-88.5-21T320-320H200v120Zm280-120q38 0 69-22t43-58h168v-360H200v360h168q12 36 43 58t69 22ZM200-200h560-560Z"/></svg>
       </div>
       <div class="card-titulo">Recepción</div>
-      <span class="chev">›</span>
     </a>
 
     <!-- Devoluciones -->
     <a class="card" href="devoluciones.html">
-      <div class="card-icono ico-operacion">
+      <div class="card-icono ico-devol">
         <svg viewBox="0 -960 960 960"><path d="M280-200q-17 0-28.5-11.5T240-240q0-17 11.5-28.5T280-280h280q50 0 85-35t35-85q0-50-35-85t-85-35H320l64 64q11 11 11 28t-11 28q-11 11-28 11t-28-11L184-544q-12-12-12-28t12-28l144-144q11-11 28-11t28 11q11 11 11 28t-11 28l-64 64h240q83 0 141.5 58.5T760-400q0 83-58.5 141.5T560-200H280Z"/></svg>
       </div>
       <div class="card-titulo">Devoluciones</div>
-      <span class="chev">›</span>
     </a>
 
   </div>
 
-  <!-- ===== CATÁLOGO (Violeta) ===== -->
+  <!-- ===== CATÁLOGO (Cálidos) ===== -->
   <h2 class="grupo-titulo grupo-catalogo">Catálogo</h2>
   <div class="grid-menu">
 
     <!-- Inventario -->
     <a class="card" href="inventario.html">
-      <div class="card-icono ico-catalogo">
+      <div class="card-icono ico-inventario">
         <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h560q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm280 440q11 0 19.5-7.5T510-220v-120l44 44q7 7 17 7t17-7q7-7 7-17t-7-17l-86-86q-12-12-28-12t-28 12l-86 86q-7 7-7 17t7 17q7 7 17 7t17-7l44-44v120q0 11 8.5 19.5T480-200Z"/></svg>
       </div>
       <div class="card-titulo">Inventario</div>
-      <span class="chev">›</span>
     </a>
 
     <!-- Productos -->
     <a class="card" href="productos.html">
-      <div class="card-icono ico-catalogo">
+      <div class="card-icono ico-productos">
         <svg viewBox="0 -960 960 960"><path d="M856-406 566-116q-23 23-56.5 22.5T453-117L119-451q-11-11-18-25.5T94-508v-252q0-33 23.5-56.5T174-840h252q17 0 31.5 7t25.5 18l372 372q23 23 22.5 56.5T856-406ZM260-600q25 0 42.5-17.5T320-660q0-25-17.5-42.5T260-720q-25 0-42.5 17.5T200-660q0 25 17.5 42.5T260-600Z"/></svg>
       </div>
       <div class="card-titulo">Productos</div>
-      <span class="chev">›</span>
     </a>
 
     <!-- Categorías -->
     <a class="card" href="categorias.html">
-      <div class="card-icono ico-catalogo">
+      <div class="card-icono ico-categorias">
         <svg viewBox="0 -960 960 960"><path d="M140-200q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm300 440q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Z"/></svg>
       </div>
       <div class="card-titulo">Categorías</div>
-      <span class="chev">›</span>
     </a>
 
     <!-- Registrar códigos -->
     <a class="card" href="codigos.html">
-      <div class="card-icono ico-catalogo">
+      <div class="card-icono ico-codigos">
         <svg viewBox="0 -960 960 960"><path d="M120-680v-120q0-33 23.5-56.5T200-880h120q17 0 28.5 11.5T360-840q0 17-11.5 28.5T320-800H200v120q0 17-11.5 28.5T160-640q-17 0-28.5-11.5T120-680Zm720 0q0 17-11.5 28.5T800-640q-17 0-28.5-11.5T760-680v-120H640q-17 0-28.5-11.5T600-840q0-17 11.5-28.5T640-880h120q33 0 56.5 23.5T840-800v120ZM200-120q-33 0-56.5-23.5T120-200v-120q0-17 11.5-28.5T160-360q17 0 28.5 11.5T200-320v120h120q17 0 28.5 11.5T360-160q0 17-11.5 28.5T320-120H200Zm440 0q-17 0-28.5-11.5T600-160q0-17 11.5-28.5T640-200h120v-120q0-17 11.5-28.5T800-360q17 0 28.5 11.5T840-320v120q0 33-23.5 56.5T760-120H640ZM200-760v120q0 17-11.5 28.5T160-600q-17 0-28.5-11.5T120-640v-120q0-33 23.5-56.5T200-840h120q17 0 28.5 11.5T360-800q0 17-11.5 28.5T320-760H200Zm560 0H640q-17 0-28.5-11.5T600-800q0-17 11.5-28.5T640-840h120q33 0 56.5 23.5T840-760v120q0 17-11.5 28.5T800-600q-17 0-28.5-11.5T760-640v-120ZM240-240v-120q0-17 11.5-28.5T280-400h120q17 0 28.5 11.5T440-360v120q0 17-11.5 28.5T400-200H280q-17 0-28.5-11.5T240-240Zm280-200q-17 0-28.5-11.5T480-480q0-17 11.5-28.5T520-520q17 0 28.5 11.5T560-480q0 17-11.5 28.5T520-440Zm160 0q-17 0-28.5-11.5T640-480q0-17 11.5-28.5T680-520q17 0 28.5 11.5T720-480q0 17-11.5 28.5T680-440ZM520-280q-17 0-28.5-11.5T480-320q0-17 11.5-28.5T520-360q17 0 28.5 11.5T560-320q0 17-11.5 28.5T520-280Zm160 0q-17 0-28.5-11.5T640-320q0-17 11.5-28.5T680-360q17 0 28.5 11.5T720-320q0 17-11.5 28.5T680-280Z"/></svg>
       </div>
       <div class="card-titulo">Registrar códigos</div>
-      <span class="chev">›</span>
     </a>
 
   </div>
 
-  <!-- ===== ANÁLISIS (Cian) ===== -->
+  <!-- ===== ANÁLISIS (Verdes) ===== -->
   <h2 class="grupo-titulo grupo-analisis">Análisis</h2>
   <div class="grid-menu">
 
     <!-- Historial -->
     <a class="card" href="historial-caja.html">
-      <div class="card-icono ico-analisis">
+      <div class="card-icono ico-historial">
         <svg viewBox="0 -960 960 960"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h480q50 0 85 35t35 85v560q0 50-35 85t-85 35H240Zm0-80h480v-560H240v560Zm80-80h320q17 0 28.5-11.5T680-280q0-17-11.5-28.5T640-320H320q-17 0-28.5 11.5T280-280q0 17 11.5 28.5T320-240Zm0-160h320q17 0 28.5-11.5T680-440q0-17-11.5-28.5T640-480H320q-17 0-28.5 11.5T280-440q0 17 11.5 28.5T320-400Zm0-160h320q17 0 28.5-11.5T680-600q0-17-11.5-28.5T640-640H320q-17 0-28.5 11.5T280-600q0 17 11.5 28.5T320-560Zm0-160h320q17 0 28.5-11.5T680-760q0-17-11.5-28.5T640-800H320q-17 0-28.5 11.5T280-760q0 17 11.5 28.5T320-720ZM240-160v-560 560Z"/></svg>
       </div>
       <div class="card-titulo">Historial</div>
-      <span class="chev">›</span>
     </a>
 
     <!-- Dashboard -->
     <a class="card" href="dashboard.html">
-      <div class="card-icono ico-analisis">
+      <div class="card-icono ico-dashboard">
         <svg viewBox="0 -960 960 960"><path d="M640-160v-280q0-17 11.5-28.5T680-480q17 0 28.5 11.5T720-440v280q0 17-11.5 28.5T680-120q-17 0-28.5-11.5T640-160Zm-200 0v-560q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v560q0 17-11.5 28.5T480-120q-17 0-28.5-11.5T440-160Zm-200 0v-400q0-17 11.5-28.5T280-600q17 0 28.5 11.5T320-560v400q0 17-11.5 28.5T280-120q-17 0-28.5-11.5T240-160Z"/></svg>
       </div>
       <div class="card-titulo">Dashboard</div>
-      <span class="chev">›</span>
     </a>
 
   </div>

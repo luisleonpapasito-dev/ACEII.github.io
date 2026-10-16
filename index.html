@@ -5,21 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ACEII · Cafetería</title>
 <link rel="stylesheet" href="estilos.css">
-<!-- Favicons -->
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
 <link rel="icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-<!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2563EB" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
 <script src="comun.js"></script>
 <style>
   /* =====================================================
-     REDISEÑO VISUAL v2 - Menú agrupado por secciones
-     Paleta: 3 tonos azules por grupo
+     REDISEÑO VISUAL v3 - Colores por módulo + flecha única
      ===================================================== */
 
   /* ---------- Variables (claro) ---------- */
@@ -176,10 +173,10 @@
     color: var(--ac-texto-suave);
   }
 
-  /* ---------- Tonos azules por grupo (elegidos para verse lindos) ---------- */
-  .grupo-operacion { --g1: #3B82F6; --g2: #1D4ED8; --g-acento: #2563EB; }  /* Azul brillante */
-  .grupo-catalogo  { --g1: #0EA5E9; --g2: #0369A1; --g-acento: #0284C7; }  /* Azul cielo */
-  .grupo-analisis  { --g1: #6366F1; --g2: #4338CA; --g-acento: #4F46E5; }  /* Índigo */
+  /* ---------- Color de la barrita por grupo ---------- */
+  .grupo-operacion { --g-acento: #2563EB; }
+  .grupo-catalogo  { --g-acento: #EA580C; }
+  .grupo-analisis  { --g-acento: #059669; }
 
   /* ---------- Cuadrícula ---------- */
   .panel-menu .grid-menu {
@@ -217,7 +214,7 @@
     }
   }
 
-  /* Círculo decorativo suavizado (muy sutil) */
+  /* Círculo decorativo suave */
   .panel-menu .card::after {
     content: "";
     position: absolute;
@@ -233,11 +230,8 @@
     background: radial-gradient(circle, rgba(96, 165, 250, 0.08) 0%, rgba(96, 165, 250, 0) 70%);
   }
 
-  /* Eliminamos la barrita azul del CSS viejo (por si acaso) */
-  .panel-menu .card::before {
-    content: none !important;
-    display: none !important;
-  }
+  /* ❌ Eliminamos la barrita y flechita del CSS viejo de estilos.css */
+  .panel-menu .card::before { content: none !important; display: none !important; }
 
   .panel-menu .card .card-titulo {
     font-size: 15.5px;
@@ -247,8 +241,13 @@
     padding-right: 0;
     margin: 0;
   }
+  /* ❌ Matamos la flechita nativa "›" que viene del estilos.css global */
+  .panel-menu .card .card-titulo::after {
+    content: none !important;
+    display: none !important;
+  }
 
-  /* ---------- Flecha SVG en círculo ---------- */
+  /* ---------- Flecha SVG en círculo (única) ---------- */
   .panel-menu .card .chev {
     position: absolute;
     top: 26px;
@@ -264,7 +263,7 @@
     pointer-events: none;
   }
 
-  /* ---------- Íconos por grupo (azul) ---------- */
+  /* ---------- Íconos con color de módulo ---------- */
   .panel-menu .card .card-icono {
     width: 48px;
     height: 48px;
@@ -273,7 +272,7 @@
     display: grid;
     place-items: center;
     background: linear-gradient(135deg, var(--g1), var(--g2));
-    box-shadow: var(--ac-sombra-icono);
+    box-shadow: 0 6px 14px color-mix(in srgb, var(--g2) 40%, transparent);
     flex-shrink: 0;
   }
   .panel-menu .card .card-icono svg {
@@ -283,13 +282,27 @@
     color: #fff;
   }
 
-  /* Operación con más peso (destacada) */
-  .grupo-operacion .card {
-    min-height: 124px;
-    background: linear-gradient(180deg, rgba(37, 99, 235, 0.06), transparent 70%), var(--superficie);
-  }
+  /* ============================================
+     COLORES DE CADA MÓDULO
+     ============================================ */
 
-  /* ---------- Animación de entrada ---------- */
+  /* OPERACIÓN · familia azul */
+  .ico-caja       { --g1: #0C4A9E; --g2: #062B5C; }
+  .ico-ventas     { --g1: #2563EB; --g2: #1E40AF; }
+  .ico-recepcion  { --g1: #00A6E0; --g2: #0284C7; }
+  .ico-devol      { --g1: #38BDF8; --g2: #0EA5E9; }
+
+  /* CATÁLOGO · familia cálida (bien diferenciados) */
+  .ico-inventario { --g1: #FBBF24; --g2: #F59E0B; }  /* Amarillo dorado */
+  .ico-productos  { --g1: #14B8A6; --g2: #0D9488; }  /* Verde azulado / teal */
+  .ico-categorias { --g1: #EC4899; --g2: #DB2777; }  /* Rosa fucsia */
+  .ico-codigos    { --g1: #F97316; --g2: #EA580C; }  /* Naranja quemado */
+
+  /* ANÁLISIS · familia verde */
+  .ico-historial  { --g1: #4ADE80; --g2: #16A34A; }  /* Verde lima suave */
+  .ico-dashboard  { --g1: #B4FF9A; --g2: #71C55B; }  /* Verde menta claro */
+
+  /* ---------- Animación ---------- */
   @keyframes ac-subir {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: none; }
@@ -411,7 +424,7 @@
 <!-- Panel del menú -->
 <div class="panel-menu" id="menu" style="display:none;">
 
-  <!-- ===== OPERACIÓN (Azul brillante) ===== -->
+  <!-- ===== OPERACIÓN (Azules) ===== -->
   <section class="grupo grupo-operacion">
     <h2 class="grupo-titulo">Operación</h2>
     <p class="grupo-sub">Lo que usas en cada turno</p>
@@ -419,7 +432,7 @@
 
       <!-- Caja del turno -->
       <a class="card" href="caja.html">
-        <div class="card-icono">
+        <div class="card-icono ico-caja">
           <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
         </div>
         <div class="card-titulo">Caja del turno</div>
@@ -428,9 +441,9 @@
         </svg>
       </a>
 
-      <!-- Ventas (carrito relleno, igual estilo que los demás) -->
+      <!-- Ventas -->
       <a class="card" href="ventas.html">
-        <div class="card-icono">
+        <div class="card-icono ico-ventas">
           <svg viewBox="0 -960 960 960"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM40-800v-80h130l148 310h368l166-310h88L740-560q-11 20-30 30t-40 10H320L240-620 160-440h560v80H160q-26 0-40-22t-2-46l80-160L60-880l-20-40v80Z"/></svg>
         </div>
         <div class="card-titulo">Ventas</div>
@@ -441,7 +454,7 @@
 
       <!-- Recepción -->
       <a class="card" href="recepcion.html">
-        <div class="card-icono">
+        <div class="card-icono ico-recepcion">
           <svg viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-120H640q-30 38-71.5 59T480-240q-47 0-88.5-21T320-320H200v120Zm280-120q38 0 69-22t43-58h168v-360H200v360h168q12 36 43 58t69 22ZM200-200h560-560Z"/></svg>
         </div>
         <div class="card-titulo">Recepción</div>
@@ -452,7 +465,7 @@
 
       <!-- Devoluciones -->
       <a class="card" href="devoluciones.html">
-        <div class="card-icono">
+        <div class="card-icono ico-devol">
           <svg viewBox="0 -960 960 960"><path d="M280-200q-17 0-28.5-11.5T240-240q0-17 11.5-28.5T280-280h280q50 0 85-35t35-85q0-50-35-85t-85-35H320l64 64q11 11 11 28t-11 28q-11 11-28 11t-28-11L184-544q-12-12-12-28t12-28l144-144q11-11 28-11t28 11q11 11 11 28t-11 28l-64 64h240q83 0 141.5 58.5T760-400q0 83-58.5 141.5T560-200H280Z"/></svg>
         </div>
         <div class="card-titulo">Devoluciones</div>
@@ -464,7 +477,7 @@
     </div>
   </section>
 
-  <!-- ===== CATÁLOGO (Azul cielo) ===== -->
+  <!-- ===== CATÁLOGO (Cálidos) ===== -->
   <section class="grupo grupo-catalogo">
     <h2 class="grupo-titulo">Catálogo</h2>
     <p class="grupo-sub">Productos, categorías y códigos</p>
@@ -472,7 +485,7 @@
 
       <!-- Inventario -->
       <a class="card" href="inventario.html">
-        <div class="card-icono">
+        <div class="card-icono ico-inventario">
           <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h560q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm280 440q11 0 19.5-7.5T510-220v-120l44 44q7 7 17 7t17-7q7-7 7-17t-7-17l-86-86q-12-12-28-12t-28 12l-86 86q-7 7-7 17t7 17q7 7 17 7t17-7l44-44v120q0 11 8.5 19.5T480-200Z"/></svg>
         </div>
         <div class="card-titulo">Inventario</div>
@@ -481,9 +494,9 @@
         </svg>
       </a>
 
-      <!-- Productos -->
+      <!-- Productos (ahora Teal, sin morado) -->
       <a class="card" href="productos.html">
-        <div class="card-icono">
+        <div class="card-icono ico-productos">
           <svg viewBox="0 -960 960 960"><path d="M856-406 566-116q-23 23-56.5 22.5T453-117L119-451q-11-11-18-25.5T94-508v-252q0-33 23.5-56.5T174-840h252q17 0 31.5 7t25.5 18l372 372q23 23 22.5 56.5T856-406ZM260-600q25 0 42.5-17.5T320-660q0-25-17.5-42.5T260-720q-25 0-42.5 17.5T200-660q0 25 17.5 42.5T260-600Z"/></svg>
         </div>
         <div class="card-titulo">Productos</div>
@@ -494,7 +507,7 @@
 
       <!-- Categorías -->
       <a class="card" href="categorias.html">
-        <div class="card-icono">
+        <div class="card-icono ico-categorias">
           <svg viewBox="0 -960 960 960"><path d="M140-200q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm300 440q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Z"/></svg>
         </div>
         <div class="card-titulo">Categorías</div>
@@ -505,7 +518,7 @@
 
       <!-- Registrar códigos -->
       <a class="card" href="codigos.html">
-        <div class="card-icono">
+        <div class="card-icono ico-codigos">
           <svg viewBox="0 -960 960 960"><path d="M120-680v-120q0-33 23.5-56.5T200-880h120q17 0 28.5 11.5T360-840q0 17-11.5 28.5T320-800H200v120q0 17-11.5 28.5T160-640q-17 0-28.5-11.5T120-680Zm720 0q0 17-11.5 28.5T800-640q-17 0-28.5-11.5T760-680v-120H640q-17 0-28.5-11.5T600-840q0-17 11.5-28.5T640-880h120q33 0 56.5 23.5T840-800v120ZM200-120q-33 0-56.5-23.5T120-200v-120q0-17 11.5-28.5T160-360q17 0 28.5 11.5T200-320v120h120q17 0 28.5 11.5T360-160q0 17-11.5 28.5T320-120H200Zm440 0q-17 0-28.5-11.5T600-160q0-17 11.5-28.5T640-200h120v-120q0-17 11.5-28.5T800-360q17 0 28.5 11.5T840-320v120q0 33-23.5 56.5T760-120H640ZM200-760v120q0 17-11.5 28.5T160-600q-17 0-28.5-11.5T120-640v-120q0-33 23.5-56.5T200-840h120q17 0 28.5 11.5T360-800q0 17-11.5 28.5T320-760H200Zm560 0H640q-17 0-28.5-11.5T600-800q0-17 11.5-28.5T640-840h120q33 0 56.5 23.5T840-760v120q0 17-11.5 28.5T800-600q-17 0-28.5-11.5T760-640v-120ZM240-240v-120q0-17 11.5-28.5T280-400h120q17 0 28.5 11.5T440-360v120q0 17-11.5 28.5T400-200H280q-17 0-28.5-11.5T240-240Zm280-200q-17 0-28.5-11.5T480-480q0-17 11.5-28.5T520-520q17 0 28.5 11.5T560-480q0 17-11.5 28.5T520-440Zm160 0q-17 0-28.5-11.5T640-480q0-17 11.5-28.5T680-520q17 0 28.5 11.5T720-480q0 17-11.5 28.5T680-440ZM520-280q-17 0-28.5-11.5T480-320q0-17 11.5-28.5T520-360q17 0 28.5 11.5T560-320q0 17-11.5 28.5T520-280Zm160 0q-17 0-28.5-11.5T640-320q0-17 11.5-28.5T680-360q17 0 28.5 11.5T720-320q0 17-11.5 28.5T680-280Z"/></svg>
         </div>
         <div class="card-titulo">Registrar códigos</div>
@@ -517,7 +530,7 @@
     </div>
   </section>
 
-  <!-- ===== ANÁLISIS (Índigo) ===== -->
+  <!-- ===== ANÁLISIS (Verdes) ===== -->
   <section class="grupo grupo-analisis">
     <h2 class="grupo-titulo">Análisis</h2>
     <p class="grupo-sub">Consulta y reportes</p>
@@ -525,7 +538,7 @@
 
       <!-- Historial -->
       <a class="card" href="historial-caja.html">
-        <div class="card-icono">
+        <div class="card-icono ico-historial">
           <svg viewBox="0 -960 960 960"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h480q50 0 85 35t35 85v560q0 50-35 85t-85 35H240Zm0-80h480v-560H240v560Zm80-80h320q17 0 28.5-11.5T680-280q0-17-11.5-28.5T640-320H320q-17 0-28.5 11.5T280-280q0 17 11.5 28.5T320-240Zm0-160h320q17 0 28.5-11.5T680-440q0-17-11.5-28.5T640-480H320q-17 0-28.5 11.5T280-440q0 17 11.5 28.5T320-400Zm0-160h320q17 0 28.5-11.5T680-600q0-17-11.5-28.5T640-640H320q-17 0-28.5 11.5T280-600q0 17 11.5 28.5T320-560Zm0-160h320q17 0 28.5-11.5T680-760q0-17-11.5-28.5T640-800H320q-17 0-28.5 11.5T280-760q0 17 11.5 28.5T320-720ZM240-160v-560 560Z"/></svg>
         </div>
         <div class="card-titulo">Historial</div>
@@ -536,7 +549,7 @@
 
       <!-- Dashboard -->
       <a class="card" href="dashboard.html">
-        <div class="card-icono">
+        <div class="card-icono ico-dashboard">
           <svg viewBox="0 -960 960 960"><path d="M640-160v-280q0-17 11.5-28.5T680-480q17 0 28.5 11.5T720-440v280q0 17-11.5 28.5T680-120q-17 0-28.5-11.5T640-160Zm-200 0v-560q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v560q0 17-11.5 28.5T480-120q-17 0-28.5-11.5T440-160Zm-200 0v-400q0-17 11.5-28.5T280-600q17 0 28.5 11.5T320-560v400q0 17-11.5 28.5T280-120q-17 0-28.5-11.5T240-160Z"/></svg>
         </div>
         <div class="card-titulo">Dashboard</div>

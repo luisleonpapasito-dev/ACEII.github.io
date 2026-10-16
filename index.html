@@ -16,10 +16,9 @@
 <script src="comun.js"></script>
 <style>
   /* =====================================================
-     REDISEÑO VISUAL v4 - Cards con subtítulos
+     REDISEÑO VISUAL v5 - Con sección admin condicional
      ===================================================== */
 
-  /* ---------- Variables (claro) ---------- */
   :root {
     --ac-texto: #0F1B3D;
     --ac-texto-suave: #5B6785;
@@ -45,7 +44,6 @@
     --superficie: #121D3A;
   }
 
-  /* ---------- Header con saludo ---------- */
   .app-header-saludo {
     font-size: 13px;
     font-weight: 600;
@@ -61,7 +59,6 @@
     line-height: 1.3;
   }
 
-  /* ---------- Banner del turno ---------- */
   #bannerTurno {
     background: none;
     border: 0;
@@ -140,14 +137,12 @@
     padding: 14px 16px;
   }
 
-  /* ---------- Panel del menú ---------- */
   .panel-menu {
     max-width: 520px;
     margin: 0 auto;
     padding: 0 14px calc(40px + env(safe-area-inset-bottom));
   }
 
-  /* ---------- Títulos de grupo con subtítulo ---------- */
   .grupo-titulo {
     display: flex;
     align-items: center;
@@ -173,12 +168,11 @@
     color: var(--ac-texto-suave);
   }
 
-  /* ---------- Color de la barrita por grupo ---------- */
   .grupo-operacion { --g-acento: #2563EB; }
   .grupo-catalogo  { --g-acento: #EA580C; }
   .grupo-analisis  { --g-acento: #059669; }
+  .grupo-admin     { --g-acento: #7C3AED; }
 
-  /* ---------- Cuadrícula ---------- */
   .panel-menu .grid-menu {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -186,7 +180,6 @@
     margin: 0;
   }
 
-  /* ---------- Tarjetas ---------- */
   .panel-menu .card {
     position: relative;
     display: flex;
@@ -213,7 +206,6 @@
     }
   }
 
-  /* Círculo decorativo suave */
   .panel-menu .card::after {
     content: "";
     position: absolute;
@@ -229,10 +221,8 @@
     background: radial-gradient(circle, rgba(96, 165, 250, 0.08) 0%, rgba(96, 165, 250, 0) 70%);
   }
 
-  /* ❌ Eliminamos la barrita y flechita del CSS viejo de estilos.css */
   .panel-menu .card::before { content: none !important; display: none !important; }
 
-  /* Contenedor de texto (título + subtítulo) */
   .panel-menu .card .card-texto {
     display: flex;
     flex-direction: column;
@@ -255,14 +245,11 @@
     color: var(--ac-texto-suave);
     margin: 0;
   }
-
-  /* ❌ Matamos la flechita nativa "›" que viene del estilos.css global */
   .panel-menu .card .card-titulo::after {
     content: none !important;
     display: none !important;
   }
 
-  /* ---------- Flecha SVG en círculo (color del grupo) ---------- */
   .panel-menu .card .chev {
     position: absolute;
     top: 20px;
@@ -278,16 +265,16 @@
     pointer-events: none;
   }
 
-  /* Colores de la flechita por grupo */
   .grupo-operacion .card { --chev-color: #2563EB; --chev-bg: rgba(37, 99, 235, 0.10); }
   .grupo-catalogo  .card { --chev-color: #EA580C; --chev-bg: rgba(234, 88, 12, 0.10); }
   .grupo-analisis  .card { --chev-color: #059669; --chev-bg: rgba(5, 150, 105, 0.10); }
+  .grupo-admin     .card { --chev-color: #7C3AED; --chev-bg: rgba(124, 58, 237, 0.10); }
 
   html.tema-oscuro .grupo-operacion .card { --chev-color: #7DB1FF; --chev-bg: rgba(125, 177, 255, 0.14); }
   html.tema-oscuro .grupo-catalogo  .card { --chev-color: #FB923C; --chev-bg: rgba(251, 146, 60, 0.14); }
   html.tema-oscuro .grupo-analisis  .card { --chev-color: #4ADE80; --chev-bg: rgba(74, 222, 128, 0.14); }
+  html.tema-oscuro .grupo-admin     .card { --chev-color: #A78BFA; --chev-bg: rgba(167, 139, 250, 0.14); }
 
-  /* ---------- Íconos con color de módulo ---------- */
   .panel-menu .card .card-icono {
     width: 44px;
     height: 44px;
@@ -306,27 +293,26 @@
     color: #fff;
   }
 
-  /* ============================================
-     COLORES DE CADA MÓDULO
-     ============================================ */
-
-  /* OPERACIÓN · familia azul */
+  /* OPERACIÓN */
   .ico-caja       { --g1: #0C4A9E; --g2: #062B5C; }
   .ico-ventas     { --g1: #2563EB; --g2: #1E40AF; }
   .ico-recepcion  { --g1: #00A6E0; --g2: #0284C7; }
   .ico-devol      { --g1: #38BDF8; --g2: #0EA5E9; }
 
-  /* CATÁLOGO · familia cálida (bien diferenciados) */
+  /* CATÁLOGO */
   .ico-inventario { --g1: #FBBF24; --g2: #F59E0B; }
   .ico-productos  { --g1: #14B8A6; --g2: #0D9488; }
   .ico-categorias { --g1: #EC4899; --g2: #DB2777; }
   .ico-codigos    { --g1: #F97316; --g2: #EA580C; }
 
-  /* ANÁLISIS · familia verde */
+  /* ANÁLISIS */
   .ico-historial  { --g1: #4ADE80; --g2: #16A34A; }
   .ico-dashboard  { --g1: #B4FF9A; --g2: #71C55B; }
 
-  /* ---------- Animación ---------- */
+  /* ADMIN */
+  .ico-admin-usuarios  { --g1: #8B5CF6; --g2: #6D28D9; }
+  .ico-admin-horarios  { --g1: #A78BFA; --g2: #7C3AED; }
+
   @keyframes ac-subir {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: none; }
@@ -339,7 +325,6 @@
     #bannerMiTurno, .panel-menu .card { animation: none !important; }
   }
 
-  /* ---------- Cerrar sesión (azul discreto y centrado) ---------- */
   .cerrar-sesion-box {
     display: inline-flex;
     align-items: center;
@@ -364,7 +349,10 @@
   }
   .cerrar-sesion-box:active { transform: scale(.98); }
 
-  /* ---------- Pantallas muy pequeñas ---------- */
+  /* Oculta la sección admin por defecto */
+  .seccion-admin { display: none; }
+  .seccion-admin.visible { display: block; }
+
   @media (max-width: 340px) {
     .hero-monto { font-size: 28px; }
     .panel-menu .grid-menu { gap: 10px; }
@@ -452,13 +440,12 @@
 <!-- Panel del menú -->
 <div class="panel-menu" id="menu" style="display:none;">
 
-  <!-- ===== OPERACIÓN (Azules) ===== -->
+  <!-- ===== OPERACIÓN ===== -->
   <section class="grupo grupo-operacion">
     <h2 class="grupo-titulo">Operación</h2>
     <p class="grupo-sub">Lo que usas en cada turno</p>
     <div class="grid-menu">
 
-      <!-- Caja del turno -->
       <a class="card" href="caja.html">
         <div class="card-icono ico-caja">
           <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
@@ -467,12 +454,9 @@
           <div class="card-titulo">Caja del turno</div>
           <div class="card-desc">Movimientos y cierre del turno</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
 
-      <!-- Ventas -->
       <a class="card" href="ventas.html">
         <div class="card-icono ico-ventas">
           <svg viewBox="0 -960 960 960"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM40-800v-80h130l148 310h368l166-310h88L740-560q-11 20-30 30t-40 10H320L240-620 160-440h560v80H160q-26 0-40-22t-2-46l80-160L60-880l-20-40v80Z"/></svg>
@@ -481,12 +465,9 @@
           <div class="card-titulo">Ventas</div>
           <div class="card-desc">Registra y consulta tus ventas</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
 
-      <!-- Recepción -->
       <a class="card" href="recepcion.html">
         <div class="card-icono ico-recepcion">
           <svg viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-120H640q-30 38-71.5 59T480-240q-47 0-88.5-21T320-320H200v120Zm280-120q38 0 69-22t43-58h168v-360H200v360h168q12 36 43 58t69 22ZM200-200h560-560Z"/></svg>
@@ -495,12 +476,9 @@
           <div class="card-titulo">Recepción</div>
           <div class="card-desc">Controla ingresos de productos</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
 
-      <!-- Devoluciones -->
       <a class="card" href="devoluciones.html">
         <div class="card-icono ico-devol">
           <svg viewBox="0 -960 960 960"><path d="M280-200q-17 0-28.5-11.5T240-240q0-17 11.5-28.5T280-280h280q50 0 85-35t35-85q0-50-35-85t-85-35H320l64 64q11 11 11 28t-11 28q-11 11-28 11t-28-11L184-544q-12-12-12-28t12-28l144-144q11-11 28-11t28 11q11 11 11 28t-11 28l-64 64h240q83 0 141.5 58.5T760-400q0 83-58.5 141.5T560-200H280Z"/></svg>
@@ -509,21 +487,18 @@
           <div class="card-titulo">Devoluciones</div>
           <div class="card-desc">Gestiona devoluciones de productos</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
 
     </div>
   </section>
 
-  <!-- ===== CATÁLOGO (Cálidos) ===== -->
+  <!-- ===== CATÁLOGO ===== -->
   <section class="grupo grupo-catalogo">
     <h2 class="grupo-titulo">Catálogo</h2>
     <p class="grupo-sub">Productos, categorías y códigos</p>
     <div class="grid-menu">
 
-      <!-- Inventario -->
       <a class="card" href="inventario.html">
         <div class="card-icono ico-inventario">
           <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h560q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm280 440q11 0 19.5-7.5T510-220v-120l44 44q7 7 17 7t17-7q7-7 7-17t-7-17l-86-86q-12-12-28-12t-28 12l-86 86q-7 7-7 17t7 17q7 7 17 7t17-7l44-44v120q0 11 8.5 19.5T480-200Z"/></svg>
@@ -532,12 +507,9 @@
           <div class="card-titulo">Inventario</div>
           <div class="card-desc">Consulta y administra el stock</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
 
-      <!-- Productos -->
       <a class="card" href="productos.html">
         <div class="card-icono ico-productos">
           <svg viewBox="0 -960 960 960"><path d="M856-406 566-116q-23 23-56.5 22.5T453-117L119-451q-11-11-18-25.5T94-508v-252q0-33 23.5-56.5T174-840h252q17 0 31.5 7t25.5 18l372 372q23 23 22.5 56.5T856-406ZM260-600q25 0 42.5-17.5T320-660q0-25-17.5-42.5T260-720q-25 0-42.5 17.5T200-660q0 25 17.5 42.5T260-600Z"/></svg>
@@ -546,12 +518,9 @@
           <div class="card-titulo">Productos</div>
           <div class="card-desc">Consulta y edita el catálogo</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
 
-      <!-- Categorías -->
       <a class="card" href="categorias.html">
         <div class="card-icono ico-categorias">
           <svg viewBox="0 -960 960 960"><path d="M140-200q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm300 440q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Z"/></svg>
@@ -560,12 +529,9 @@
           <div class="card-titulo">Categorías</div>
           <div class="card-desc">Organiza tus productos por tipo</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
 
-      <!-- Registrar códigos -->
       <a class="card" href="codigos.html">
         <div class="card-icono ico-codigos">
           <svg viewBox="0 -960 960 960"><path d="M120-680v-120q0-33 23.5-56.5T200-880h120q17 0 28.5 11.5T360-840q0 17-11.5 28.5T320-800H200v120q0 17-11.5 28.5T160-640q-17 0-28.5-11.5T120-680Zm720 0q0 17-11.5 28.5T800-640q-17 0-28.5-11.5T760-680v-120H640q-17 0-28.5-11.5T600-840q0-17 11.5-28.5T640-880h120q33 0 56.5 23.5T840-800v120ZM200-120q-33 0-56.5-23.5T120-200v-120q0-17 11.5-28.5T160-360q17 0 28.5 11.5T200-320v120h120q17 0 28.5 11.5T360-160q0 17-11.5 28.5T320-120H200Zm440 0q-17 0-28.5-11.5T600-160q0-17 11.5-28.5T640-200h120v-120q0-17 11.5-28.5T800-360q17 0 28.5 11.5T840-320v120q0 33-23.5 56.5T760-120H640ZM200-760v120q0 17-11.5 28.5T160-600q-17 0-28.5-11.5T120-640v-120q0-33 23.5-56.5T200-840h120q17 0 28.5 11.5T360-800q0 17-11.5 28.5T320-760H200Zm560 0H640q-17 0-28.5-11.5T600-800q0-17 11.5-28.5T640-840h120q33 0 56.5 23.5T840-760v120q0 17-11.5 28.5T800-600q-17 0-28.5-11.5T760-640v-120ZM240-240v-120q0-17 11.5-28.5T280-400h120q17 0 28.5 11.5T440-360v120q0 17-11.5 28.5T400-200H280q-17 0-28.5-11.5T240-240Zm280-200q-17 0-28.5-11.5T480-480q0-17 11.5-28.5T520-520q17 0 28.5 11.5T560-480q0 17-11.5 28.5T520-440Zm160 0q-17 0-28.5-11.5T640-480q0-17 11.5-28.5T680-520q17 0 28.5 11.5T720-480q0 17-11.5 28.5T680-440ZM520-280q-17 0-28.5-11.5T480-320q0-17 11.5-28.5T520-360q17 0 28.5 11.5T560-320q0 17-11.5 28.5T520-280Zm160 0q-17 0-28.5-11.5T640-320q0-17 11.5-28.5T680-360q17 0 28.5 11.5T720-320q0 17-11.5 28.5T680-280Z"/></svg>
@@ -574,21 +540,18 @@
           <div class="card-titulo">Registrar códigos</div>
           <div class="card-desc">Asocia códigos de barra a productos</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
 
     </div>
   </section>
 
-  <!-- ===== ANÁLISIS (Verdes) ===== -->
+  <!-- ===== ANÁLISIS ===== -->
   <section class="grupo grupo-analisis">
     <h2 class="grupo-titulo">Análisis</h2>
     <p class="grupo-sub">Consulta y reportes</p>
     <div class="grid-menu">
 
-      <!-- Historial -->
       <a class="card" href="historial-caja.html">
         <div class="card-icono ico-historial">
           <svg viewBox="0 -960 960 960"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h480q50 0 85 35t35 85v560q0 50-35 85t-85 35H240Zm0-80h480v-560H240v560Zm80-80h320q17 0 28.5-11.5T680-280q0-17-11.5-28.5T640-320H320q-17 0-28.5 11.5T280-280q0 17 11.5 28.5T320-240Zm0-160h320q17 0 28.5-11.5T680-440q0-17-11.5-28.5T640-480H320q-17 0-28.5 11.5T280-440q0 17 11.5 28.5T320-400Zm0-160h320q17 0 28.5-11.5T680-600q0-17-11.5-28.5T640-640H320q-17 0-28.5 11.5T280-600q0 17 11.5 28.5T320-560Zm0-160h320q17 0 28.5-11.5T680-760q0-17-11.5-28.5T640-800H320q-17 0-28.5 11.5T280-760q0 17 11.5 28.5T320-720ZM240-160v-560 560Z"/></svg>
@@ -597,12 +560,9 @@
           <div class="card-titulo">Historial</div>
           <div class="card-desc">Movimientos y cierres anteriores</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
 
-      <!-- Dashboard -->
       <a class="card" href="dashboard.html">
         <div class="card-icono ico-dashboard">
           <svg viewBox="0 -960 960 960"><path d="M640-160v-280q0-17 11.5-28.5T680-480q17 0 28.5 11.5T720-440v280q0 17-11.5 28.5T680-120q-17 0-28.5-11.5T640-160Zm-200 0v-560q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v560q0 17-11.5 28.5T480-120q-17 0-28.5-11.5T440-160Zm-200 0v-400q0-17 11.5-28.5T280-600q17 0 28.5 11.5T320-560v400q0 17-11.5 28.5T280-120q-17 0-28.5-11.5T240-160Z"/></svg>
@@ -611,9 +571,38 @@
           <div class="card-titulo">Dashboard</div>
           <div class="card-desc">Análisis y estadísticas del negocio</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ===== ADMINISTRACIÓN (solo visible para admin) ===== -->
+  <section class="grupo grupo-admin seccion-admin" id="seccionAdmin">
+    <h2 class="grupo-titulo">👑 Administración</h2>
+    <p class="grupo-sub">Solo visible para administradores</p>
+    <div class="grid-menu">
+
+      <a class="card" href="admin-usuarios.html">
+        <div class="card-icono ico-admin-usuarios">
+          <svg viewBox="0 -960 960 960"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"/></svg>
+        </div>
+        <div class="card-texto">
+          <div class="card-titulo">Usuarios</div>
+          <div class="card-desc">Crea, edita y asigna roles</div>
+        </div>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+
+      <a class="card" href="admin-horarios.html">
+        <div class="card-icono ico-admin-horarios">
+          <svg viewBox="0 -960 960 960"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-80q-25 0-42.5-17.5T420-300q0-25 17.5-42.5T480-360q25 0 42.5 17.5T540-300q0 25-17.5 42.5T480-240Zm-40-160v-320h80v320h-80Z"/></svg>
+        </div>
+        <div class="card-texto">
+          <div class="card-titulo">Horarios y turnos</div>
+          <div class="card-desc">Historial de aperturas y cierres</div>
+        </div>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
 
     </div>
@@ -634,7 +623,7 @@ let usuarioPendienteAjeno = null;
 function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
 
 /* =========================================================
-   TEMA: solo día/noche (sin detección automática)
+   TEMA: solo día/noche
    ========================================================= */
 (function inicializarBotonTema() {
   const btn = document.getElementById('btnTema');
@@ -663,6 +652,20 @@ function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
   });
 })();
 
+/* =========================================================
+   Mostrar u ocultar sección admin según rol
+   ========================================================= */
+function aplicarRolAdmin() {
+  const u = getUsuarioTurno();
+  const seccion = document.getElementById('seccionAdmin');
+  if (!seccion) return;
+  if (u && u.rol === 'admin') {
+    seccion.classList.add('visible');
+  } else {
+    seccion.classList.remove('visible');
+  }
+}
+
 async function pintar() {
   const hayToken = !!getToken();
   const hayUsuario = !!getUsuarioTurno();
@@ -675,6 +678,7 @@ async function pintar() {
   $('menu').style.display = (hayToken && hayUsuario && hayTurno) ? 'block' : 'none';
 
   if (hayToken && hayUsuario && hayTurno) {
+    aplicarRolAdmin();
     pintarUsuarioTurno();
     await cargarBannerTurno();
   } else {
@@ -740,7 +744,7 @@ async function iniciarTurno() {
       } catch (e) {}
 
       if (hayTurnoAjeno) {
-        usuarioPendienteAjeno = { id: r.id_usuario, nombre: r.nombre };
+        usuarioPendienteAjeno = { id: r.id_usuario, nombre: r.nombre, rol: r.rol || 'cajero' };
         $('login').style.display = 'none';
         $('turno').style.display = 'none';
         $('pantallaCerrarAjeno').style.display = 'block';
@@ -756,7 +760,7 @@ async function iniciarTurno() {
         return;
       }
 
-      guardarUsuarioTurno({ id: r.id_usuario, nombre: r.nombre });
+      guardarUsuarioTurno({ id: r.id_usuario, nombre: r.nombre, rol: r.rol || 'cajero' });
       $('pinTurno').value = '';
       mostrar('Bienvenido ✓ ' + r.nombre, 'ok');
       await verificarTurnoCaja(r.id_usuario, r.nombre);
@@ -912,7 +916,7 @@ $('btnCancelarAjeno').addEventListener('click', function () {
 
 async function continuarLogin() {
   if (!usuarioPendienteAjeno) return;
-  guardarUsuarioTurno({ id: usuarioPendienteAjeno.id, nombre: usuarioPendienteAjeno.nombre });
+  guardarUsuarioTurno({ id: usuarioPendienteAjeno.id, nombre: usuarioPendienteAjeno.nombre, rol: usuarioPendienteAjeno.rol || 'cajero' });
   $('pantallaCerrarAjeno').style.display = 'none';
   mostrar('Bienvenido ✓ ' + usuarioPendienteAjeno.nombre, 'ok');
   const id = usuarioPendienteAjeno.id;

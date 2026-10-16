@@ -263,14 +263,14 @@
   .ico-recepcion  { --g1: #00A6E0; --g2: #0284C7; }  /* Azul cielo */
   .ico-devol      { --g1: #38BDF8; --g2: #0EA5E9; }  /* Celeste brillante */
 
-  /* CATÁLOGO · familia cálida */
-  .ico-inventario { --g1: #F59E0B; --g2: #B45309; }  /* Ámbar */
+  /* CATÁLOGO · familia cálida (bien diferenciados) */
+  .ico-inventario { --g1: #FBBF24; --g2: #F59E0B; }  /* Amarillo dorado */
   .ico-productos  { --g1: #FB923C; --g2: #EA580C; }  /* Naranja */
-  .ico-categorias { --g1: #FB7185; --g2: #E11D48; }  /* Coral */
-  .ico-codigos    { --g1: #F87171; --g2: #DC2626; }  /* Rojo suave */
+  .ico-categorias { --g1: #EC4899; --g2: #DB2777; }  /* Rosa fucsia */
+  .ico-codigos    { --g1: #F97316; --g2: #EA580C; }  /* Naranja quemado */
 
   /* ANÁLISIS · familia verde (2 tonos bien diferenciados) */
-  .ico-historial  { --g1: #258D19; --g2: #005C00; }  /* Verde bosque */
+  .ico-historial  { --g1: #4ADE80; --g2: #16A34A; }  /* Verde lima suave */
   .ico-dashboard  { --g1: #B4FF9A; --g2: #71C55B; }  /* Verde menta claro */
 
   /* Animación de entrada */
@@ -286,13 +286,13 @@
     #bannerMiTurno, .panel-menu .card { animation: none !important; }
   }
 
-  /* ---------- Cerrar sesión (nuevo diseño llamativo) ---------- */
+  /* ---------- Cerrar sesión (sin ícono) ---------- */
   .cerrar-sesion-box {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 0;
     margin: 32px 0 8px;
     padding: 16px 22px;
     min-height: 56px;
@@ -327,15 +327,6 @@
     box-shadow: 0 12px 28px rgba(220, 38, 38, 0.45);
   }
   .cerrar-sesion-box:active { transform: scale(0.98); }
-
-  .cerrar-sesion-box .cerrar-sesion-icono {
-    width: 20px;
-    height: 20px;
-    fill: #fff;
-    flex-shrink: 0;
-    transition: transform 0.18s ease;
-  }
-  .cerrar-sesion-box:hover .cerrar-sesion-icono { transform: translateX(3px); }
 
   /* ---------- Pantallas muy pequeñas ---------- */
   @media (max-width: 340px) {
@@ -523,9 +514,6 @@
   </div>
 
   <div class="cerrar-sesion-box" onclick="cerrarSesion()">
-    <svg viewBox="0 -960 960 960" class="cerrar-sesion-icono">
-      <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280q17 0 28.5 11.5T520-800q0 17-11.5 28.5T480-760H200v560h280q17 0 28.5 11.5T520-160q0 17-11.5 28.5T480-120H200Zm480-320H400q-17 0-28.5-11.5T360-480q0-17 11.5-28.5T400-520h280l-44-44q-11-11-11-28t11-28q11-11 28-11t28 11l112 112q12 12 12 28t-12 28L692-340q-11 11-28 11t-28-11q-11-11-11-28t11-28l44-44Z"/>
-    </svg>
     <span>Cerrar sesión</span>
   </div>
 

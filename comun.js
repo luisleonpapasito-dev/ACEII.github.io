@@ -3,10 +3,6 @@ const URL_SERVIDOR = 'https://script.google.com/macros/s/AKfycbytYTtsMeI-9Pw-wWZ
 
 const $ = function (id) { return document.getElementById(id); };
 
-// ============================================================
-// TEMA (claro / oscuro / auto)
-// Se aplica ANTES de que se renderice el body para evitar "flash"
-// ============================================================
 (function aplicarTemaInmediato() {
   try {
     const tema = localStorage.getItem('caf_tema') || 'auto';
@@ -45,9 +41,6 @@ function emojiTema(tema) {
   return '⚙️';
 }
 
-// ============================================================
-// TOASTS GLOBALES
-// ============================================================
 function mostrar(texto, clase) {
   const e = document.getElementById('estado');
   if (e) {
@@ -59,7 +52,6 @@ function mostrar(texto, clase) {
       e.style.display = '';
     }
   }
-
   if (texto && (clase === 'ok' || clase === 'error' || clase === 'aviso')) {
     mostrarToast_(texto, clase);
   }
@@ -74,29 +66,22 @@ function mostrarToast_(texto, clase) {
     toastNode_.id = 'toastGlobal';
     document.body.appendChild(toastNode_);
   }
-
   let icono = '';
   if (clase === 'ok') icono = '✅ ';
   else if (clase === 'error') icono = '⚠️ ';
   else if (clase === 'aviso') icono = '⏳ ';
-
   toastNode_.textContent = icono + texto;
   toastNode_.className = 'toast-global visible ' + (clase || '');
-
   clearTimeout(toastTimeout_);
   toastTimeout_ = setTimeout(function () {
     toastNode_.classList.remove('visible');
   }, clase === 'error' ? 4000 : 2500);
-
   if (navigator.vibrate) {
     if (clase === 'ok') navigator.vibrate(60);
     else if (clase === 'error') navigator.vibrate([80, 40, 80]);
   }
 }
 
-// ============================================================
-// UTILIDADES
-// ============================================================
 function norm(s) {
   return String(s || '')
     .toLowerCase()
@@ -106,12 +91,10 @@ function norm(s) {
     .trim();
 }
 
-// ---------- Token general ----------
 function getToken() { try { return localStorage.getItem('caf_token') || ''; } catch (e) { return ''; } }
 function guardarToken(t) { try { localStorage.setItem('caf_token', t); } catch (e) {} }
 function borrarToken() { try { localStorage.removeItem('caf_token'); } catch (e) {} }
 
-// ---------- Usuario de turno ----------
 function getUsuarioTurno() {
   try {
     const u = JSON.parse(localStorage.getItem('caf_usuario_turno') || 'null');
@@ -125,7 +108,6 @@ function borrarUsuarioTurno() {
   try { localStorage.removeItem('caf_usuario_turno'); } catch (e) {}
 }
 
-// ---------- Turno de caja ----------
 function getTurnoActual() {
   try {
     const t = JSON.parse(localStorage.getItem('caf_turno_caja') || 'null');
@@ -147,10 +129,7 @@ function exigirSesion() {
 async function exigirTurnoCajaAbierto() {
   const u = getUsuarioTurno();
   if (!u) return false;
-
-  // ⭐ Si es admin, no exigir turno abierto
   if (u.rol === 'admin') return true;
-
   if (getTurnoActual()) return true;
   try {
     const r = await jsonp({ accion: 'mi_turno', id_usuario: u.id }, 15000);
@@ -177,20 +156,19 @@ function cerrarTurno() {
   location.href = 'index.html';
 }
 
-// ---------- JSONP y POST ----------
 function jsonp(params, limiteMs) {
   return new Promise(function (resolve, reject) {
     const nombre = 'cb_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
     const s = document.createElement('script');
     let fin = false;
-    let t = null;
+    let timeoutId = null;
     function limpiar() {
       fin = true;
-      clearTimeout(t);
+      clearTimeout(timeoutId);
       if (s.parentNode) s.parentNode.removeChild(s);
       delete window[nombre];
     }
-    t = setTimeout(function () {
+    timeoutId = setTimeout(function () {
       if (!fin) { limpiar(); reject(new Error('El servidor no respondió a tiempo')); }
     }, limiteMs || 15000);
     window[nombre] = function (r) { if (!fin) { limpiar(); resolve(r); } };
@@ -204,21 +182,18 @@ function jsonp(params, limiteMs) {
   });
 }
 
-async function exigirTurnoCajaAbierto() {
-  const u = getUsuarioTurno();
-  if (!u) return false;
-
-  // ⭐ Si es admin, no exige turno
-  if (u.rol === 'admin') return true;
-
-  if (getTurnoActual()) return true;
+async function post(cuerpo) {
+  const ctrl = new AbortController();
+  const timeoutId = setTimeout(function () { ctrl.abort(); }, 120000);
   try {
-    const r = await jsonp({ accion: 'mi_turno', id_usuario: u.id }, 15000);
-    if (r && r.ok && r.turno) {
-      guardarTurnoActual(r.turno);
-      return true;
-    }
-  } catch (e) {}
-  location.href = 'caja.html';
-  return false;
+    const r = await fetch(URL_SERVIDOR, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({ token: getToken() }, cuerpo)),
+      signal: ctrl.signal
+    });
+    return await r.json();
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }

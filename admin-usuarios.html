@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="es" class="tema-claro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Usuarios · ACEII</title>
+<link rel="stylesheet" href="estilos.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563EB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
+<script src="comun.js"></script>
+<style>
+  :root {
+    --ac-texto: #0F1B3D;
+    --ac-texto-suave: #5B6785;
+    --ac-borde: #E3E9F4;
+    --superficie: #FFFFFF;
+    --superficie-2: #EEF3FB;
+    --ac-acento: #7C3AED;
+    --ac-acento-bg: rgba(124, 58, 237, 0.10);
+  }
+  html.tema-oscuro {
+    --ac-texto: #F1F5FF;
+    --ac-texto-suave: #9AA8CC;
+    --ac-borde: #223156;
+    --superficie: #121D3A;
+    --superficie-2: #1C2A4A;
+    --ac-acento: #A78BFA;
+    --ac-acento-bg: rgba(167, 139, 250, 0.14);
+  }
+
+  body {
+    background: var(--fondo, #F4F7FC);
+    color: var(--ac-texto);
+  }
+
+  .admin-wrap {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 14px 14px calc(40px + env(safe-area-inset-bottom));
+  }
+
+  .admin-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 16px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+    color: #fff;
+    box-shadow: 0 10px 28px rgba(109, 40, 217, 0.35);
+  }
+  .admin-header-icono {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .admin-header-icono svg { width: 24px; height: 24px; fill: #fff; }
+  .admin-header-texto { flex: 1; }
+  .admin-header-titulo { font-size: 18px; font-weight: 800; line-height: 1.2; }
+  .admin-header-sub { font-size: 12.5px; font-weight: 500; opacity: 0.9; margin-top: 2px; }
+
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .btn-nuevo {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(109, 40, 217, 0.3);
+    transition: transform 0.12s ease;
+  }
+  .btn-nuevo:active { transform: scale(0.97); }
+  .btn-nuevo svg { width: 18px; height: 18px; fill: #fff; }
+
+  .busqueda {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--superficie);
+    border: 1.5px solid var(--ac-borde);
+    color: var(--ac-texto);
+    font-size: 14px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+  }
+  .busqueda:focus {
+    outline: none;
+    border-color: var(--ac-acento);
+  }
+
+  .lista-usuarios {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .user-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: var(--superficie);
+    border: 1px solid var(--ac-borde);
+    border-radius: 14px;
+    transition: transform 0.12s ease, box-shadow 0.15s ease;
+  }
+  .user-card:active { transform: scale(0.98); }
+  .user-card.inactivo { opacity: 0.6; }
+
+  .user-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .user-card.inactivo .user-avatar {
+    background: linear-gradient(135deg, #9CA3AF, #6B7280);
+  }
+
+  .user-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .user-nombre {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ac-texto);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .user-meta {
+    display: flex;
+    gap: 6px;
+    margin-top: 3px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .badge-admin { background: rgba(124, 58, 237, 0.15); color: #7C3AED; }
+  .badge-cajero { background: rgba(37, 99, 235, 0.15); color: #2563EB; }
+  .badge-activo { background: rgba(16, 185, 129, 0.15); color: #059669; }
+  .badge-inactivo { background: rgba(220, 38, 38, 0.15); color: #DC2626; }
+  .badge-nopin { background: rgba(217, 119, 6, 0.15); color: #D97706; }
+  html.tema-oscuro .badge-admin { background: rgba(167, 139, 250, 0.2); color: #C4B5FD; }
+  html.tema-oscuro .badge-cajero { background: rgba(96, 165, 250, 0.2); color: #93C5FD; }
+  html.tema-oscuro .badge-activo { background: rgba(52, 211, 153, 0.2); color: #6EE7B7; }
+  html.tema-oscuro .badge-inactivo { background: rgba(248, 113, 113, 0.2); color: #FCA5A5; }
+  html.tema-oscuro .badge-nopin { background: rgba(251, 191, 36, 0.2); color: #FCD34D; }
+
+  .user-chev {
+    width: 24px;
+    height: 24px;
+    color: var(--ac-acento);
+    flex-shrink: 0;
+  }
+
+  /* Modal */
+  .modal-fondo {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 100;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+  .modal-fondo.abierto { display: flex; align-items: flex-start; justify-content: center; padding-top: 40px; }
+
+  .modal {
+    background: var(--superficie);
+    border-radius: 18px;
+    padding: 22px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-titulo {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--ac-texto);
+    margin-bottom: 4px;
+  }
+  .modal-sub {
+    font-size: 13px;
+    color: var(--ac-texto-suave);
+    margin-bottom: 18px;
+  }
+
+  .form-grupo {
+    margin-bottom: 14px;
+  }
+  .form-grupo label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ac-texto-suave);
+    margin-bottom: 6px;
+  }
+  .form-grupo input,
+  .form-grupo select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: var(--superficie-2);
+    border: 1.5px solid var(--ac-borde);
+    color: var(--ac-texto);
+    font-size: 15px;
+    box-sizing: border-box;
+    font-family: inherit;
+  }
+  .form-grupo input:focus,
+  .form-grupo select:focus {
+    outline: none;
+    border-color: var(--ac-acento);
+  }
+
+  .aviso-info {
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--ac-acento-bg);
+    color: var(--ac-acento);
+    font-size: 12.5px;
+    font-weight: 500;
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
+
+  .modal-acciones {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .modal-acciones button {
+    flex: 1;
+    padding: 13px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.12s ease;
+  }
+  .modal-acciones button:active { transform: scale(0.97); }
+  .btn-primario {
+    background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+    color: #fff;
+  }
+  .btn-secundario {
+    background: var(--superficie-2);
+    color: var(--ac-texto-suave);
+  }
+  .btn-peligro {
+    background: rgba(220, 38, 38, 0.12);
+    color: #DC2626;
+  }
+
+  .modal-acciones-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  .vacio {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--ac-texto-suave);
+    font-size: 14px;
+  }
+
+  .link-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ac-acento);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-bottom: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="admin-wrap">
+
+  <a href="index.html" class="link-volver">← Volver al menú</a>
+
+  <div class="admin-header">
+    <div class="admin-header-icono">
+      <svg viewBox="0 -960 960 960"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"/></svg>
+    </div>
+    <div class="admin-header-texto">
+      <div class="admin-header-titulo">Usuarios</div>
+      <div class="admin-header-sub" id="contadorUsuarios">Cargando...</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn-nuevo" id="btnNuevo">
+      <svg viewBox="0 -960 960 960"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+      Nuevo usuario
+    </button>
+  </div>
+
+  <input type="text" id="buscar" class="busqueda" placeholder="🔎 Buscar por nombre o ID...">
+
+  <div class="lista-usuarios" id="listaUsuarios">
+    <div class="vacio">Cargando usuarios...</div>
+  </div>
+
+</div>
+
+<!-- Modal Crear/Editar -->
+<div class="modal-fondo" id="modalForm">
+  <div class="modal">
+    <div class="modal-titulo" id="modalFormTitulo">Nuevo usuario</div>
+    <div class="modal-sub" id="modalFormSub">Crea un usuario nuevo</div>
+
+    <div class="aviso-info" id="avisoPin" style="display:none;">
+      🔑 Deja el PIN vacío para mantener el actual
+    </div>
+
+    <div class="form-grupo">
+      <label>Nombre *</label>
+      <input type="text" id="fNombre" maxlength="60" placeholder="Ej: Juan Pérez">
+    </div>
+
+    <div class="form-grupo">
+      <label>PIN * (mínimo 3 dígitos)</label>
+      <input type="text" id="fPin" maxlength="10" inputmode="numeric" placeholder="Ej: 1234">
+    </div>
+
+    <div class="form-grupo">
+      <label>Rol *</label>
+      <select id="fRol">
+        <option value="cajero">Cajero</option>
+        <option value="admin">Administrador</option>
+      </select>
+    </div>
+
+    <div class="modal-acciones">
+      <button class="btn-secundario" id="btnCancelarForm">Cancelar</button>
+      <button class="btn-primario" id="btnGuardarForm">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Acciones -->
+<div class="modal-fondo" id="modalAcciones">
+  <div class="modal">
+    <div class="modal-titulo" id="accionesNombre">Nombre</div>
+    <div class="modal-sub" id="accionesId">USR-XX</div>
+
+    <div class="modal-acciones-vertical">
+      <button class="btn-primario" id="btnEditar">✏️ Editar nombre / rol</button>
+      <button class="btn-secundario" id="btnCambiarPin">🔑 Cambiar PIN</button>
+      <button class="btn-secundario" id="btnActivarDesactivar">🔒 Activar / Desactivar</button>
+      <button class="btn-peligro" id="btnEliminar">🗑️ Eliminar usuario</button>
+      <button class="btn-secundario" id="btnCerrarAcciones">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Cambiar PIN -->
+<div class="modal-fondo" id="modalPin">
+  <div class="modal">
+    <div class="modal-titulo">Cambiar PIN</div>
+    <div class="modal-sub" id="pinUsuario">Usuario</div>
+
+    <div class="form-grupo">
+      <label>Nuevo PIN * (mínimo 3 dígitos)</label>
+      <input type="text" id="fNuevoPin" maxlength="10" inputmode="numeric" placeholder="Ej: 1234">
+    </div>
+
+    <div class="modal-acciones">
+      <button class="btn-secundario" id="btnCancelarPin">Cancelar</button>
+      <button class="btn-primario" id="btnGuardarPin">Guardar PIN</button>
+    </div>
+  </div>
+</div>
+
+<script>
+exigirSesion();
+
+let usuarios = [];
+let usuarioSeleccionado = null;
+let modoModal = 'crear';
+
+function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
+
+(async function init() {
+  const u = getUsuarioTurno();
+  if (!u || u.rol !== 'admin') {
+    mostrar('Acceso solo para administradores', 'error');
+    location.href = 'index.html';
+    return;
+  }
+  await cargarUsuarios();
+})();
+
+async function cargarUsuarios() {
+  const u = getUsuarioTurno();
+  try {
+    const r = await jsonp({ accion: 'usuarios_admin', id_usuario: u.id }, 20000);
+    if (r && r.error === 'Token inválido') { borrarToken(); location.href = 'index.html'; return; }
+    if (r && r.ok) {
+      usuarios = r.items;
+      pintarLista();
+      $('contadorUsuarios').textContent = usuarios.length + ' usuario' + (usuarios.length === 1 ? '' : 's') + ' en total';
+    } else {
+      mostrar(r.error || 'Error al cargar', 'error');
+    }
+  } catch (err) {
+    mostrar('Error: ' + err.message, 'error');
+  }
+}
+
+function pintarLista() {
+  const cont = $('listaUsuarios');
+  const q = norm($('buscar').value);
+
+  let lista = usuarios.slice();
+  if (q) {
+    lista = lista.filter(function (u) {
+      return norm(u.nombre + ' ' + u.id).indexOf(q) >= 0;
+    });
+  }
+
+  // Orden: admins primero, luego alfabético
+  lista.sort(function (a, b) {
+    if (a.rol === 'admin' && b.rol !== 'admin') return -1;
+    if (a.rol !== 'admin' && b.rol === 'admin') return 1;
+    return a.nombre.localeCompare(b.nombre);
+  });
+
+  if (lista.length === 0) {
+    cont.innerHTML = '<div class="vacio">' + (q ? 'No se encontraron usuarios' : 'Sin usuarios') + '</div>';
+    return;
+  }
+
+  cont.innerHTML = '';
+  lista.forEach(function (u) {
+    const inicial = (u.nombre || '?').charAt(0).toUpperCase();
+    const card = document.createElement('div');
+    card.className = 'user-card' + (u.activo === 'No' ? ' inactivo' : '');
+
+    const badgeRol = u.rol === 'admin'
+      ? '<span class="badge badge-admin">👑 Admin</span>'
+      : '<span class="badge badge-cajero">Cajero</span>';
+    const badgeActivo = u.activo === 'No'
+      ? '<span class="badge badge-inactivo">Inactivo</span>'
+      : '<span class="badge badge-activo">Activo</span>';
+    const badgePin = u.tiene_pin ? '' : '<span class="badge badge-nopin">Sin PIN</span>';
+
+    card.innerHTML =
+      '<div class="user-avatar">' + inicial + '</div>' +
+      '<div class="user-info">' +
+        '<div class="user-nombre">' + u.nombre + '</div>' +
+        '<div class="user-meta">' +
+          '<span class="badge badge-cajero">' + u.id + '</span>' +
+          badgeRol +
+          badgeActivo +
+          badgePin +
+        '</div>' +
+      '</div>' +
+      '<svg class="user-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+
+    card.addEventListener('click', function () {
+      abrirAcciones(u);
+    });
+
+    cont.appendChild(card);
+  });
+}
+
+$('buscar').addEventListener('input', pintarLista);
+
+// ---------- Modal Acciones ----------
+function abrirAcciones(u) {
+  usuarioSeleccionado = u;
+  $('accionesNombre').textContent = u.nombre;
+  $('accionesId').textContent = u.id;
+
+  const btnAct = $('btnActivarDesactivar');
+  btnAct.textContent = u.activo === 'No' ? '🔓 Reactivar usuario' : '🔒 Desactivar usuario';
+
+  const btnElim = $('btnEliminar');
+  btnElim.style.display = u.id === getUsuarioTurno().id ? 'none' : 'block';
+
+  $('modalAcciones').classList.add('abierto');
+}
+
+$('btnCerrarAcciones').addEventListener('click', function () {
+  $('modalAcciones').classList.remove('abierto');
+  usuarioSeleccionado = null;
+});
+
+// ---------- Editar ----------
+$('btnEditar').addEventListener('click', function () {
+  if (!usuarioSeleccionado) return;
+  modoModal = 'editar';
+  $('modalFormTitulo').textContent = 'Editar usuario';
+  $('modalFormSub').textContent = usuarioSeleccionado.id;
+  $('fNombre').value = usuarioSeleccionado.nombre;
+  $('fPin').value = '';
+  $('fRol').value = usuarioSeleccionado.rol;
+  $('avisoPin').style.display = 'block';
+  $('modalAcciones').classList.remove('abierto');
+  $('modalForm').classList.add('abierto');
+});
+
+// ---------- Nuevo ----------
+$('btnNuevo').addEventListener('click', function () {
+  modoModal = 'crear';
+  usuarioSeleccionado = null;
+  $('modalFormTitulo').textContent = 'Nuevo usuario';
+  $('modalFormSub').textContent = 'Crea un usuario nuevo';
+  $('fNombre').value = '';
+  $('fPin').value = '';
+  $('fRol').value = 'cajero';
+  $('avisoPin').style.display = 'none';
+  $('modalForm').classList.add('abierto');
+});
+
+$('btnCancelarForm').addEventListener('click', function () {
+  $('modalForm').classList.remove('abierto');
+});
+
+$('btnGuardarForm').addEventListener('click', async function () {
+  const nombre = $('fNombre').value.trim();
+  const pin = $('fPin').value.trim();
+  const rol = $('fRol').value;
+
+  if (!nombre) { mostrar('Escribe el nombre', 'error'); return; }
+
+  const u = getUsuarioTurno();
+  $('btnGuardarForm').disabled = true;
+  mostrar('Guardando...', 'aviso');
+
+  try {
+    let r;
+    if (modoModal === 'crear') {
+      if (!pin || pin.length < 3) { mostrar('El PIN debe tener mínimo 3 dígitos', 'error'); $('btnGuardarForm').disabled = false; return; }
+      r = await post({
+        accion: 'crear_usuario',
+        id_usuario_solicitante: u.id,
+        nombre: nombre,
+        pin: pin,
+        rol: rol
+      });
+    } else {
+      // Editar
+      r = await post({
+        accion: 'editar_usuario',
+        id_usuario_solicitante: u.id,
+        id_usuario: usuarioSeleccionado.id,
+        nombre: nombre,
+        rol: rol
+      });
+      // Si puso un PIN nuevo, cambiarlo también
+      if (r.ok && pin && pin.length >= 3) {
+        await post({
+          accion: 'cambiar_pin',
+          id_usuario_solicitante: u.id,
+          id_usuario: usuarioSeleccionado.id,
+          pin: pin
+        });
+      }
+    }
+
+    if (r.ok) {
+      mostrar(modoModal === 'crear' ? 'Usuario creado ✓' : 'Usuario actualizado ✓', 'ok');
+      $('modalForm').classList.remove('abierto');
+      await cargarUsuarios();
+    } else if (r.error === 'Token inválido') {
+      borrarToken(); location.href = 'index.html';
+    } else {
+      mostrar(r.error || 'Error', 'error');
+    }
+  } catch (err) {
+    mostrar('Error: ' + err.message, 'error');
+  } finally {
+    $('btnGuardarForm').disabled = false;
+  }
+});
+
+// ---------- Cambiar PIN ----------
+$('btnCambiarPin').addEventListener('click', function () {
+  if (!usuarioSeleccionado) return;
+  $('pinUsuario').textContent = usuarioSeleccionado.nombre + ' (' + usuarioSeleccionado.id + ')';
+  $('fNuevoPin').value = '';
+  $('modalAcciones').classList.remove('abierto');
+  $('modalPin').classList.add('abierto');
+});
+
+$('btnCancelarPin').addEventListener('click', function () {
+  $('modalPin').classList.remove('abierto');
+});
+
+$('btnGuardarPin').addEventListener('click', async function () {
+  const pin = $('fNuevoPin').value.trim();
+  if (!pin || pin.length < 3) { mostrar('El PIN debe tener mínimo 3 dígitos', 'error'); return; }
+
+  const u = getUsuarioTurno();
+  $('btnGuardarPin').disabled = true;
+  mostrar('Guardando PIN...', 'aviso');
+
+  try {
+    const r = await post({
+      accion: 'cambiar_pin',
+      id_usuario_solicitante: u.id,
+      id_usuario: usuarioSeleccionado.id,
+      pin: pin
+    });
+    if (r.ok) {
+      mostrar('PIN actualizado ✓', 'ok');
+      $('modalPin').classList.remove('abierto');
+      await cargarUsuarios();
+    } else {
+      mostrar(r.error || 'Error', 'error');
+    }
+  } catch (err) {
+    mostrar('Error: ' + err.message, 'error');
+  } finally {
+    $('btnGuardarPin').disabled = false;
+  }
+});
+
+// ---------- Activar / Desactivar ----------
+$('btnActivarDesactivar').addEventListener('click', async function () {
+  if (!usuarioSeleccionado) return;
+  const nuevoEstado = usuarioSeleccionado.activo === 'No' ? 'Sí' : 'No';
+  const accion = nuevoEstado === 'No' ? 'desactivar' : 'reactivar';
+
+  if (!confirm('¿' + accion.charAt(0).toUpperCase() + accion.slice(1) + ' a ' + usuarioSeleccionado.nombre + '?')) return;
+
+  const u = getUsuarioTurno();
+  mostrar('Actualizando...', 'aviso');
+  try {
+    const r = await post({
+      accion: 'activar_usuario',
+      id_usuario_solicitante: u.id,
+      id_usuario: usuarioSeleccionado.id,
+      activo: nuevoEstado
+    });
+    if (r.ok) {
+      mostrar('Usuario ' + (nuevoEstado === 'No' ? 'desactivado' : 'reactivado') + ' ✓', 'ok');
+      $('modalAcciones').classList.remove('abierto');
+      await cargarUsuarios();
+    } else {
+      mostrar(r.error || 'Error', 'error');
+    }
+  } catch (err) {
+    mostrar('Error: ' + err.message, 'error');
+  }
+});
+
+// ---------- Eliminar ----------
+$('btnEliminar').addEventListener('click', async function () {
+  if (!usuarioSeleccionado) return;
+  if (!confirm('¿Eliminar definitivamente a ' + usuarioSeleccionado.nombre + '?\n\nEsta acción no se puede deshacer.\n\nSolo funciona si el usuario nunca ha tenido movimientos.')) return;
+
+  const u = getUsuarioTurno();
+  mostrar('Eliminando...', 'aviso');
+  try {
+    const r = await post({
+      accion: 'eliminar_usuario',
+      id_usuario_solicitante: u.id,
+      id_usuario: usuarioSeleccionado.id
+    });
+    if (r.ok) {
+      mostrar('Usuario eliminado ✓', 'ok');
+      $('modalAcciones').classList.remove('abierto');
+      await cargarUsuarios();
+    } else {
+      mostrar(r.error || 'Error', 'error');
+    }
+  } catch (err) {
+    mostrar('Error: ' + err.message, 'error');
+  }
+});
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('service-worker.js').catch(function (e) {
+      console.warn('SW no registrado:', e);
+    });
+  });
+}
+</script>
+</body>
+</html>

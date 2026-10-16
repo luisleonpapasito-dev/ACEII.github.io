@@ -779,6 +779,14 @@ $('btnTurno').addEventListener('click', iniciarTurno);
 $('pinTurno').addEventListener('keydown', function (e) { if (e.key === 'Enter') iniciarTurno(); });
 
 async function verificarTurnoCaja(idUsuario, nombre) {
+  // ⭐ Si es admin, no exigir turno — va directo al menú
+  const u = getUsuarioTurno();
+  if (u && u.rol === 'admin') {
+    mostrar('Bienvenido ' + nombre, 'ok');
+    setTimeout(pintar, 300);
+    return;
+  }
+
   mostrar('Verificando turno...', 'aviso');
   try {
     const r = await jsonp({ accion: 'mi_turno', id_usuario: idUsuario }, 20000);

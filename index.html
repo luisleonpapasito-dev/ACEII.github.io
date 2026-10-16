@@ -27,9 +27,9 @@
     --ac-flecha: #2563EB;
     --ac-flecha-bg: rgba(37, 99, 235, 0.10);
     --ac-sombra-icono: 0 6px 14px rgba(29, 78, 216, 0.28);
-    --logout-bg: #FFF1F2;
-    --logout-borde: #FBD0D4;
-    --logout-texto: #D6454D;
+    --logout-bg: #EFF6FF;
+    --logout-borde: #DBEAFE;
+    --logout-texto: #2563EB;
     --superficie: #FFFFFF;
   }
   html.tema-oscuro {
@@ -39,9 +39,9 @@
     --ac-flecha: #7DB1FF;
     --ac-flecha-bg: rgba(125, 177, 255, 0.14);
     --ac-sombra-icono: 0 6px 14px rgba(0, 0, 0, 0.35);
-    --logout-bg: rgba(255, 107, 112, 0.10);
-    --logout-borde: rgba(255, 107, 112, 0.28);
-    --logout-texto: #FF9A9E;
+    --logout-bg: rgba(96, 165, 250, 0.12);
+    --logout-borde: rgba(96, 165, 250, 0.28);
+    --logout-texto: #93C5FD;
     --superficie: #121D3A;
   }
 
@@ -248,6 +248,7 @@
   }
 
   /* ---------- Flecha SVG en círculo (única) ---------- */
+  /* ---------- Flecha SVG en círculo (color del grupo) ---------- */
   .panel-menu .card .chev {
     position: absolute;
     top: 26px;
@@ -256,12 +257,21 @@
     height: 28px;
     padding: 6px;
     border-radius: 50%;
-    color: var(--ac-flecha);
-    background: var(--ac-flecha-bg);
+    color: var(--chev-color, var(--ac-flecha));
+    background: var(--chev-bg, var(--ac-flecha-bg));
     box-sizing: border-box;
     fill: none;
     pointer-events: none;
   }
+
+  /* Colores de la flechita por grupo */
+  .grupo-operacion .card { --chev-color: #2563EB; --chev-bg: rgba(37, 99, 235, 0.10); }
+  .grupo-catalogo  .card { --chev-color: #EA580C; --chev-bg: rgba(234, 88, 12, 0.10); }
+  .grupo-analisis  .card { --chev-color: #059669; --chev-bg: rgba(5, 150, 105, 0.10); }
+
+  html.tema-oscuro .grupo-operacion .card { --chev-color: #7DB1FF; --chev-bg: rgba(125, 177, 255, 0.14); }
+  html.tema-oscuro .grupo-catalogo  .card { --chev-color: #FB923C; --chev-bg: rgba(251, 146, 60, 0.14); }
+  html.tema-oscuro .grupo-analisis  .card { --chev-color: #4ADE80; --chev-bg: rgba(74, 222, 128, 0.14); }
 
   /* ---------- Íconos con color de módulo ---------- */
   .panel-menu .card .card-icono {
@@ -316,15 +326,18 @@
   }
 
   /* ---------- Cerrar sesión (rojo pastel) ---------- */
+   /* ---------- Cerrar sesión (azul discreto y bien centrado) ---------- */
   .cerrar-sesion-box {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    width: 100%;
+    width: auto;
+    min-width: 220px;
+    max-width: 100%;
     min-height: 48px;
-    margin: 28px 0 0;
-    padding: 12px 20px;
+    margin: 28px auto 0;
+    padding: 12px 24px;
     border-radius: 999px;
     background: var(--logout-bg);
     border: 1.5px solid var(--logout-borde);
@@ -334,6 +347,7 @@
     box-shadow: none;
     cursor: pointer;
     transition: transform .12s ease, background .18s ease;
+    text-align: center;
   }
   .cerrar-sesion-box:active { transform: scale(.98); }
 
@@ -561,8 +575,10 @@
     </div>
   </section>
 
-  <div class="cerrar-sesion-box" onclick="cerrarSesion()">
-    <span>Cerrar sesión</span>
+  <div style="display:flex; justify-content:center; margin-top:28px;">
+    <div class="cerrar-sesion-box" onclick="cerrarSesion()">
+      <span>Cerrar sesión</span>
+    </div>
   </div>
 
 </div>

@@ -34,16 +34,18 @@
   }
 
   /* ===== Íconos 3D de las cards ===== */
-    /* ===== Ícono de caja 3D exclusivo de Ventas ===== */
+  /* ===== Ícono de caja 3D exclusivo de Ventas ===== */
   .card-icono.icono-caja-3d {
     background: linear-gradient(145deg, #3B82F6 0%, #2563EB 100%);
     box-shadow: 0 6px 14px rgba(37, 99, 235, 0.32);
   }
   .card-icono.icono-caja-3d svg {
-    width: 34px;
-    height: 34px;
+    width: 38px;
+    height: 38px;
   }
-
+  .card-icono.icono-caja-3d svg .caja-linea {
+    stroke-width: 1.4;
+  }
   /* ===== Cerrar sesión mejorado ===== */
   .cerrar-sesion-box {
     display: flex;
@@ -198,33 +200,20 @@
     </a>
 
     <!-- Ventas · DESTACADA con caja 3D -->
-    <a class="card destacada" href="ventas.html" style="--acento: #2563EB;">
+        <a class="card destacada" href="ventas.html" style="--acento: #2563EB;">
       <div class="card-icono azul icono-caja-3d">
         <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="cajaTop" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#93C5FD"/>
-              <stop offset="1" stop-color="#60A5FA"/>
-            </linearGradient>
-            <linearGradient id="cajaFront" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#60A5FA"/>
-              <stop offset="1" stop-color="#2563EB"/>
-            </linearGradient>
-            <linearGradient id="cajaSide" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#3B82F6"/>
-              <stop offset="1" stop-color="#1E40AF"/>
-            </linearGradient>
-          </defs>
-          <!-- Caja 3D -->
-          <path d="M12 24 L32 14 L52 24 L32 34 Z" fill="url(#cajaTop)" stroke="#1E40AF" stroke-width="1.2" stroke-linejoin="round"/>
-          <path d="M12 24 L32 34 L32 54 L12 44 Z" fill="url(#cajaFront)" stroke="#1E40AF" stroke-width="1.2" stroke-linejoin="round"/>
-          <path d="M52 24 L32 34 L32 54 L52 44 Z" fill="url(#cajaSide)" stroke="#1E40AF" stroke-width="1.2" stroke-linejoin="round"/>
-          <!-- Círculo blanco con carrito -->
-          <circle cx="32" cy="39" r="8" fill="#ffffff" opacity="0.95"/>
-          <g transform="translate(28, 35) scale(0.18)">
-            <path d="M0 0h4l3 12h14l3-9H6" fill="none" stroke="#2563EB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="9" cy="18" r="2.5" fill="#2563EB"/>
-            <circle cx="17" cy="18" r="2.5" fill="#2563EB"/>
+          <!-- Caja 3D isométrica -->
+          <path d="M12 22 L32 12 L52 22 L32 32 Z" fill="#93C5FD" stroke="#1E40AF" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M12 22 L32 32 L32 54 L12 44 Z" fill="#3B82F6" stroke="#1E40AF" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M52 22 L32 32 L32 54 L52 44 Z" fill="#1E40AF" stroke="#1E40AF" stroke-width="1.6" stroke-linejoin="round"/>
+          <!-- Línea de brillo en la cara frontal -->
+          <path d="M20 28 L20 48" stroke="#ffffff" stroke-width="1.5" opacity="0.35" stroke-linecap="round"/>
+          <!-- Carrito blanco encima de la caja -->
+          <g transform="translate(22, 32) scale(0.28)">
+            <path d="M0 0h4l3 12h14l3-9H6" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="9" cy="18" r="2.8" fill="#ffffff"/>
+            <circle cx="17" cy="18" r="2.8" fill="#ffffff"/>
           </g>
         </svg>
       </div>

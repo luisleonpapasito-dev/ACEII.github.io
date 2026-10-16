@@ -204,18 +204,21 @@ function jsonp(params, limiteMs) {
   });
 }
 
-async function post(cuerpo) {
-  const ctrl = new AbortController();
-  const t = setTimeout(function () { ctrl.abort(); }, 120000);
+async function exigirTurnoCajaAbierto() {
+  const u = getUsuarioTurno();
+  if (!u) return false;
+
+  // ⭐ Si es admin, no exige turno
+  if (u.rol === 'admin') return true;
+
+  if (getTurnoActual()) return true;
   try {
-    const r = await fetch(URL_SERVIDOR, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(Object.assign({ token: getToken() }, cuerpo)),
-      signal: ctrl.signal
-    });
-    return await r.json();
-  } finally {
-    clearTimeout(t);
-  }
+    const r = await jsonp({ accion: 'mi_turno', id_usuario: u.id }, 15000);
+    if (r && r.ok && r.turno) {
+      guardarTurnoActual(r.turno);
+      return true;
+    }
+  } catch (e) {}
+  location.href = 'caja.html';
+  return false;
 }

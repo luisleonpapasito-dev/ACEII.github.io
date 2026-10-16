@@ -3,7 +3,7 @@
 // Cachea la "cáscara" de la app para que abra sin internet
 // =====================================================================
 
-const VERSION = 'aceii-95';
+const VERSION = 'aceii-96';
 const CACHE_STATIC = VERSION + '-static';
 
 const ARCHIVOS_ESTATICOS = [

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="tema-auto">
+<html lang="es" class="tema-claro">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,44 +18,34 @@
 <script src="comun.js"></script>
 <style>
   /* =====================================================
-     REDISEÑO VISUAL - Menú agrupado por secciones
+     REDISEÑO VISUAL v2 - Menú agrupado por secciones
+     Paleta: 3 tonos azules por grupo
      ===================================================== */
 
-  /* ---------- Variables propias (claro) ---------- */
+  /* ---------- Variables (claro) ---------- */
   :root {
     --ac-texto: #0F1B3D;
+    --ac-texto-suave: #5B6785;
     --ac-borde: #E3E9F4;
-    --ac-chev: #2563EB;
-    --ac-sombra: 0 4px 14px rgba(15, 27, 61, 0.07);
-    --ac-hero-1: #3B82F6;
-    --ac-hero-2: #1D4ED8;
-    --ac-danger: #DC2626;
-    --ac-danger-bg: #FDECEE;
-    --ac-danger-borde: rgba(220, 38, 38, 0.35);
+    --ac-flecha: #2563EB;
+    --ac-flecha-bg: rgba(37, 99, 235, 0.10);
+    --ac-sombra-icono: 0 6px 14px rgba(29, 78, 216, 0.28);
+    --logout-bg: #FFF1F2;
+    --logout-borde: #FBD0D4;
+    --logout-texto: #D6454D;
+    --superficie: #FFFFFF;
   }
   html.tema-oscuro {
     --ac-texto: #F1F5FF;
+    --ac-texto-suave: #9AA8CC;
     --ac-borde: #223156;
-    --ac-chev: #7DB1FF;
-    --ac-sombra: 0 4px 14px rgba(0, 0, 0, 0.35);
-    --ac-hero-1: #2563EB;
-    --ac-hero-2: #1E3A8A;
-    --ac-danger: #FF6B70;
-    --ac-danger-bg: #2A1620;
-    --ac-danger-borde: rgba(255, 107, 112, 0.4);
-  }
-  @media (prefers-color-scheme: dark) {
-    html.tema-auto {
-      --ac-texto: #F1F5FF;
-      --ac-borde: #223156;
-      --ac-chev: #7DB1FF;
-      --ac-sombra: 0 4px 14px rgba(0, 0, 0, 0.35);
-      --ac-hero-1: #2563EB;
-      --ac-hero-2: #1E3A8A;
-      --ac-danger: #FF6B70;
-      --ac-danger-bg: #2A1620;
-      --ac-danger-borde: rgba(255, 107, 112, 0.4);
-    }
+    --ac-flecha: #7DB1FF;
+    --ac-flecha-bg: rgba(125, 177, 255, 0.14);
+    --ac-sombra-icono: 0 6px 14px rgba(0, 0, 0, 0.35);
+    --logout-bg: rgba(255, 107, 112, 0.10);
+    --logout-borde: rgba(255, 107, 112, 0.28);
+    --logout-texto: #FF9A9E;
+    --superficie: #121D3A;
   }
 
   /* ---------- Header con saludo ---------- */
@@ -89,7 +79,7 @@
     overflow: hidden;
     padding: 20px;
     border-radius: 24px;
-    background: linear-gradient(135deg, var(--ac-hero-1), var(--ac-hero-2));
+    background: linear-gradient(135deg, #3B82F6, #1D4ED8);
     color: #fff;
     box-shadow: 0 10px 28px rgba(29, 78, 216, 0.35);
   }
@@ -110,7 +100,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
   .hero-cuerpo { flex: 1; min-width: 0; }
   .hero-etiqueta { font-size: 13px; font-weight: 600; opacity: 0.92; }
@@ -127,11 +117,11 @@
     color: #1649C0;
     border: 0;
     border-radius: 999px;
-    padding: 12px 16px;
-    min-height: 44px;
+    padding: 10px 14px;
+    min-height: 40px;
     display: inline-flex;
     align-items: center;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     text-decoration: none;
     white-space: nowrap;
@@ -140,45 +130,58 @@
   }
   #bannerMiTurno .hero-btn:active { transform: scale(0.95); }
 
+  #bannerTurnoId {
+    white-space: pre-line;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
   #bannerOtroTurno {
     background: var(--superficie);
     border: 1.5px solid rgba(234, 88, 12, 0.35);
     border-radius: 18px;
     padding: 14px 16px;
-    box-shadow: var(--ac-sombra);
   }
 
   /* ---------- Panel del menú ---------- */
   .panel-menu {
     max-width: 520px;
     margin: 0 auto;
-    padding: 0 14px 28px;
+    padding: 0 14px calc(40px + env(safe-area-inset-bottom));
   }
 
-  /* Títulos de grupo */
+  /* ---------- Títulos de grupo con subtítulo ---------- */
   .grupo-titulo {
-    margin: 24px 4px 10px;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--texto-suave);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    margin: 26px 4px 2px;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ac-texto);
   }
   .grupo-titulo::before {
     content: "";
     width: 4px;
-    height: 14px;
-    border-radius: 2px;
-    background: var(--grupo-color, var(--azul));
+    height: 18px;
+    border-radius: 4px;
+    background: var(--g-acento);
   }
-  .grupo-operacion { --grupo-color: #2563EB; }
-  .grupo-catalogo  { --grupo-color: #EA580C; }
-  .grupo-analisis  { --grupo-color: #059669; }
+  .grupo-sub {
+    margin: 0 4px 12px 18px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--ac-texto-suave);
+  }
 
-  /* Cuadrícula */
+  /* ---------- Tonos azules por grupo (elegidos para verse lindos) ---------- */
+  .grupo-operacion { --g1: #3B82F6; --g2: #1D4ED8; --g-acento: #2563EB; }  /* Azul brillante */
+  .grupo-catalogo  { --g1: #0EA5E9; --g2: #0369A1; --g-acento: #0284C7; }  /* Azul cielo */
+  .grupo-analisis  { --g1: #6366F1; --g2: #4338CA; --g-acento: #4F46E5; }  /* Índigo */
+
+  /* ---------- Cuadrícula ---------- */
   .panel-menu .grid-menu {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -186,7 +189,7 @@
     margin: 0;
   }
 
-  /* Tarjetas */
+  /* ---------- Tarjetas ---------- */
   .panel-menu .card {
     position: relative;
     display: flex;
@@ -194,13 +197,12 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 14px;
-    min-height: 116px;
+    min-height: 108px;
     padding: 16px;
     margin: 0;
     background: var(--superficie);
     border: 1px solid var(--ac-borde);
     border-radius: 18px;
-    box-shadow: var(--ac-sombra);
     color: var(--ac-texto);
     text-decoration: none;
     text-align: left;
@@ -215,42 +217,54 @@
     }
   }
 
-  /* Barrita lateral de cada card con el color del módulo */
-  .panel-menu .card::before {
-    content: "" !important;
+  /* Círculo decorativo suavizado (muy sutil) */
+  .panel-menu .card::after {
+    content: "";
     position: absolute;
-    left: 0;
-    top: 16px;
-    bottom: 16px;
-    width: 4px;
-    border-radius: 0 4px 4px 0;
-    background: linear-gradient(180deg, var(--g1), var(--g2)) !important;
-    transition: width 0.15s ease;
+    width: 90px;
+    height: 90px;
+    right: -35px;
+    top: -35px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, rgba(59, 130, 246, 0) 70%);
+    pointer-events: none;
   }
-  .panel-menu .card:active::before { width: 6px; }
+  html.tema-oscuro .panel-menu .card::after {
+    background: radial-gradient(circle, rgba(96, 165, 250, 0.08) 0%, rgba(96, 165, 250, 0) 70%);
+  }
+
+  /* Eliminamos la barrita azul del CSS viejo (por si acaso) */
+  .panel-menu .card::before {
+    content: none !important;
+    display: none !important;
+  }
 
   .panel-menu .card .card-titulo {
-    font-size: 15px;
+    font-size: 15.5px;
     font-weight: 700;
     line-height: 1.25;
     color: var(--ac-texto);
-    padding-right: 24px;
+    padding-right: 0;
     margin: 0;
   }
 
-  /* Flecha única generada por CSS (sin span) */
-  .panel-menu .card .card-titulo::after {
-    content: "›";
+  /* ---------- Flecha SVG en círculo ---------- */
+  .panel-menu .card .chev {
     position: absolute;
+    top: 26px;
     right: 14px;
-    bottom: 14px;
-    font-size: 22px;
-    line-height: 1;
-    color: var(--ac-chev);
-    opacity: 0.9;
+    width: 28px;
+    height: 28px;
+    padding: 6px;
+    border-radius: 50%;
+    color: var(--ac-flecha);
+    background: var(--ac-flecha-bg);
+    box-sizing: border-box;
+    fill: none;
+    pointer-events: none;
   }
 
-  /* Iconos: cuadro con degradado por módulo */
+  /* ---------- Íconos por grupo (azul) ---------- */
   .panel-menu .card .card-icono {
     width: 48px;
     height: 48px;
@@ -259,7 +273,7 @@
     display: grid;
     place-items: center;
     background: linear-gradient(135deg, var(--g1), var(--g2));
-    box-shadow: 0 6px 14px color-mix(in srgb, var(--g2) 40%, transparent);
+    box-shadow: var(--ac-sombra-icono);
     flex-shrink: 0;
   }
   .panel-menu .card .card-icono svg {
@@ -269,27 +283,13 @@
     color: #fff;
   }
 
-  /* ============================================
-     PALETA POR MÓDULO
-     ============================================ */
+  /* Operación con más peso (destacada) */
+  .grupo-operacion .card {
+    min-height: 124px;
+    background: linear-gradient(180deg, rgba(37, 99, 235, 0.06), transparent 70%), var(--superficie);
+  }
 
-  /* OPERACIÓN · familia azul (4 tonos bien diferenciados) */
-  .ico-caja       { --g1: #0C4A9E; --g2: #062B5C; }  /* Azul marino oscuro */
-  .ico-ventas     { --g1: #2563EB; --g2: #1E40AF; }  /* Azul rey */
-  .ico-recepcion  { --g1: #00A6E0; --g2: #0284C7; }  /* Azul cielo */
-  .ico-devol      { --g1: #38BDF8; --g2: #0EA5E9; }  /* Celeste brillante */
-
-  /* CATÁLOGO · familia cálida (bien diferenciados) */
-  .ico-inventario { --g1: #FBBF24; --g2: #F59E0B; }  /* Amarillo dorado */
-  .ico-productos  { --g1: #A855F7; --g2: #7E22CE; }  /* Morado */
-  .ico-categorias { --g1: #EC4899; --g2: #DB2777; }  /* Rosa fucsia */
-  .ico-codigos    { --g1: #F97316; --g2: #EA580C; }  /* Naranja quemado */
-
-  /* ANÁLISIS · familia verde (2 tonos bien diferenciados) */
-  .ico-historial  { --g1: #4ADE80; --g2: #16A34A; }  /* Verde lima suave */
-  .ico-dashboard  { --g1: #B4FF9A; --g2: #71C55B; }  /* Verde menta claro */
-
-  /* Animación de entrada */
+  /* ---------- Animación de entrada ---------- */
   @keyframes ac-subir {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: none; }
@@ -302,47 +302,27 @@
     #bannerMiTurno, .panel-menu .card { animation: none !important; }
   }
 
-  /* ---------- Cerrar sesión (sin ícono) ---------- */
+  /* ---------- Cerrar sesión (rojo pastel) ---------- */
   .cerrar-sesion-box {
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0;
-    margin: 32px 0 8px;
-    padding: 16px 22px;
-    min-height: 56px;
+    gap: 10px;
     width: 100%;
-    max-width: none;
-    color: #fff;
+    min-height: 48px;
+    margin: 28px 0 0;
+    padding: 12px 20px;
+    border-radius: 999px;
+    background: var(--logout-bg);
+    border: 1.5px solid var(--logout-borde);
+    color: var(--logout-texto);
     font-size: 15px;
     font-weight: 700;
-    letter-spacing: 0.02em;
+    box-shadow: none;
     cursor: pointer;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
-    border: 0;
-    box-shadow: 0 8px 22px rgba(220, 38, 38, 0.35);
-    transition: transform 0.12s ease, box-shadow 0.2s ease, filter 0.18s ease;
-    overflow: hidden;
+    transition: transform .12s ease, background .18s ease;
   }
-  .cerrar-sesion-box::before {
-    content: "";
-    position: absolute;
-    left: -40%;
-    top: 0;
-    bottom: 0;
-    width: 40%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
-    transform: skewX(-20deg);
-    transition: left 0.45s ease;
-  }
-  .cerrar-sesion-box:hover::before { left: 120%; }
-  .cerrar-sesion-box:hover {
-    filter: brightness(1.05);
-    box-shadow: 0 12px 28px rgba(220, 38, 38, 0.45);
-  }
-  .cerrar-sesion-box:active { transform: scale(0.98); }
+  .cerrar-sesion-box:active { transform: scale(.98); }
 
   /* ---------- Pantallas muy pequeñas ---------- */
   @media (max-width: 340px) {
@@ -355,7 +335,7 @@
 <body>
 
 <header class="app-header">
-  <button class="btn-tema" id="btnTema" title="Cambiar tema">⚙️</button>
+  <button class="btn-tema" id="btnTema" title="Cambiar tema">☀️</button>
   <div class="app-header-contenido">
     <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
     <div class="app-header-texto">
@@ -428,106 +408,145 @@
   <button id="btnCancelarApertura" style="width:100%; margin-top:6px;">Cancelar (cerrar sesión)</button>
 </div>
 
-<!-- Panel del menú: módulos agrupados en 3 secciones -->
+<!-- Panel del menú -->
 <div class="panel-menu" id="menu" style="display:none;">
 
-  <!-- ===== OPERACIÓN (Azul) ===== -->
-  <h2 class="grupo-titulo grupo-operacion">Operación</h2>
-  <div class="grid-menu">
+  <!-- ===== OPERACIÓN (Azul brillante) ===== -->
+  <section class="grupo grupo-operacion">
+    <h2 class="grupo-titulo">Operación</h2>
+    <p class="grupo-sub">Lo que usas en cada turno</p>
+    <div class="grid-menu">
 
-    <!-- Caja del turno -->
-    <a class="card" href="caja.html">
-      <div class="card-icono ico-caja">
-        <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
-      </div>
-      <div class="card-titulo">Caja del turno</div>
-    </a>
+      <!-- Caja del turno -->
+      <a class="card" href="caja.html">
+        <div class="card-icono">
+          <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
+        </div>
+        <div class="card-titulo">Caja del turno</div>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
 
-    <!-- Ventas -->
-    <a class="card" href="ventas.html">
-      <div class="card-icono ico-ventas">
-        <svg viewBox="0 0 24 24"><path d="M3 4h2l2.4 10.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.76L20 8H6.2" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.5" cy="19" r="1.6" fill="#ffffff"/><circle cx="17" cy="19" r="1.6" fill="#ffffff"/></svg>
-      </div>
-      <div class="card-titulo">Ventas</div>
-    </a>
+      <!-- Ventas (carrito relleno, igual estilo que los demás) -->
+      <a class="card" href="ventas.html">
+        <div class="card-icono">
+          <svg viewBox="0 -960 960 960"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM40-800v-80h130l148 310h368l166-310h88L740-560q-11 20-30 30t-40 10H320L240-620 160-440h560v80H160q-26 0-40-22t-2-46l80-160L60-880l-20-40v80Z"/></svg>
+        </div>
+        <div class="card-titulo">Ventas</div>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
 
-    <!-- Recepción -->
-    <a class="card" href="recepcion.html">
-      <div class="card-icono ico-recepcion">
-        <svg viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-120H640q-30 38-71.5 59T480-240q-47 0-88.5-21T320-320H200v120Zm280-120q38 0 69-22t43-58h168v-360H200v360h168q12 36 43 58t69 22ZM200-200h560-560Z"/></svg>
-      </div>
-      <div class="card-titulo">Recepción</div>
-    </a>
+      <!-- Recepción -->
+      <a class="card" href="recepcion.html">
+        <div class="card-icono">
+          <svg viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-120H640q-30 38-71.5 59T480-240q-47 0-88.5-21T320-320H200v120Zm280-120q38 0 69-22t43-58h168v-360H200v360h168q12 36 43 58t69 22ZM200-200h560-560Z"/></svg>
+        </div>
+        <div class="card-titulo">Recepción</div>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
 
-    <!-- Devoluciones -->
-    <a class="card" href="devoluciones.html">
-      <div class="card-icono ico-devol">
-        <svg viewBox="0 -960 960 960"><path d="M280-200q-17 0-28.5-11.5T240-240q0-17 11.5-28.5T280-280h280q50 0 85-35t35-85q0-50-35-85t-85-35H320l64 64q11 11 11 28t-11 28q-11 11-28 11t-28-11L184-544q-12-12-12-28t12-28l144-144q11-11 28-11t28 11q11 11 11 28t-11 28l-64 64h240q83 0 141.5 58.5T760-400q0 83-58.5 141.5T560-200H280Z"/></svg>
-      </div>
-      <div class="card-titulo">Devoluciones</div>
-    </a>
+      <!-- Devoluciones -->
+      <a class="card" href="devoluciones.html">
+        <div class="card-icono">
+          <svg viewBox="0 -960 960 960"><path d="M280-200q-17 0-28.5-11.5T240-240q0-17 11.5-28.5T280-280h280q50 0 85-35t35-85q0-50-35-85t-85-35H320l64 64q11 11 11 28t-11 28q-11 11-28 11t-28-11L184-544q-12-12-12-28t12-28l144-144q11-11 28-11t28 11q11 11 11 28t-11 28l-64 64h240q83 0 141.5 58.5T760-400q0 83-58.5 141.5T560-200H280Z"/></svg>
+        </div>
+        <div class="card-titulo">Devoluciones</div>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
 
-  </div>
+    </div>
+  </section>
 
-  <!-- ===== CATÁLOGO (Cálidos) ===== -->
-  <h2 class="grupo-titulo grupo-catalogo">Catálogo</h2>
-  <div class="grid-menu">
+  <!-- ===== CATÁLOGO (Azul cielo) ===== -->
+  <section class="grupo grupo-catalogo">
+    <h2 class="grupo-titulo">Catálogo</h2>
+    <p class="grupo-sub">Productos, categorías y códigos</p>
+    <div class="grid-menu">
 
-    <!-- Inventario -->
-    <a class="card" href="inventario.html">
-      <div class="card-icono ico-inventario">
-        <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h560q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm280 440q11 0 19.5-7.5T510-220v-120l44 44q7 7 17 7t17-7q7-7 7-17t-7-17l-86-86q-12-12-28-12t-28 12l-86 86q-7 7-7 17t7 17q7 7 17 7t17-7l44-44v120q0 11 8.5 19.5T480-200Z"/></svg>
-      </div>
-      <div class="card-titulo">Inventario</div>
-    </a>
+      <!-- Inventario -->
+      <a class="card" href="inventario.html">
+        <div class="card-icono">
+          <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h560q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm280 440q11 0 19.5-7.5T510-220v-120l44 44q7 7 17 7t17-7q7-7 7-17t-7-17l-86-86q-12-12-28-12t-28 12l-86 86q-7 7-7 17t7 17q7 7 17 7t17-7l44-44v120q0 11 8.5 19.5T480-200Z"/></svg>
+        </div>
+        <div class="card-titulo">Inventario</div>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
 
-    <!-- Productos -->
-    <a class="card" href="productos.html">
-      <div class="card-icono ico-productos">
-        <svg viewBox="0 -960 960 960"><path d="M856-406 566-116q-23 23-56.5 22.5T453-117L119-451q-11-11-18-25.5T94-508v-252q0-33 23.5-56.5T174-840h252q17 0 31.5 7t25.5 18l372 372q23 23 22.5 56.5T856-406ZM260-600q25 0 42.5-17.5T320-660q0-25-17.5-42.5T260-720q-25 0-42.5 17.5T200-660q0 25 17.5 42.5T260-600Z"/></svg>
-      </div>
-      <div class="card-titulo">Productos</div>
-    </a>
+      <!-- Productos -->
+      <a class="card" href="productos.html">
+        <div class="card-icono">
+          <svg viewBox="0 -960 960 960"><path d="M856-406 566-116q-23 23-56.5 22.5T453-117L119-451q-11-11-18-25.5T94-508v-252q0-33 23.5-56.5T174-840h252q17 0 31.5 7t25.5 18l372 372q23 23 22.5 56.5T856-406ZM260-600q25 0 42.5-17.5T320-660q0-25-17.5-42.5T260-720q-25 0-42.5 17.5T200-660q0 25 17.5 42.5T260-600Z"/></svg>
+        </div>
+        <div class="card-titulo">Productos</div>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
 
-    <!-- Categorías -->
-    <a class="card" href="categorias.html">
-      <div class="card-icono ico-categorias">
-        <svg viewBox="0 -960 960 960"><path d="M140-200q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm300 440q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Z"/></svg>
-      </div>
-      <div class="card-titulo">Categorías</div>
-    </a>
+      <!-- Categorías -->
+      <a class="card" href="categorias.html">
+        <div class="card-icono">
+          <svg viewBox="0 -960 960 960"><path d="M140-200q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm300 440q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Z"/></svg>
+        </div>
+        <div class="card-titulo">Categorías</div>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
 
-    <!-- Registrar códigos -->
-    <a class="card" href="codigos.html">
-      <div class="card-icono ico-codigos">
-        <svg viewBox="0 -960 960 960"><path d="M120-680v-120q0-33 23.5-56.5T200-880h120q17 0 28.5 11.5T360-840q0 17-11.5 28.5T320-800H200v120q0 17-11.5 28.5T160-640q-17 0-28.5-11.5T120-680Zm720 0q0 17-11.5 28.5T800-640q-17 0-28.5-11.5T760-680v-120H640q-17 0-28.5-11.5T600-840q0-17 11.5-28.5T640-880h120q33 0 56.5 23.5T840-800v120ZM200-120q-33 0-56.5-23.5T120-200v-120q0-17 11.5-28.5T160-360q17 0 28.5 11.5T200-320v120h120q17 0 28.5 11.5T360-160q0 17-11.5 28.5T320-120H200Zm440 0q-17 0-28.5-11.5T600-160q0-17 11.5-28.5T640-200h120v-120q0-17 11.5-28.5T800-360q17 0 28.5 11.5T840-320v120q0 33-23.5 56.5T760-120H640ZM200-760v120q0 17-11.5 28.5T160-600q-17 0-28.5-11.5T120-640v-120q0-33 23.5-56.5T200-840h120q17 0 28.5 11.5T360-800q0 17-11.5 28.5T320-760H200Zm560 0H640q-17 0-28.5-11.5T600-800q0-17 11.5-28.5T640-840h120q33 0 56.5 23.5T840-760v120q0 17-11.5 28.5T800-600q-17 0-28.5-11.5T760-640v-120ZM240-240v-120q0-17 11.5-28.5T280-400h120q17 0 28.5 11.5T440-360v120q0 17-11.5 28.5T400-200H280q-17 0-28.5-11.5T240-240Zm280-200q-17 0-28.5-11.5T480-480q0-17 11.5-28.5T520-520q17 0 28.5 11.5T560-480q0 17-11.5 28.5T520-440Zm160 0q-17 0-28.5-11.5T640-480q0-17 11.5-28.5T680-520q17 0 28.5 11.5T720-480q0 17-11.5 28.5T680-440ZM520-280q-17 0-28.5-11.5T480-320q0-17 11.5-28.5T520-360q17 0 28.5 11.5T560-320q0 17-11.5 28.5T520-280Zm160 0q-17 0-28.5-11.5T640-320q0-17 11.5-28.5T680-360q17 0 28.5 11.5T720-320q0 17-11.5 28.5T680-280Z"/></svg>
-      </div>
-      <div class="card-titulo">Registrar códigos</div>
-    </a>
+      <!-- Registrar códigos -->
+      <a class="card" href="codigos.html">
+        <div class="card-icono">
+          <svg viewBox="0 -960 960 960"><path d="M120-680v-120q0-33 23.5-56.5T200-880h120q17 0 28.5 11.5T360-840q0 17-11.5 28.5T320-800H200v120q0 17-11.5 28.5T160-640q-17 0-28.5-11.5T120-680Zm720 0q0 17-11.5 28.5T800-640q-17 0-28.5-11.5T760-680v-120H640q-17 0-28.5-11.5T600-840q0-17 11.5-28.5T640-880h120q33 0 56.5 23.5T840-800v120ZM200-120q-33 0-56.5-23.5T120-200v-120q0-17 11.5-28.5T160-360q17 0 28.5 11.5T200-320v120h120q17 0 28.5 11.5T360-160q0 17-11.5 28.5T320-120H200Zm440 0q-17 0-28.5-11.5T600-160q0-17 11.5-28.5T640-200h120v-120q0-17 11.5-28.5T800-360q17 0 28.5 11.5T840-320v120q0 33-23.5 56.5T760-120H640ZM200-760v120q0 17-11.5 28.5T160-600q-17 0-28.5-11.5T120-640v-120q0-33 23.5-56.5T200-840h120q17 0 28.5 11.5T360-800q0 17-11.5 28.5T320-760H200Zm560 0H640q-17 0-28.5-11.5T600-800q0-17 11.5-28.5T640-840h120q33 0 56.5 23.5T840-760v120q0 17-11.5 28.5T800-600q-17 0-28.5-11.5T760-640v-120ZM240-240v-120q0-17 11.5-28.5T280-400h120q17 0 28.5 11.5T440-360v120q0 17-11.5 28.5T400-200H280q-17 0-28.5-11.5T240-240Zm280-200q-17 0-28.5-11.5T480-480q0-17 11.5-28.5T520-520q17 0 28.5 11.5T560-480q0 17-11.5 28.5T520-440Zm160 0q-17 0-28.5-11.5T640-480q0-17 11.5-28.5T680-520q17 0 28.5 11.5T720-480q0 17-11.5 28.5T680-440ZM520-280q-17 0-28.5-11.5T480-320q0-17 11.5-28.5T520-360q17 0 28.5 11.5T560-320q0 17-11.5 28.5T520-280Zm160 0q-17 0-28.5-11.5T640-320q0-17 11.5-28.5T680-360q17 0 28.5 11.5T720-320q0 17-11.5 28.5T680-280Z"/></svg>
+        </div>
+        <div class="card-titulo">Registrar códigos</div>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
 
-  </div>
+    </div>
+  </section>
 
-  <!-- ===== ANÁLISIS (Verdes) ===== -->
-  <h2 class="grupo-titulo grupo-analisis">Análisis</h2>
-  <div class="grid-menu">
+  <!-- ===== ANÁLISIS (Índigo) ===== -->
+  <section class="grupo grupo-analisis">
+    <h2 class="grupo-titulo">Análisis</h2>
+    <p class="grupo-sub">Consulta y reportes</p>
+    <div class="grid-menu">
 
-    <!-- Historial -->
-    <a class="card" href="historial-caja.html">
-      <div class="card-icono ico-historial">
-        <svg viewBox="0 -960 960 960"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h480q50 0 85 35t35 85v560q0 50-35 85t-85 35H240Zm0-80h480v-560H240v560Zm80-80h320q17 0 28.5-11.5T680-280q0-17-11.5-28.5T640-320H320q-17 0-28.5 11.5T280-280q0 17 11.5 28.5T320-240Zm0-160h320q17 0 28.5-11.5T680-440q0-17-11.5-28.5T640-480H320q-17 0-28.5 11.5T280-440q0 17 11.5 28.5T320-400Zm0-160h320q17 0 28.5-11.5T680-600q0-17-11.5-28.5T640-640H320q-17 0-28.5 11.5T280-600q0 17 11.5 28.5T320-560Zm0-160h320q17 0 28.5-11.5T680-760q0-17-11.5-28.5T640-800H320q-17 0-28.5 11.5T280-760q0 17 11.5 28.5T320-720ZM240-160v-560 560Z"/></svg>
-      </div>
-      <div class="card-titulo">Historial</div>
-    </a>
+      <!-- Historial -->
+      <a class="card" href="historial-caja.html">
+        <div class="card-icono">
+          <svg viewBox="0 -960 960 960"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h480q50 0 85 35t35 85v560q0 50-35 85t-85 35H240Zm0-80h480v-560H240v560Zm80-80h320q17 0 28.5-11.5T680-280q0-17-11.5-28.5T640-320H320q-17 0-28.5 11.5T280-280q0 17 11.5 28.5T320-240Zm0-160h320q17 0 28.5-11.5T680-440q0-17-11.5-28.5T640-480H320q-17 0-28.5 11.5T280-440q0 17 11.5 28.5T320-400Zm0-160h320q17 0 28.5-11.5T680-600q0-17-11.5-28.5T640-640H320q-17 0-28.5 11.5T280-600q0 17 11.5 28.5T320-560Zm0-160h320q17 0 28.5-11.5T680-760q0-17-11.5-28.5T640-800H320q-17 0-28.5 11.5T280-760q0 17 11.5 28.5T320-720ZM240-160v-560 560Z"/></svg>
+        </div>
+        <div class="card-titulo">Historial</div>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
 
-    <!-- Dashboard -->
-    <a class="card" href="dashboard.html">
-      <div class="card-icono ico-dashboard">
-        <svg viewBox="0 -960 960 960"><path d="M640-160v-280q0-17 11.5-28.5T680-480q17 0 28.5 11.5T720-440v280q0 17-11.5 28.5T680-120q-17 0-28.5-11.5T640-160Zm-200 0v-560q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v560q0 17-11.5 28.5T480-120q-17 0-28.5-11.5T440-160Zm-200 0v-400q0-17 11.5-28.5T280-600q17 0 28.5 11.5T320-560v400q0 17-11.5 28.5T280-120q-17 0-28.5-11.5T240-160Z"/></svg>
-      </div>
-      <div class="card-titulo">Dashboard</div>
-    </a>
+      <!-- Dashboard -->
+      <a class="card" href="dashboard.html">
+        <div class="card-icono">
+          <svg viewBox="0 -960 960 960"><path d="M640-160v-280q0-17 11.5-28.5T680-480q17 0 28.5 11.5T720-440v280q0 17-11.5 28.5T680-120q-17 0-28.5-11.5T640-160Zm-200 0v-560q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v560q0 17-11.5 28.5T480-120q-17 0-28.5-11.5T440-160Zm-200 0v-400q0-17 11.5-28.5T280-600q17 0 28.5 11.5T320-560v400q0 17-11.5 28.5T280-120q-17 0-28.5-11.5T240-160Z"/></svg>
+        </div>
+        <div class="card-titulo">Dashboard</div>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
 
-  </div>
+    </div>
+  </section>
 
   <div class="cerrar-sesion-box" onclick="cerrarSesion()">
     <span>Cerrar sesión</span>
@@ -541,19 +560,34 @@ let usuarioPendienteAjeno = null;
 
 function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
 
+/* =========================================================
+   TEMA: solo día/noche (sin detección automática)
+   ========================================================= */
 (function inicializarBotonTema() {
   const btn = document.getElementById('btnTema');
   if (!btn) return;
-  function actualizarEmoji() { btn.textContent = emojiTema(getTema()); }
-  actualizarEmoji();
+
+  function aplicarTema(t) {
+    document.documentElement.classList.remove('tema-claro', 'tema-oscuro', 'tema-auto');
+    document.documentElement.classList.add('tema-' + t);
+    try { localStorage.setItem('caf_tema', t); } catch (e) {}
+    btn.textContent = (t === 'oscuro') ? '🌙' : '☀️';
+  }
+
+  let temaInicial = 'claro';
+  try {
+    const guardado = localStorage.getItem('caf_tema');
+    if (guardado === 'oscuro' || guardado === 'claro') temaInicial = guardado;
+  } catch (e) {}
+  aplicarTema(temaInicial);
+
   btn.addEventListener('click', function () {
-    const nuevo = siguienteTema();
-    actualizarEmoji();
+    const actual = document.documentElement.classList.contains('tema-oscuro') ? 'oscuro' : 'claro';
+    const nuevo = (actual === 'oscuro') ? 'claro' : 'oscuro';
+    aplicarTema(nuevo);
     if (navigator.vibrate) navigator.vibrate(30);
-    const mensajes = { auto: '⚙️ Tema automático', claro: '☀️ Tema claro', oscuro: '🌙 Tema oscuro' };
-    mostrar(mensajes[nuevo] || nuevo, 'ok');
+    mostrar(nuevo === 'oscuro' ? '🌙 Tema oscuro' : '☀️ Tema claro', 'ok');
   });
-  window.addEventListener('caf-tema-cambiado', actualizarEmoji);
 })();
 
 async function pintar() {
@@ -824,7 +858,7 @@ async function cargarBannerTurno() {
       $('bannerMiTurno').style.display = 'block';
       $('bannerOtroTurno').style.display = 'none';
       $('bannerSaldo').textContent = '$' + Number(cache.saldo_esperado || 0).toLocaleString('es-CO');
-      $('bannerTurnoId').textContent = 'Turno ' + cache.turno_id + ' · Base $' + Number(cache.base || 0).toLocaleString('es-CO');
+      $('bannerTurnoId').textContent = 'Turno ' + cache.turno_id + '\nBase $' + Number(cache.base || 0).toLocaleString('es-CO');
     }
   } catch (e) {}
 
@@ -838,7 +872,7 @@ async function cargarBannerTurno() {
       $('bannerMiTurno').style.display = 'block';
       $('bannerOtroTurno').style.display = 'none';
       $('bannerSaldo').textContent = '$' + Number(r.saldo_esperado || 0).toLocaleString('es-CO');
-      $('bannerTurnoId').textContent = 'Turno ' + r.mi_turno.id + ' · Base $' + Number(r.mi_turno.base || 0).toLocaleString('es-CO');
+      $('bannerTurnoId').textContent = 'Turno ' + r.mi_turno.id + '\nBase $' + Number(r.mi_turno.base || 0).toLocaleString('es-CO');
 
       try {
         localStorage.setItem('caf_banner_cache', JSON.stringify({

@@ -205,6 +205,7 @@
     text-decoration: none;
     text-align: left;
     transition: transform 0.15s ease, box-shadow 0.2s ease;
+    overflow: hidden;
   }
   .panel-menu .card:active { transform: scale(0.97); }
   @media (hover: hover) {
@@ -213,6 +214,21 @@
       box-shadow: 0 10px 22px rgba(15, 27, 61, 0.14);
     }
   }
+
+  /* Barrita lateral de cada card con el color del módulo */
+  .panel-menu .card::before {
+    content: "" !important;
+    position: absolute;
+    left: 0;
+    top: 16px;
+    bottom: 16px;
+    width: 4px;
+    border-radius: 0 4px 4px 0;
+    background: linear-gradient(180deg, var(--g1), var(--g2)) !important;
+    transition: width 0.15s ease;
+  }
+  .panel-menu .card:active::before { width: 6px; }
+
   .panel-menu .card .card-titulo {
     font-size: 15px;
     font-weight: 700;
@@ -265,7 +281,7 @@
 
   /* CATÁLOGO · familia cálida (bien diferenciados) */
   .ico-inventario { --g1: #FBBF24; --g2: #F59E0B; }  /* Amarillo dorado */
-  .ico-productos  { --g1: #FB923C; --g2: #EA580C; }  /* Naranja */
+  .ico-productos  { --g1: #A855F7; --g2: #7E22CE; }  /* Morado */
   .ico-categorias { --g1: #EC4899; --g2: #DB2777; }  /* Rosa fucsia */
   .ico-codigos    { --g1: #F97316; --g2: #EA580C; }  /* Naranja quemado */
 

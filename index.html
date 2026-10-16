@@ -670,14 +670,16 @@ async function pintar() {
   const hayToken = !!getToken();
   const hayUsuario = !!getUsuarioTurno();
   const hayTurno = !!getTurnoActual();
+  const u = getUsuarioTurno();
+  const esAdmin = u && u.rol === 'admin';
 
   $('login').style.display = (!hayToken) ? 'block' : 'none';
   $('turno').style.display = (hayToken && !hayUsuario) ? 'block' : 'none';
   $('pantallaCerrarAjeno').style.display = 'none';
   $('abrirTurno').style.display = 'none';
-  $('menu').style.display = (hayToken && hayUsuario && hayTurno) ? 'block' : 'none';
+  $('menu').style.display = (hayToken && hayUsuario && (hayTurno || esAdmin)) ? 'block' : 'none';
 
-  if (hayToken && hayUsuario && hayTurno) {
+  if (hayToken && hayUsuario && (hayTurno || esAdmin)) {
     aplicarRolAdmin();
     pintarUsuarioTurno();
     await cargarBannerTurno();
@@ -743,7 +745,8 @@ async function iniciarTurno() {
         }
       } catch (e) {}
 
-      if (hayTurnoAjeno) {
+      // ⭐ Si es admin, salta el bloqueo del turno ajeno
+      if (hayTurnoAjeno && (r.rol || 'cajero') !== 'admin') {
         usuarioPendienteAjeno = { id: r.id_usuario, nombre: r.nombre, rol: r.rol || 'cajero' };
         $('login').style.display = 'none';
         $('turno').style.display = 'none';

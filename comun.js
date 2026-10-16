@@ -145,10 +145,14 @@ function exigirSesion() {
 }
 
 async function exigirTurnoCajaAbierto() {
+  const u = getUsuarioTurno();
+  if (!u) return false;
+
+  // ⭐ Si es admin, no exigir turno abierto
+  if (u.rol === 'admin') return true;
+
   if (getTurnoActual()) return true;
   try {
-    const u = getUsuarioTurno();
-    if (!u) return false;
     const r = await jsonp({ accion: 'mi_turno', id_usuario: u.id }, 15000);
     if (r && r.ok && r.turno) {
       guardarTurnoActual(r.turno);

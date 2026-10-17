@@ -227,6 +227,37 @@
 
   .seccion-admin { display: none; }
   .seccion-admin.visible { display: block; }
+
+    /* =====================================================
+     DESTRUCTOR FINAL DE CÍRCULOS Y MANCHAS
+     ===================================================== */
+  
+  /* 1. Elimina cualquier pseudo-elemento (círculos de fondo) */
+  .card::before, 
+  .card::after,
+  .panel-menu .card::before,
+  .panel-menu .card::after,
+  .card-ventas-ancha::before,
+  .card-ventas-ancha::after,
+  .grid-operacion-resto .card::before,
+  .grid-operacion-resto .card::after {
+    content: none !important;
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
+  /* 2. Quita el fondo circular a los iconos (esos "manchones" de color) */
+  .card-icono {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  
+  /* 3. Asegura que las tarjetas tengan fondo sólido y limpio */
+  .panel-menu .card {
+    background: var(--superficie) !important;
+    background-image: none !important;
+  }
 </style>
 </head>
 <body>

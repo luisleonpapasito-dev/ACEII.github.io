@@ -16,7 +16,7 @@
 <script src="comun.js"></script>
 <style>
   /* =====================================================
-     REDISEÑO VISUAL v9 - Limpieza de blobs y flechas
+     REDISEÑO VISUAL v10 - Minimalista y Limpio
      ===================================================== */
   :root {
     --ac-texto: #0F1B3D;
@@ -42,9 +42,14 @@
     --superficie: #121D3A;
   }
 
-  /* ====== ANULACIÓN DE ESTILOS VIEJOS (Blobs y líneas) ====== */
-  .panel-menu .card::before { content: none !important; display: none !important; }
-  .panel-menu .card::after { content: none !important; display: none !important; }
+  /* ====== ANULACIÓN TOTAL DE ESTILOS VIEJOS (Círculos, líneas, etc) ====== */
+  .panel-menu .card::before, 
+  .panel-menu .card::after,
+  .card::before,
+  .card::after { 
+    content: none !important; 
+    display: none !important; 
+  }
   .card-titulo::after { content: none !important; display: none !important; }
 
   /* ====== HEADER ====== */
@@ -84,12 +89,12 @@
   .grupo-analisis  { --g-acento: #059669; }
   .grupo-admin     { --g-acento: #7C3AED; }
 
-  /* ====== TARJETAS BASE ====== */
+  /* ====== TARJETAS BASE (Minimalistas) ====== */
   .panel-menu .card {
     position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
     background: var(--superficie); border: 1px solid var(--ac-borde); border-radius: 18px;
     color: var(--ac-texto); text-decoration: none; text-align: left;
-    transition: transform 0.15s ease, box-shadow 0.2s ease; overflow: hidden;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
     padding: 16px; box-shadow: 0 2px 8px rgba(30,60,140,.04);
   }
   .panel-menu .card:active { transform: scale(0.97); }
@@ -97,7 +102,7 @@
   .panel-menu .card .card-icono {
     width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
     background: linear-gradient(135deg, var(--g1), var(--g2));
-    box-shadow: 0 6px 14px color-mix(in srgb, var(--g2) 35%, transparent);
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--g2) 25%, transparent);
     flex-shrink: 0; margin-bottom: 4px;
   }
   .panel-menu .card .card-icono svg { width: 24px; height: 24px; fill: #fff; display: block; }
@@ -151,19 +156,10 @@
   .card-ventas-ancha .card-titulo { font-size: 20px; font-weight: 800; line-height: 1.1; color: #fff; margin: 0; }
   .card-ventas-ancha .card-desc { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.92); margin: 0; }
   
-  /* Flechita de Ventas: Forzada a ser un círculo perfecto */
   .card-ventas-ancha .chev {
-    position: static !important; 
-    background: #fff !important; 
-    color: #2F5FE8 !important; 
-    width: 36px !important; 
-    height: 36px !important; 
-    padding: 0 !important; 
-    box-shadow: none !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    position: static !important; background: #fff !important; color: #2F5FE8 !important; 
+    width: 36px !important; height: 36px !important; padding: 0 !important; box-shadow: none !important;
+    border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important;
     flex-shrink: 0;
   }
   .card-ventas-ancha .chev svg { width: 20px; height: 20px; }
@@ -181,8 +177,6 @@
   .panel-menu .grid-menu-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .panel-menu .grid-menu-2 .card { min-height: 80px; padding: 14px; flex-direction: row; align-items: center; gap: 12px; }
   .panel-menu .grid-menu-2 .card .texto-wrapper { display: flex; flex-direction: column; gap: 3px; flex: 1; padding-right: 10px; }
-  
-  /* Centrar el chevron verticalmente en las tarjetas de 2 columnas */
   .panel-menu .grid-menu-2 .card .chev { top: 50%; transform: translateY(-50%); right: 14px; }
 
   /* ====== BADGE ADMIN ====== */
@@ -202,7 +196,6 @@
   .seccion-admin { display: none; }
   .seccion-admin.visible { display: block; }
 
-  /* Ajuste para el header en móvil */
   @media (max-width: 400px) {
     .grid-operacion-resto .card { padding: 10px 8px; min-height: 120px; }
     .grid-operacion-resto .card .card-titulo { font-size: 12px; }
@@ -816,10 +809,9 @@ async function cargarBannerTurno() {
 
     if (r.mi_turno) {
       $('resumenFlotante').style.display = 'flex';
-      $('bannerTurno').style.display = 'none'; // Ocultamos la alerta antigua
+      $('bannerTurno').style.display = 'none'; 
       
       $('resumenFlotante').querySelector('#rtCaja').textContent = fmt(r.saldo_esperado || 0);
-      // Nota: Asumimos que el backend envía r.ventas_hoy, si no, se queda en 0
       $('resumenFlotante').querySelector('#rtVentas').textContent = r.ventas_hoy || '0';
 
       try {

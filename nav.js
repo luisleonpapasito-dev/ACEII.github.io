@@ -13,12 +13,12 @@
                 padding-bottom: env(safe-area-inset-bottom, 0);
             }
             .bottom-nav-bar {
-                width: 100%; max-width: 520px; height: 84px;
+                width: 100%; max-width: 520px; height: 86px; /* Un pelín más alto */
                 background: var(--superficie, #fff);
                 border-top: 1px solid var(--ac-borde, #E3E9F4);
                 border-radius: 24px 24px 0 0;
                 box-shadow: 0 -6px 18px rgba(30,60,140,.08);
-                display: flex; padding: 10px 10px 0 10px;
+                display: flex; padding: 10px 8px 0 8px;
                 pointer-events: auto; box-sizing: border-box;
             }
             .nav-item {
@@ -26,23 +26,28 @@
                 align-items: center; gap: 6px;
                 text-decoration: none;
                 color: var(--ac-texto-suave, #5B6785);
-                font-size: 11px; font-weight: 600;
+                font-size: 12px; /* Texto un poco más grande */
+                font-weight: 600;
                 transition: color 0.2s;
                 -webkit-tap-highlight-color: transparent;
             }
             .nav-item.active { color: var(--ac-flecha, #2563EB); font-weight: 700; }
+            
+            /* Pastilla de fondo del icono */
             .nav-item span {
-                width: 64px; height: 32px; border-radius: 16px;
+                width: 64px; height: 36px; border-radius: 18px;
                 background: transparent;
                 display: flex; align-items: center; justify-content: center;
                 transition: background 0.2s;
             }
             .nav-item.active span { background: var(--ac-flecha-bg, rgba(37, 99, 235, 0.10)); }
+            
+            /* Iconos más grandes */
             .nav-item svg {
-                width: 24px; height: 24px; fill: none; stroke: currentColor;
+                width: 26px; height: 26px; fill: none; stroke: currentColor;
                 stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
             }
-            .nav-item.active svg { stroke-width: 2; }
+            .nav-item.active svg { stroke-width: 2.2; }
 
             /* Fallback oscuro */
             @media (prefers-color-scheme: dark) {
@@ -57,10 +62,10 @@
             html.tema-oscuro .nav-item.active span { background: rgba(125, 177, 255, 0.14); }
 
             @media (max-width: 360px) {
-                .bottom-nav-bar { height: 72px; padding: 8px 4px 0 4px; }
-                .nav-item span { width: 52px; height: 28px; }
-                .nav-item svg { width: 20px; height: 20px; }
-                .nav-item { font-size: 10px; }
+                .bottom-nav-bar { height: 76px; padding: 8px 4px 0 4px; }
+                .nav-item span { width: 54px; height: 30px; }
+                .nav-item svg { width: 22px; height: 22px; }
+                .nav-item { font-size: 11px; }
             }
         </style>
         <div class="bottom-nav-bar-container">
@@ -68,6 +73,10 @@
                 <a href="index.html" class="nav-item" data-page="inicio" aria-label="Inicio">
                     <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>
                     <span>Inicio</span>
+                </a>
+                <a href="ventas.html" class="nav-item" data-page="ventas" aria-label="Ventas">
+                    <svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.4 11.2a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20 7H6"/></svg>
+                    <span>Ventas</span>
                 </a>
                 <a href="inventario.html" class="nav-item" data-page="inventario" aria-label="Inventario">
                     <svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8zM3.3 7.5L12 12.5l8.7-5M12 22v-9.5"/></svg>
@@ -77,21 +86,23 @@
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
                     <span>Historial</span>
                 </a>
-                <a href="perfil.html" class="nav-item" data-page="perfil" aria-label="Mi perfil">
-                    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-                    <span>Perfil</span>
+                <a href="perfil.html" class="nav-item" data-page="perfil" aria-label="Más">
+                    <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+                    <span>Más</span>
                 </a>
             </div>
         </div>
     `;
     document.body.insertAdjacentHTML('beforeend', navHTML);
 
+    // Resaltar pestaña activa
     const path = window.location.pathname.split('/').pop() || '';
     let activePage = '';
     if (path === '' || path === 'index.html') activePage = 'inicio';
+    else if (path === 'ventas.html') activePage = 'ventas';
     else if (['inventario.html', 'productos.html', 'categorias.html', 'codigos.html', 'recepcion.html'].includes(path)) activePage = 'inventario';
-    else if (['historial-caja.html', 'dashboard.html', 'caja.html', 'ventas.html', 'devoluciones.html'].includes(path)) activePage = 'historial';
-    else if (path === 'perfil.html') activePage = 'perfil';
+    else if (['historial-caja.html', 'dashboard.html', 'caja.html', 'devoluciones.html'].includes(path)) activePage = 'historial';
+    else if (['perfil.html', 'admin-usuarios.html', 'admin-horarios.html'].includes(path)) activePage = 'perfil';
 
     if (activePage) {
         const activeItem = document.querySelector(`.nav-item[data-page="${activePage}"]`);

@@ -17,6 +17,30 @@
 <meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
 <script src="comun.js"></script>
 <style>
+/* Variables para que el nav.js y la app funcionen bien */
+:root {
+  --ac-texto: #0F1B3D;
+  --ac-texto-suave: #5B6785;
+  --ac-borde: #E3E9F4;
+  --ac-flecha: #2563EB;
+  --ac-flecha-bg: rgba(37, 99, 235, 0.10);
+  --superficie: #FFFFFF;
+  --bottom-nav-height: 84px;
+}
+html.tema-oscuro {
+  --ac-texto: #F1F5FF;
+  --ac-texto-suave: #9AA8CC;
+  --ac-borde: #223156;
+  --ac-flecha: #7DB1FF;
+  --ac-flecha-bg: rgba(125, 177, 255, 0.14);
+  --superficie: #121D3A;
+}
+
+/* Margen inferior para que la barra no tape el último elemento */
+body {
+  padding-bottom: calc(var(--bottom-nav-height) + 20px + env(safe-area-inset-bottom)) !important;
+}
+
   #resultados {
     max-height: 300px;
     overflow-y: auto;

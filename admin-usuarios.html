@@ -358,7 +358,7 @@
     <div class="modal-sub" id="modalFormSub">Crea un usuario nuevo</div>
 
     <div class="aviso-info" id="avisoPin" style="display:none;">
-      🔑 Deja el PIN vacío para mantener el actual
+      🔑 Deja los campos de PIN vacíos para mantener el actual
     </div>
 
     <div class="form-grupo">
@@ -367,8 +367,13 @@
     </div>
 
     <div class="form-grupo">
-      <label>PIN * (mínimo 3 dígitos)</label>
-      <input type="text" id="fPin" maxlength="10" inputmode="numeric" placeholder="Ej: 1234">
+      <label>PIN * (letras y números, mín. 3)</label>
+      <input type="text" id="fPin" maxlength="20" placeholder="Ej: Juan2026">
+    </div>
+
+    <div class="form-grupo">
+      <label>Repetir PIN *</label>
+      <input type="text" id="fPinConfirma" maxlength="20" placeholder="Repite el PIN">
     </div>
 
     <div class="form-grupo">
@@ -409,8 +414,13 @@
     <div class="modal-sub" id="pinUsuario">Usuario</div>
 
     <div class="form-grupo">
-      <label>Nuevo PIN * (mínimo 3 dígitos)</label>
-      <input type="text" id="fNuevoPin" maxlength="10" inputmode="numeric" placeholder="Ej: 1234">
+      <label>Nuevo PIN * (letras y números, mín. 3)</label>
+      <input type="text" id="fNuevoPin" maxlength="20" placeholder="Ej: NuevoPin123">
+    </div>
+
+    <div class="form-grupo">
+      <label>Repetir PIN *</label>
+      <input type="text" id="fNuevoPinConfirma" maxlength="20" placeholder="Repite el PIN">
     </div>
 
     <div class="modal-acciones">
@@ -467,7 +477,6 @@ function pintarLista() {
     });
   }
 
-  // Orden: admins primero, luego alfabético
   lista.sort(function (a, b) {
     if (a.rol === 'admin' && b.rol !== 'admin') return -1;
     if (a.rol !== 'admin' && b.rol === 'admin') return 1;
@@ -516,18 +525,12 @@ function pintarLista() {
 
 $('buscar').addEventListener('input', pintarLista);
 
-// ---------- Modal Acciones ----------
 function abrirAcciones(u) {
   usuarioSeleccionado = u;
   $('accionesNombre').textContent = u.nombre;
   $('accionesId').textContent = u.id;
-
-  const btnAct = $('btnActivarDesactivar');
-  btnAct.textContent = u.activo === 'No' ? '🔓 Reactivar usuario' : '🔒 Desactivar usuario';
-
-  const btnElim = $('btnEliminar');
-  btnElim.style.display = u.id === getUsuarioTurno().id ? 'none' : 'block';
-
+  $('btnActivarDesactivar').textContent = u.activo === 'No' ? '🔓 Reactivar usuario' : '🔒 Desactivar usuario';
+  $('btnEliminar').style.display = u.id === getUsuarioTurno().id ? 'none' : 'block';
   $('modalAcciones').classList.add('abierto');
 }
 
@@ -536,7 +539,6 @@ $('btnCerrarAcciones').addEventListener('click', function () {
   usuarioSeleccionado = null;
 });
 
-// ---------- Editar ----------
 $('btnEditar').addEventListener('click', function () {
   if (!usuarioSeleccionado) return;
   modoModal = 'editar';
@@ -544,13 +546,13 @@ $('btnEditar').addEventListener('click', function () {
   $('modalFormSub').textContent = usuarioSeleccionado.id;
   $('fNombre').value = usuarioSeleccionado.nombre;
   $('fPin').value = '';
+  $('fPinConfirma').value = '';
   $('fRol').value = usuarioSeleccionado.rol;
   $('avisoPin').style.display = 'block';
   $('modalAcciones').classList.remove('abierto');
   $('modalForm').classList.add('abierto');
 });
 
-// ---------- Nuevo ----------
 $('btnNuevo').addEventListener('click', function () {
   modoModal = 'crear';
   usuarioSeleccionado = null;
@@ -558,6 +560,7 @@ $('btnNuevo').addEventListener('click', function () {
   $('modalFormSub').textContent = 'Crea un usuario nuevo';
   $('fNombre').value = '';
   $('fPin').value = '';
+  $('fPinConfirma').value = '';
   $('fRol').value = 'cajero';
   $('avisoPin').style.display = 'none';
   $('modalForm').classList.add('abierto');
@@ -570,9 +573,16 @@ $('btnCancelarForm').addEventListener('click', function () {
 $('btnGuardarForm').addEventListener('click', async function () {
   const nombre = $('fNombre').value.trim();
   const pin = $('fPin').value.trim();
+  const pinConfirma = $('fPinConfirma').value.trim();
   const rol = $('fRol').value;
 
   if (!nombre) { mostrar('Escribe el nombre', 'error'); return; }
+
+  // Validación solo si se ingresó algo en PIN o si es creación
+  if (modoModal === 'crear' || pin) {
+    if (pin.length < 3) { mostrar('El PIN debe tener mínimo 3 caracteres', 'error'); return; }
+    if (pin !== pinConfirma) { mostrar('Los PINs no coinciden', 'error'); return; }
+  }
 
   const u = getUsuarioTurno();
   $('btnGuardarForm').disabled = true;
@@ -581,7 +591,6 @@ $('btnGuardarForm').addEventListener('click', async function () {
   try {
     let r;
     if (modoModal === 'crear') {
-      if (!pin || pin.length < 3) { mostrar('El PIN debe tener mínimo 3 dígitos', 'error'); $('btnGuardarForm').disabled = false; return; }
       r = await post({
         accion: 'crear_usuario',
         id_usuario_solicitante: u.id,
@@ -590,7 +599,6 @@ $('btnGuardarForm').addEventListener('click', async function () {
         rol: rol
       });
     } else {
-      // Editar
       r = await post({
         accion: 'editar_usuario',
         id_usuario_solicitante: u.id,
@@ -598,8 +606,7 @@ $('btnGuardarForm').addEventListener('click', async function () {
         nombre: nombre,
         rol: rol
       });
-      // Si puso un PIN nuevo, cambiarlo también
-      if (r.ok && pin && pin.length >= 3) {
+      if (r.ok && pin) {
         await post({
           accion: 'cambiar_pin',
           id_usuario_solicitante: u.id,
@@ -625,11 +632,11 @@ $('btnGuardarForm').addEventListener('click', async function () {
   }
 });
 
-// ---------- Cambiar PIN ----------
 $('btnCambiarPin').addEventListener('click', function () {
   if (!usuarioSeleccionado) return;
   $('pinUsuario').textContent = usuarioSeleccionado.nombre + ' (' + usuarioSeleccionado.id + ')';
   $('fNuevoPin').value = '';
+  $('fNuevoPinConfirma').value = '';
   $('modalAcciones').classList.remove('abierto');
   $('modalPin').classList.add('abierto');
 });
@@ -640,7 +647,10 @@ $('btnCancelarPin').addEventListener('click', function () {
 
 $('btnGuardarPin').addEventListener('click', async function () {
   const pin = $('fNuevoPin').value.trim();
-  if (!pin || pin.length < 3) { mostrar('El PIN debe tener mínimo 3 dígitos', 'error'); return; }
+  const pinConfirma = $('fNuevoPinConfirma').value.trim();
+
+  if (pin.length < 3) { mostrar('El PIN debe tener mínimo 3 caracteres', 'error'); return; }
+  if (pin !== pinConfirma) { mostrar('Los PINs no coinciden', 'error'); return; }
 
   const u = getUsuarioTurno();
   $('btnGuardarPin').disabled = true;
@@ -667,12 +677,10 @@ $('btnGuardarPin').addEventListener('click', async function () {
   }
 });
 
-// ---------- Activar / Desactivar ----------
 $('btnActivarDesactivar').addEventListener('click', async function () {
   if (!usuarioSeleccionado) return;
   const nuevoEstado = usuarioSeleccionado.activo === 'No' ? 'Sí' : 'No';
   const accion = nuevoEstado === 'No' ? 'desactivar' : 'reactivar';
-
   if (!confirm('¿' + accion.charAt(0).toUpperCase() + accion.slice(1) + ' a ' + usuarioSeleccionado.nombre + '?')) return;
 
   const u = getUsuarioTurno();
@@ -696,10 +704,9 @@ $('btnActivarDesactivar').addEventListener('click', async function () {
   }
 });
 
-// ---------- Eliminar ----------
 $('btnEliminar').addEventListener('click', async function () {
   if (!usuarioSeleccionado) return;
-  if (!confirm('¿Eliminar definitivamente a ' + usuarioSeleccionado.nombre + '?\n\nEsta acción no se puede deshacer.\n\nSolo funciona si el usuario nunca ha tenido movimientos.')) return;
+  if (!confirm('¿Eliminar definitivamente a ' + usuarioSeleccionado.nombre + '?\n\nEsta acción no se puede deshacer.')) return;
 
   const u = getUsuarioTurno();
   mostrar('Eliminando...', 'aviso');

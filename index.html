@@ -16,20 +16,14 @@
 <script src="comun.js"></script>
 <style>
   /* =====================================================
-     REDISEÑO VISUAL v5 - Con sección admin condicional
-     y barra de navegación inferior
+     DISEÑO EXACTO A LA MAQUETA (Captura)
      ===================================================== */
-
   :root {
     --ac-texto: #0F1B3D;
     --ac-texto-suave: #5B6785;
     --ac-borde: #E3E9F4;
     --ac-flecha: #2563EB;
     --ac-flecha-bg: rgba(37, 99, 235, 0.10);
-    --ac-sombra-icono: 0 6px 14px rgba(29, 78, 216, 0.28);
-    --logout-bg: #EFF6FF;
-    --logout-borde: #DBEAFE;
-    --logout-texto: #2563EB;
     --superficie: #FFFFFF;
     --bottom-nav-height: 84px;
   }
@@ -39,386 +33,120 @@
     --ac-borde: #223156;
     --ac-flecha: #7DB1FF;
     --ac-flecha-bg: rgba(125, 177, 255, 0.14);
-    --ac-sombra-icono: 0 6px 14px rgba(0, 0, 0, 0.35);
-    --logout-bg: rgba(96, 165, 250, 0.12);
-    --logout-borde: rgba(96, 165, 250, 0.28);
-    --logout-texto: #93C5FD;
     --superficie: #121D3A;
   }
 
-  .app-header-saludo {
-    font-size: 13px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.85);
-    margin-bottom: 2px;
-    letter-spacing: 0.2px;
-  }
-  .app-header-frase {
-    font-size: 11px;
-    color: rgba(255,255,255,0.65);
-    margin-top: 2px;
-    font-weight: 500;
-    line-height: 1.3;
-  }
+  /* Header */
+  .app-header-saludo { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); margin-bottom: 2px; }
+  .app-header-frase { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 2px; font-weight: 500; line-height: 1.3; }
 
-  #bannerTurno {
-    background: none;
-    border: 0;
-    box-shadow: none;
-    padding: 0;
-    margin: 14px auto 0;
-    width: calc(100% - 28px);
-    max-width: 520px;
-  }
+  /* Banner del Turno (3 columnas) */
+  #bannerTurno { background: none; border: 0; box-shadow: none; padding: 0; margin: -34px 16px 0 16px; position: relative; z-index: 10; width: auto; max-width: 520px; }
   #bannerMiTurno {
-    position: relative;
-    overflow: hidden;
-    padding: 20px;
-    border-radius: 24px;
-    background: linear-gradient(135deg, #3B82F6, #1D4ED8);
-    color: #fff;
-    box-shadow: 0 10px 28px rgba(29, 78, 216, 0.35);
+    background: #fff; border: 1px solid var(--ac-borde); border-radius: 18px;
+    box-shadow: 0 6px 18px rgba(30,60,140,.12); display: flex; align-items: center; height: 72px; padding: 0 16px;
   }
-  #bannerMiTurno::after {
-    content: "";
-    position: absolute;
-    right: -40px;
-    top: -40px;
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.10);
-    pointer-events: none;
-  }
-  .hero-fila {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-  }
-  .hero-cuerpo { flex: 1; min-width: 0; }
-  .hero-etiqueta { font-size: 13px; font-weight: 600; opacity: 0.92; }
-  .hero-monto {
-    font-size: 34px;
-    font-weight: 800;
-    letter-spacing: -1px;
-    line-height: 1.1;
-    margin: 2px 0;
-  }
-  .hero-meta { font-size: 11.5px; font-weight: 500; opacity: 0.85; margin-top: 2px; word-break: break-word; }
-  #bannerMiTurno .hero-btn {
-    background: #fff;
-    color: #1649C0;
-    border: 0;
-    border-radius: 999px;
-    padding: 10px 14px;
-    min-height: 40px;
-    display: inline-flex;
-    align-items: center;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
-    white-space: nowrap;
-    box-shadow: none;
-    transition: transform 0.12s ease;
-  }
-  #bannerMiTurno .hero-btn:active { transform: scale(0.95); }
+  #bannerMiTurno .hero-etiqueta, #bannerMiTurno .hero-monto, #bannerMiTurno .hero-meta, #bannerMiTurno .hero-btn { display: none; }
+  
+  .banner-mini-col { flex: 1; padding-left: 16px; display: flex; flex-direction: column; gap: 4px; }
+  .banner-mini-col:first-child { padding-left: 0; }
+  .banner-mini-sep { width: 1px; height: 36px; background: var(--ac-borde); }
+  .banner-mini-lbl { font-size: 11px; font-weight: 600; color: var(--ac-texto-suave); }
+  .banner-mini-val { font-size: 15px; font-weight: 700; color: var(--ac-texto); }
+  .banner-mini-val.abierto { color: #0E7A55; display: flex; align-items: center; gap: 6px; }
+  .banner-mini-dot { width: 8px; height: 8px; border-radius: 4px; background: #16A870; display: block; }
 
-  #bannerTurnoId {
-    white-space: pre-line;
-    font-size: 11px;
-    line-height: 1.45;
-  }
+  /* Contenedor Principal */
+  .panel-menu { max-width: 520px; margin: 0 auto; padding: 20px 16px calc(var(--bottom-nav-height) + 20px + env(safe-area-inset-bottom)); }
 
-  #bannerOtroTurno {
-    background: var(--superficie);
-    border: 1.5px solid rgba(234, 88, 12, 0.35);
-    border-radius: 18px;
-    padding: 14px 16px;
-  }
+  /* Títulos de Grupo */
+  .grupo-header { display: flex; align-items: center; margin-bottom: 12px; }
+  .grupo-titulo { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 17px; font-weight: 800; color: var(--ac-texto); height: 24px; }
+  .grupo-titulo::before { content: ""; width: 4px; height: 18px; border-radius: 2px; background: var(--g-acento); display: block; }
+  .grupo-sub { margin-left: auto; font-size: 12px; font-weight: 500; color: var(--ac-texto-suave); }
 
-  .panel-menu {
-    max-width: 520px;
-    margin: 0 auto;
-    padding: 0 14px calc(var(--bottom-nav-height) + 20px + env(safe-area-inset-bottom));
-  }
-
-  .grupo-titulo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 26px 4px 2px;
-    font-size: 16px;
-    font-weight: 800;
-    letter-spacing: 0;
-    text-transform: none;
-    color: var(--ac-texto);
-  }
-  .grupo-titulo::before {
-    content: "";
-    width: 4px;
-    height: 18px;
-    border-radius: 4px;
-    background: var(--g-acento);
-  }
-  .grupo-sub {
-    margin: 0 4px 12px 18px;
-    font-size: 12.5px;
-    font-weight: 500;
-    color: var(--ac-texto-suave);
-  }
-
-  .grupo-operacion { --g-acento: #2563EB; }
+  .grupo-operacion { --g-acento: #2F5FE8; }
   .grupo-catalogo  { --g-acento: #EA580C; }
-  .grupo-analisis  { --g-acento: #059669; }
+  .grupo-analisis  { --g-acento: #16A34A; }
   .grupo-admin     { --g-acento: #7C3AED; }
 
-  .panel-menu .grid-menu {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin: 0;
+  /* Tarjeta Gigante de Ventas */
+  .btn-ventas-gigante {
+    margin-top: 12px; height: 92px; box-sizing: border-box; padding: 0 16px; display: flex; align-items: center; gap: 14px;
+    border-radius: 20px; background: linear-gradient(120deg, #1F46CC 0%, #3A74F2 100%);
+    box-shadow: 0 8px 18px rgba(36,84,220,.28); text-decoration: none; color: #fff;
   }
+  .btn-ventas-gigante .icono-grande { width: 54px; height: 54px; border-radius: 16px; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; flex: none; }
+  .btn-ventas-gigante .texto { flex: 1; min-width: 0; }
+  .btn-ventas-gigante .texto h3 { font-size: 20px; font-weight: 800; line-height: 1.1; margin: 0; }
+  .btn-ventas-gigante .texto p { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.92); margin: 4px 0 0 0; }
+  .btn-ventas-gigante .flecha { width: 36px; height: 36px; border-radius: 18px; background: #fff; display: flex; align-items: center; justify-content: center; flex: none; }
 
-  .panel-menu .card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    min-height: 140px;
-    padding: 16px;
-    margin: 0;
-    background: var(--superficie);
-    border: 1px solid var(--ac-borde);
-    border-radius: 18px;
-    color: var(--ac-texto);
-    text-decoration: none;
-    text-align: left;
-    transition: transform 0.15s ease, box-shadow 0.2s ease;
-    overflow: hidden;
+  /* Grid de Operación (3 columnas) */
+  .grid-operacion { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+  .card-op {
+    display: flex; flex-direction: column; gap: 12px; padding: 14px 12px; box-sizing: border-box;
+    background: var(--superficie); border: 1px solid var(--ac-borde); border-radius: 18px;
+    box-shadow: 0 2px 8px rgba(30,60,140,.06); text-decoration: none; color: var(--ac-texto); height: 124px;
   }
-  .panel-menu .card:active { transform: scale(0.97); }
-  @media (hover: hover) {
-    .panel-menu .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 22px rgba(15, 27, 61, 0.14);
-    }
+  .card-op .card-icono { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+  .card-op .card-texto { display: flex; flex-direction: column; gap: 2px; }
+  .card-op .card-titulo { font-size: 14px; font-weight: 700; line-height: 1.2; }
+  .card-op .card-desc { font-size: 12px; line-height: 1.35; color: var(--ac-texto-suave); }
+
+  /* Grid de Catálogo y Análisis (2 columnas) */
+  .grid-2col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+  .card-2col {
+    position: relative; display: flex; align-items: center; gap: 12px; padding: 14px; box-sizing: border-box;
+    background: var(--superficie); border: 1px solid var(--ac-borde); border-radius: 18px;
+    box-shadow: 0 2px 8px rgba(30,60,140,.06); text-decoration: none; color: var(--ac-texto); height: 80px;
   }
+  .card-2col .card-icono { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex: none; }
+  .card-2col .card-texto { min-width: 0; }
+  .card-2col .card-titulo { font-size: 14px; font-weight: 700; line-height: 1.2; }
+  .card-2col .card-desc { font-size: 12px; line-height: 1.35; color: var(--ac-texto-suave); margin-top: 2px; }
 
-  .panel-menu .card::after {
-    content: "";
-    position: absolute;
-    width: 90px;
-    height: 90px;
-    right: -35px;
-    top: -35px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, rgba(59, 130, 246, 0) 70%);
-    pointer-events: none;
-  }
-  html.tema-oscuro .panel-menu .card::after {
-    background: radial-gradient(circle, rgba(96, 165, 250, 0.08) 0%, rgba(96, 165, 250, 0) 70%);
-  }
+  /* Colores de Iconos */
+  .ico-caja { background: linear-gradient(145deg,#0F2D6E,#2552C4); }
+  .ico-recepcion { background: linear-gradient(145deg,#0A8FD6,#2FB4F0); }
+  .ico-devol { background: linear-gradient(145deg,#1EA7EE,#4CC3F8); }
+  .ico-inventario { background: linear-gradient(145deg,#F59E0B,#FBBF24); }
+  .ico-productos { background: linear-gradient(145deg,#0E9F8E,#22C5AE); }
+  .ico-categorias { background: linear-gradient(145deg,#DB2777,#F25AA0); }
+  .ico-codigos { background: linear-gradient(145deg,#EA580C,#FB8A3C); }
+  .ico-historial { background: linear-gradient(145deg,#16A34A,#34C466); }
+  .ico-dashboard { background: linear-gradient(145deg,#5CD97A,#A4F0A0); }
+  .ico-admin-usuarios { background: linear-gradient(145deg,#7C3AED,#6D28D9); }
+  .ico-admin-horarios { background: linear-gradient(145deg,#8B5CF6,#A78BFA); }
 
-  .panel-menu .card::before { content: none !important; display: none !important; }
+  .card-icono svg { width: 22px; height: 22px; fill: #fff; }
+  .card-2col .card-icono svg { width: 24px; height: 24px; }
 
-  .panel-menu .card .texto-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    margin-top: 4px; /* ⬅️ Esto lo deja pegado al ícono */
-    padding-right: 36px;
-  }
-
-  .panel-menu .card .card-titulo {
-    font-size: 15px;
-    font-weight: 700;
-    line-height: 1.2;
-    color: var(--ac-texto);
-    margin: 0;
-  }
-  .panel-menu .card .card-desc {
-    font-size: 11.5px;
-    font-weight: 500;
-    line-height: 1.35;
-    color: var(--ac-texto-suave);
-    margin: 0;
-  }
-  .panel-menu .card .card-titulo::after {
-    content: none !important;
-    display: none !important;
-  }
-
-  .panel-menu .card .chev {
-    position: absolute;
-    top: 20px;
-    right: 14px;
-    width: 28px;
-    height: 28px;
-    padding: 6px;
-    border-radius: 50%;
-    color: var(--chev-color, var(--ac-flecha));
-    background: var(--chev-bg, var(--ac-flecha-bg));
-    box-sizing: border-box;
-    fill: none;
-    pointer-events: none;
-  }
-
-  .grupo-operacion .card { --chev-color: #2563EB; --chev-bg: rgba(37, 99, 235, 0.10); }
-  .grupo-catalogo  .card { --chev-color: #EA580C; --chev-bg: rgba(234, 88, 12, 0.10); }
-  .grupo-analisis  .card { --chev-color: #059669; --chev-bg: rgba(5, 150, 105, 0.10); }
-  .grupo-admin     .card { --chev-color: #7C3AED; --chev-bg: rgba(124, 58, 237, 0.10); }
-
-  html.tema-oscuro .grupo-operacion .card { --chev-color: #7DB1FF; --chev-bg: rgba(125, 177, 255, 0.14); }
-  html.tema-oscuro .grupo-catalogo  .card { --chev-color: #FB923C; --chev-bg: rgba(251, 146, 60, 0.14); }
-  html.tema-oscuro .grupo-analisis  .card { --chev-color: #4ADE80; --chev-bg: rgba(74, 222, 128, 0.14); }
-  html.tema-oscuro .grupo-admin     .card { --chev-color: #A78BFA; --chev-bg: rgba(167, 139, 250, 0.14); }
-
-  .panel-menu .card .card-icono {
-    width: 44px;
-    height: 44px;
-    margin: 0;
-    border-radius: 12px;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(135deg, var(--g1), var(--g2));
-    box-shadow: 0 6px 14px color-mix(in srgb, var(--g2) 40%, transparent);
-    flex-shrink: 0;
-  }
-  .panel-menu .card .card-icono svg {
-  width: 24px;
-  height: 24px;
-  fill: #fff;
-  color: #fff;
-  display: block;
-  margin: 0 auto;
-}
-
-  /* OPERACIÓN */
-  .ico-caja       { --g1: #0C4A9E; --g2: #062B5C; }
-  .ico-ventas     { --g1: #2563EB; --g2: #1E40AF; }
-  .ico-recepcion  { --g1: #00A6E0; --g2: #0284C7; }
-  .ico-devol      { --g1: #38BDF8; --g2: #0EA5E9; }
-
-  /* CATÁLOGO */
-  .ico-inventario { --g1: #FBBF24; --g2: #F59E0B; }
-  .ico-productos  { --g1: #14B8A6; --g2: #0D9488; }
-  .ico-categorias { --g1: #EC4899; --g2: #DB2777; }
-  .ico-codigos    { --g1: #F97316; --g2: #EA580C; }
-
-  /* ANÁLISIS */
-  .ico-historial  { --g1: #4ADE80; --g2: #16A34A; }
-  .ico-dashboard  { --g1: #B4FF9A; --g2: #71C55B; }
-
-  /* ADMIN */
-  .ico-admin-usuarios  { --g1: #8B5CF6; --g2: #6D28D9; }
-  .ico-admin-horarios  { --g1: #A78BFA; --g2: #7C3AED; }
-
-  @keyframes ac-subir {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: none; }
-  }
-  #bannerMiTurno, .panel-menu .card { animation: ac-subir 0.45s ease both; }
-  .panel-menu .card:nth-child(2) { animation-delay: 0.05s; }
-  .panel-menu .card:nth-child(3) { animation-delay: 0.10s; }
-  .panel-menu .card:nth-child(4) { animation-delay: 0.15s; }
-  @media (prefers-reduced-motion: reduce) {
-    #bannerMiTurno, .panel-menu .card { animation: none !important; }
-  }
-
-  .cerrar-sesion-box {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: auto;
-    min-width: 220px;
-    max-width: 100%;
-    min-height: 48px;
-    margin: 0;
-    padding: 12px 24px;
-    border-radius: 999px;
-    background: var(--logout-bg);
-    border: 1.5px solid var(--logout-borde);
-    color: var(--logout-texto);
-    font-size: 15px;
-    font-weight: 700;
-    box-shadow: none;
-    cursor: pointer;
-    transition: transform .12s ease, background .18s ease;
-    text-align: center;
-  }
-  .cerrar-sesion-box:active { transform: scale(.98); }
-
-  /* Oculta la sección admin por defecto */
+  /* Sección Admin (oculta) */
   .seccion-admin { display: none; }
   .seccion-admin.visible { display: block; }
 
-  /* ===== BARRA DE NAVEGACIÓN INFERIOR ===== */
-  .bottom-nav-bar {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: var(--bottom-nav-height);
-    background: var(--superficie);
-    border-top: 1px solid var(--ac-borde);
-    box-shadow: 0 -6px 18px rgba(30,60,140,.08);
-    display: flex;
-    padding: 10px 10px 0 10px;
-    z-index: 1000;
-  }
-  .nav-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    text-decoration: none;
-    color: var(--ac-texto-suave);
-    font-size: 11px;
-    font-weight: 600;
-    transition: color 0.2s;
-  }
-  .nav-item.active {
-    color: var(--ac-flecha);
-    font-weight: 700;
-  }
-  .nav-item span {
-    width: 64px;
-    height: 32px;
-    border-radius: 16px;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-  }
-  .nav-item.active span {
-    background: var(--ac-flecha-bg);
-  }
-  .nav-item svg {
-    width: 24px;
-    height: 24px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  .nav-item.active svg {
-    stroke-width: 2;
+  /* Botón Cerrar Sesión */
+  .cerrar-sesion-box {
+    display: flex; align-items: center; justify-content: center; margin: 28px auto 0; width: 100%;
+    height: 52px; border-radius: 14px; border: 1.5px solid var(--ac-borde); background: var(--superficie);
+    color: var(--ac-texto-suave); font-size: 15px; font-weight: 700; cursor: pointer;
   }
 
-  @media (max-width: 340px) {
-    .hero-monto { font-size: 28px; }
-    .panel-menu .grid-menu { gap: 10px; }
-    .panel-menu .card { padding: 14px; min-height: 130px; }
-    .panel-menu .card .card-desc { font-size: 11px; }
+  /* BARRA DE NAVEGACIÓN INFERIOR */
+  .bottom-nav-bar {
+    position: fixed; left: 0; right: 0; bottom: 0; height: var(--bottom-nav-height);
+    background: var(--superficie); border-top: 1px solid var(--ac-borde); box-shadow: 0 -6px 18px rgba(30,60,140,.08);
+    display: flex; padding: 10px 10px 0 10px; z-index: 1000;
   }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; color: var(--ac-texto-suave); font-size: 11px; font-weight: 600; transition: color 0.2s; }
+  .nav-item.active { color: var(--ac-flecha); font-weight: 700; }
+  .nav-item span { width: 64px; height: 32px; border-radius: 16px; background: transparent; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+  .nav-item.active span { background: var(--ac-flecha-bg); }
+  .nav-item svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-item.active svg { stroke-width: 2; }
+
+  #bannerOtroTurno { background: var(--superficie); border: 1.5px solid rgba(234, 88, 12, 0.35); border-radius: 18px; padding: 14px 16px; }
 </style>
 </head>
 <body>
@@ -438,13 +166,19 @@
 
 <div id="bannerTurno" class="caja" style="display:none;">
   <div id="bannerMiTurno" style="display:none;">
-    <div class="hero-fila">
-      <div class="hero-cuerpo">
-        <div class="hero-etiqueta">💰 Tu turno está abierto</div>
-        <div class="hero-monto" id="bannerSaldo">$0</div>
-        <div class="hero-meta" id="bannerTurnoId"></div>
-      </div>
-      <a href="caja.html" class="main hero-btn">Ver caja →</a>
+    <div class="banner-mini-col">
+      <div class="banner-mini-lbl">Turno</div>
+      <div class="banner-mini-val abierto"><span class="banner-mini-dot"></span>Abierto</div>
+    </div>
+    <div class="banner-mini-sep"></div>
+    <div class="banner-mini-col">
+      <div class="banner-mini-lbl">Caja</div>
+      <div class="banner-mini-val" id="bannerSaldo">$0</div>
+    </div>
+    <div class="banner-mini-sep"></div>
+    <div class="banner-mini-col">
+      <div class="banner-mini-lbl">Ventas hoy</div>
+      <div class="banner-mini-val" id="bannerVentasHoy">1</div>
     </div>
   </div>
   <div id="bannerOtroTurno" style="display:none;">
@@ -497,213 +231,134 @@
   <button id="btnCancelarApertura" style="width:100%; margin-top:6px;">Cancelar (cerrar sesión)</button>
 </div>
 
-<!-- Panel del menú -->
 <div class="panel-menu" id="menu" style="display:none;">
 
-  <!-- ===== OPERACIÓN ===== -->
+  <!-- OPERACIÓN -->
   <section class="grupo grupo-operacion">
-    <h2 class="grupo-titulo">Operación</h2>
-    <p class="grupo-sub">Lo que usas en cada turno</p>
-    <div class="grid-menu">
+    <div class="grupo-header">
+      <h2 class="grupo-titulo">Operación</h2>
+      <span class="grupo-sub">Lo que usas en cada turno</span>
+    </div>
 
-      <a class="card" href="caja.html">
-        <div class="card-icono ico-caja">
-          <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
-        </div>
-        <div class="card-texto">
-          <div class="card-titulo">Caja del turno</div>
-          <div class="card-desc">Movimientos y cierre del turno</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <a class="btn-ventas-gigante" href="ventas.html">
+      <div class="icono-grande">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.4 11.2a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20 7H6"/></svg>
+      </div>
+      <div class="texto">
+        <h3>Ventas</h3>
+        <p>Registra y consulta tus ventas</p>
+      </div>
+      <div class="flecha">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2F5FE8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </div>
+    </a>
+
+    <div class="grid-operacion">
+      <a class="card-op" href="caja.html">
+        <div class="card-icono ico-caja"><svg viewBox="0 0 24 24"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg></div>
+        <div class="card-texto"><div class="card-titulo">Caja del turno</div><div class="card-desc">Movimientos y cierre</div></div>
       </a>
-
-      <a class="card" href="ventas.html">
-        <div class="card-icono ico-ventas">
-          <svg viewBox="0 -960 960 960"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM40-800v-80h130l148 310h368l166-310h88L740-560q-11 20-30 30t-40 10H320L240-620 160-440h560v80H160q-26 0-40-22t-2-46l80-160L60-880l-20-40v80Z"/></svg>
-        </div>
-        <div class="card-texto">
-          <div class="card-titulo">Ventas</div>
-          <div class="card-desc">Registra y consulta tus ventas</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <a class="card-op" href="recepcion.html">
+        <div class="card-icono ico-recepcion"><svg viewBox="0 0 24 24"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-120H640q-30 38-71.5 59T480-240q-47 0-88.5-21T320-320H200v120Zm280-120q38 0 69-22t43-58h168v-360H200v360h168q12 36 43 58t69 22ZM200-200h560-560Z"/></svg></div>
+        <div class="card-texto"><div class="card-titulo">Recepción</div><div class="card-desc">Ingresos de productos</div></div>
       </a>
-
-      <a class="card" href="recepcion.html">
-        <div class="card-icono ico-recepcion">
-          <svg viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-120H640q-30 38-71.5 59T480-240q-47 0-88.5-21T320-320H200v120Zm280-120q38 0 69-22t43-58h168v-360H200v360h168q12 36 43 58t69 22ZM200-200h560-560Z"/></svg>
-        </div>
-        <div class="card-texto">
-          <div class="card-titulo">Recepción</div>
-          <div class="card-desc">Controla ingresos de productos</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <a class="card-op" href="devoluciones.html">
+        <div class="card-icono ico-devol"><svg viewBox="0 0 24 24"><path d="M280-200q-17 0-28.5-11.5T240-240q0-17 11.5-28.5T280-280h280q50 0 85-35t35-85q0-50-35-85t-85-35H320l64 64q11 11 11 28t-11 28q-11 11-28 11t-28-11L184-544q-12-12-12-28t12-28l144-144q11-11 28-11t28 11q11 11 11 28t-11 28l-64 64h240q83 0 141.5 58.5T760-400q0 83-58.5 141.5T560-200H280Z"/></svg></div>
+        <div class="card-texto"><div class="card-titulo">Devoluciones</div><div class="card-desc">Productos devueltos</div></div>
       </a>
-
-      <a class="card" href="devoluciones.html">
-        <div class="card-icono ico-devol">
-          <svg viewBox="0 -960 960 960"><path d="M280-200q-17 0-28.5-11.5T240-240q0-17 11.5-28.5T280-280h280q50 0 85-35t35-85q0-50-35-85t-85-35H320l64 64q11 11 11 28t-11 28q-11 11-28 11t-28-11L184-544q-12-12-12-28t12-28l144-144q11-11 28-11t28 11q11 11 11 28t-11 28l-64 64h240q83 0 141.5 58.5T760-400q0 83-58.5 141.5T560-200H280Z"/></svg>
-        </div>
-        <div class="card-texto">
-          <div class="card-titulo">Devoluciones</div>
-          <div class="card-desc">Gestiona devoluciones de productos</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-
     </div>
   </section>
 
-  <!-- ===== CATÁLOGO ===== -->
-  <section class="grupo grupo-catalogo">
-    <h2 class="grupo-titulo">Catálogo</h2>
-    <p class="grupo-sub">Productos, categorías y códigos</p>
-    <div class="grid-menu">
-
-      <a class="card" href="inventario.html">
-        <div class="card-icono ico-inventario">
-          <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h560q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm280 440q11 0 19.5-7.5T510-220v-120l44 44q7 7 17 7t17-7q7-7 7-17t-7-17l-86-86q-12-12-28-12t-28 12l-86 86q-7 7-7 17t7 17q7 7 17 7t17-7l44-44v120q0 11 8.5 19.5T480-200Z"/></svg>
-        </div>
-        <div class="card-texto">
-          <div class="card-titulo">Inventario</div>
-          <div class="card-desc">Consulta y administra el stock</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <!-- CATÁLOGO -->
+  <section class="grupo grupo-catalogo" style="margin-top: 20px;">
+    <div class="grupo-header">
+      <h2 class="grupo-titulo">Catálogo</h2>
+      <span class="grupo-sub">Productos, categorías y códigos</span>
+    </div>
+    <div class="grid-2col">
+      <a class="card-2col" href="inventario.html">
+        <div class="card-icono ico-inventario"><svg viewBox="0 0 24 24"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h560q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm280 440q11 0 19.5-7.5T510-220v-120l44 44q7 7 17 7t17-7q7-7 7-17t-7-17l-86-86q-12-12-28-12t-28 12l-86 86q-7 7-7 17t7 17q7 7 17 7t17-7l44-44v120q0 11 8.5 19.5T480-200Z"/></svg></div>
+        <div class="card-texto"><div class="card-titulo">Inventario</div><div class="card-desc">Consulta el stock</div></div>
       </a>
-
-      <a class="card" href="productos.html">
-        <div class="card-icono ico-productos">
-          <svg viewBox="0 -960 960 960"><path d="M856-406 566-116q-23 23-56.5 22.5T453-117L119-451q-11-11-18-25.5T94-508v-252q0-33 23.5-56.5T174-840h252q17 0 31.5 7t25.5 18l372 372q23 23 22.5 56.5T856-406ZM260-600q25 0 42.5-17.5T320-660q0-25-17.5-42.5T260-720q-25 0-42.5 17.5T200-660q0 25 17.5 42.5T260-600Z"/></svg>
-        </div>
-        <div class="card-texto">
-          <div class="card-titulo">Productos</div>
-          <div class="card-desc">Consulta y edita el catálogo</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <a class="card-2col" href="productos.html">
+        <div class="card-icono ico-productos"><svg viewBox="0 0 24 24"><path d="M856-406 566-116q-23 23-56.5 22.5T453-117L119-451q-11-11-18-25.5T94-508v-252q0-33 23.5-56.5T174-840h252q17 0 31.5 7t25.5 18l372 372q23 23 22.5 56.5T856-406ZM260-600q25 0 42.5-17.5T320-660q0-25-17.5-42.5T260-720q-25 0-42.5 17.5T200-660q0 25 17.5 42.5T260-600Z"/></svg></div>
+        <div class="card-texto"><div class="card-titulo">Productos</div><div class="card-desc">Edita el catálogo</div></div>
       </a>
-
-      <a class="card" href="categorias.html">
-        <div class="card-icono ico-categorias">
-          <svg viewBox="0 -960 960 960"><path d="M140-200q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm300 440q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Z"/></svg>
-        </div>
-        <div class="card-texto">
-          <div class="card-titulo">Categorías</div>
-          <div class="card-desc">Organiza tus productos por tipo</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <a class="card-2col" href="categorias.html">
+        <div class="card-icono ico-categorias"><svg viewBox="0 0 24 24"><path d="M140-200q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h140q24 0 42 18t18 42q0 24-18 42t-42 18H140Zm300 440q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Zm0-220q-24 0-42-18t-18-42q0-24 18-42t42-18h380q24 0 42 18t18 42q0 24-18 42t-42 18H440Z"/></svg></div>
+        <div class="card-texto"><div class="card-titulo">Categorías</div><div class="card-desc">Organiza por tipo</div></div>
       </a>
-
-      <a class="card" href="codigos.html">
-        <div class="card-icono ico-codigos">
-          <svg viewBox="0 -960 960 960"><path d="M120-680v-120q0-33 23.5-56.5T200-880h120q17 0 28.5 11.5T360-840q0 17-11.5 28.5T320-800H200v120q0 17-11.5 28.5T160-640q-17 0-28.5-11.5T120-680Zm720 0q0 17-11.5 28.5T800-640q-17 0-28.5-11.5T760-680v-120H640q-17 0-28.5-11.5T600-840q0-17 11.5-28.5T640-880h120q33 0 56.5 23.5T840-800v120ZM200-120q-33 0-56.5-23.5T120-200v-120q0-17 11.5-28.5T160-360q17 0 28.5 11.5T200-320v120h120q17 0 28.5 11.5T360-160q0 17-11.5 28.5T320-120H200Zm440 0q-17 0-28.5-11.5T600-160q0-17 11.5-28.5T640-200h120v-120q0-17 11.5-28.5T800-360q17 0 28.5 11.5T840-320v120q0 33-23.5 56.5T760-120H640ZM200-760v120q0 17-11.5 28.5T160-600q-17 0-28.5-11.5T120-640v-120q0-33 23.5-56.5T200-840h120q17 0 28.5 11.5T360-800q0 17-11.5 28.5T320-760H200Zm560 0H640q-17 0-28.5-11.5T600-800q0-17 11.5-28.5T640-840h120q33 0 56.5 23.5T840-760v120q0 17-11.5 28.5T800-600q-17 0-28.5-11.5T760-640v-120ZM240-240v-120q0-17 11.5-28.5T280-400h120q17 0 28.5 11.5T440-360v120q0 17-11.5 28.5T400-200H280q-17 0-28.5-11.5T240-240Zm280-200q-17 0-28.5-11.5T480-480q0-17 11.5-28.5T520-520q17 0 28.5 11.5T560-480q0 17-11.5 28.5T520-440Zm160 0q-17 0-28.5-11.5T640-480q0-17 11.5-28.5T680-520q17 0 28.5 11.5T720-480q0 17-11.5 28.5T680-440ZM520-280q-17 0-28.5-11.5T480-320q0-17 11.5-28.5T520-360q17 0 28.5 11.5T560-320q0 17-11.5 28.5T520-280Zm160 0q-17 0-28.5-11.5T640-320q0-17 11.5-28.5T680-360q17 0 28.5 11.5T720-320q0 17-11.5 28.5T680-280Z"/></svg>
-        </div>
-        <div class="card-texto">
-          <div class="card-titulo">Registrar códigos</div>
-          <div class="card-desc">Asocia códigos de barra a productos</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <a class="card-2col" href="codigos.html">
+        <div class="card-icono ico-codigos"><svg viewBox="0 0 24 24"><path d="M120-680v-120q0-33 23.5-56.5T200-880h120q17 0 28.5 11.5T360-840q0 17-11.5 28.5T320-800H200v120q0 17-11.5 28.5T160-640q-17 0-28.5-11.5T120-680Zm720 0q0 17-11.5 28.5T800-640q-17 0-28.5-11.5T760-680v-120H640q-17 0-28.5-11.5T600-840q0-17 11.5-28.5T640-880h120q33 0 56.5 23.5T840-800v120ZM200-120q-33 0-56.5-23.5T120-200v-120q0-17 11.5-28.5T160-360q17 0 28.5 11.5T200-320v120h120q17 0 28.5 11.5T360-160q0 17-11.5 28.5T320-120H200Zm440 0q-17 0-28.5-11.5T600-160q0-17 11.5-28.5T640-200h120v-120q0-17 11.5-28.5T800-360q17 0 28.5 11.5T840-320v120q0 33-23.5 56.5T760-120H640ZM200-760v120q0 17-11.5 28.5T160-600q-17 0-28.5-11.5T120-640v-120q0-33 23.5-56.5T200-840h120q17 0 28.5 11.5T360-800q0 17-11.5 28.5T320-760H200Zm560 0H640q-17 0-28.5-11.5T600-800q0-17 11.5-28.5T640-840h120q33 0 56.5 23.5T840-760v120q0 17-11.5 28.5T800-600q-17 0-28.5-11.5T760-640v-120ZM240-240v-120q0-17 11.5-28.5T280-400h120q17 0 28.5 11.5T440-360v120q0 17-11.5 28.5T400-200H280q-17 0-28.5-11.5T240-240Zm280-200q-17 0-28.5-11.5T480-480q0-17 11.5-28.5T520-520q17 0 28.5 11.5T560-480q0 17-11.5 28.5T520-440Zm160 0q-17 0-28.5-11.5T640-480q0-17 11.5-28.5T680-520q17 0 28.5 11.5T720-480q0 17-11.5 28.5T680-440ZM520-280q-17 0-28.5-11.5T480-320q0-17 11.5-28.5T520-360q17 0 28.5 11.5T560-320q0 17-11.5 28.5T520-280Zm160 0q-17 0-28.5-11.5T640-320q0-17 11.5-28.5T680-360q17 0 28.5 11.5T720-320q0 17-11.5 28.5T680-280Z"/></svg></div>
+        <div class="card-texto"><div class="card-titulo">Códigos</div><div class="card-desc">Barras a productos</div></div>
       </a>
-
     </div>
   </section>
 
-  <!-- ===== ANÁLISIS ===== -->
-  <section class="grupo grupo-analisis">
-    <h2 class="grupo-titulo">Análisis</h2>
-    <p class="grupo-sub">Consulta y reportes</p>
-    <div class="grid-menu">
-
-      <a class="card" href="historial-caja.html">
-        <div class="card-icono ico-historial">
-          <svg viewBox="0 -960 960 960"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h480q50 0 85 35t35 85v560q0 50-35 85t-85 35H240Zm0-80h480v-560H240v560Zm80-80h320q17 0 28.5-11.5T680-280q0-17-11.5-28.5T640-320H320q-17 0-28.5 11.5T280-280q0 17 11.5 28.5T320-240Zm0-160h320q17 0 28.5-11.5T680-440q0-17-11.5-28.5T640-480H320q-17 0-28.5 11.5T280-440q0 17 11.5 28.5T320-400Zm0-160h320q17 0 28.5-11.5T680-600q0-17-11.5-28.5T640-640H320q-17 0-28.5 11.5T280-600q0 17 11.5 28.5T320-560Zm0-160h320q17 0 28.5-11.5T680-760q0-17-11.5-28.5T640-800H320q-17 0-28.5 11.5T280-760q0 17 11.5 28.5T320-720ZM240-160v-560 560Z"/></svg>
-        </div>
-        <div class="card-texto">
-          <div class="card-titulo">Historial</div>
-          <div class="card-desc">Movimientos y cierres anteriores</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <!-- ANÁLISIS -->
+  <section class="grupo grupo-analisis" style="margin-top: 20px;">
+    <div class="grupo-header">
+      <h2 class="grupo-titulo">Análisis</h2>
+      <span class="grupo-sub">Consulta y reportes</span>
+    </div>
+    <div class="grid-2col">
+      <a class="card-2col" href="historial-caja.html">
+        <div class="card-icono ico-historial"><svg viewBox="0 0 24 24"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h480q50 0 85 35t35 85v560q0 50-35 85t-85 35H240Zm0-80h480v-560H240v560Zm80-80h320q17 0 28.5-11.5T680-280q0-17-11.5-28.5T640-320H320q-17 0-28.5 11.5T280-280q0 17 11.5 28.5T320-240Zm0-160h320q17 0 28.5-11.5T680-440q0-17-11.5-28.5T640-480H320q-17 0-28.5 11.5T280-440q0 17 11.5 28.5T320-400Zm0-160h320q17 0 28.5-11.5T680-600q0-17-11.5-28.5T640-640H320q-17 0-28.5 11.5T280-600q0 17 11.5 28.5T320-560Zm0-160h320q17 0 28.5-11.5T680-760q0-17-11.5-28.5T640-800H320q-17 0-28.5 11.5T280-760q0 17 11.5 28.5T320-720ZM240-160v-560 560Z"/></svg></div>
+        <div class="card-texto"><div class="card-titulo">Historial</div><div class="card-desc">Cierres anteriores</div></div>
       </a>
-
-      <a class="card" href="dashboard.html">
-        <div class="card-icono ico-dashboard">
-          <svg viewBox="0 -960 960 960"><path d="M640-160v-280q0-17 11.5-28.5T680-480q17 0 28.5 11.5T720-440v280q0 17-11.5 28.5T680-120q-17 0-28.5-11.5T640-160Zm-200 0v-560q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v560q0 17-11.5 28.5T480-120q-17 0-28.5-11.5T440-160Zm-200 0v-400q0-17 11.5-28.5T280-600q17 0 28.5 11.5T320-560v400q0 17-11.5 28.5T280-120q-17 0-28.5-11.5T240-160Z"/></svg>
-        </div>
-        <div class="card-texto">
-          <div class="card-titulo">Dashboard</div>
-          <div class="card-desc">Análisis y estadísticas del negocio</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <a class="card-2col" href="dashboard.html">
+        <div class="card-icono ico-dashboard"><svg viewBox="0 0 24 24"><path d="M640-160v-280q0-17 11.5-28.5T680-480q17 0 28.5 11.5T720-440v280q0 17-11.5 28.5T680-120q-17 0-28.5-11.5T640-160Zm-200 0v-560q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v560q0 17-11.5 28.5T480-120q-17 0-28.5-11.5T440-160Zm-200 0v-400q0-17 11.5-28.5T280-600q17 0 28.5 11.5T320-560v400q0 17-11.5 28.5T280-120q-17 0-28.5-11.5T240-160Z"/></svg></div>
+        <div class="card-texto"><div class="card-titulo">Dashboard</div><div class="card-desc">Estadísticas</div></div>
       </a>
-
     </div>
   </section>
 
-  <!-- ===== ADMINISTRACIÓN (solo visible para admin) ===== -->
-  <section class="grupo grupo-admin seccion-admin" id="seccionAdmin">
-    <h2 class="grupo-titulo">👑 Administración</h2>
-    <p class="grupo-sub">Solo visible para administradores</p>
-    <div class="grid-menu">
-
-      <a class="card" href="admin-usuarios.html">
-        <div class="card-icono ico-admin-usuarios">
-          <svg viewBox="0 -960 960 960"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"/></svg>
-        </div>
-        <div class="card-texto">
-          <div class="card-titulo">Usuarios</div>
-          <div class="card-desc">Crea, edita y asigna roles</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <!-- ADMINISTRACIÓN -->
+  <section class="grupo grupo-admin seccion-admin" id="seccionAdmin" style="margin-top: 20px;">
+    <div class="grupo-header">
+      <h2 class="grupo-titulo">👑 Administración</h2>
+      <span class="grupo-sub">Solo visible para administradores</span>
+    </div>
+    <div class="grid-2col">
+      <a class="card-2col" href="admin-usuarios.html">
+        <div class="card-icono ico-admin-usuarios"><svg viewBox="0 0 24 24"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"/></svg></div>
+        <div class="card-texto"><div class="card-titulo">Usuarios</div><div class="card-desc">Roles y accesos</div></div>
       </a>
-
-      <a class="card" href="admin-horarios.html">
-        <div class="card-icono ico-admin-horarios">
-          <svg viewBox="0 -960 960 960"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-80q-25 0-42.5-17.5T420-300q0-25 17.5-42.5T480-360q25 0 42.5 17.5T540-300q0 25-17.5 42.5T480-240Zm-40-160v-320h80v320h-80Z"/></svg>
-        </div>
-        <div class="card-texto">
-          <div class="card-titulo">Horarios y turnos</div>
-          <div class="card-desc">Historial de aperturas y cierres</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <a class="card-2col" href="admin-horarios.html">
+        <div class="card-icono ico-admin-horarios"><svg viewBox="0 0 24 24"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-80q-25 0-42.5-17.5T420-300q0-25 17.5-42.5T480-360q25 0 42.5 17.5T540-300q0 25-17.5 42.5T480-240Zm-40-160v-320h80v320h-80Z"/></svg></div>
+        <div class="card-texto"><div class="card-titulo">Turnos</div><div class="card-desc">Horarios y cierres</div></div>
       </a>
-
     </div>
   </section>
 
-  <div style="display:flex; justify-content:center; margin-top:28px;">
-    <div class="cerrar-sesion-box" onclick="cerrarSesion()">
-      <span>Cerrar sesión</span>
-    </div>
+  <div class="cerrar-sesion-box" onclick="cerrarSesion()">
+    <span>Cerrar sesión</span>
   </div>
 
 </div>
 
 <script src="nav.js"></script>
 <script>
+/* =========================================================
+   JAVASCRIPT COMPLETO (Copiado y pegado de tu original)
+   ========================================================= */
 let turnoPendiente = null;
 let usuarioPendienteAjeno = null;
 
 function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
 
-/* =========================================================
-   TEMA: solo día/noche
-   ========================================================= */
 (function inicializarBotonTema() {
   const btn = document.getElementById('btnTema');
   if (!btn) return;
-
   function aplicarTema(t) {
     document.documentElement.classList.remove('tema-claro', 'tema-oscuro', 'tema-auto');
     document.documentElement.classList.add('tema-' + t);
     try { localStorage.setItem('caf_tema', t); } catch (e) {}
     btn.textContent = (t === 'oscuro') ? '🌙' : '☀️';
   }
-
   let temaInicial = 'claro';
-  try {
-    const guardado = localStorage.getItem('caf_tema');
-    if (guardado === 'oscuro' || guardado === 'claro') temaInicial = guardado;
-  } catch (e) {}
+  try { const guardado = localStorage.getItem('caf_tema'); if (guardado === 'oscuro' || guardado === 'claro') temaInicial = guardado; } catch (e) {}
   aplicarTema(temaInicial);
-
   btn.addEventListener('click', function () {
     const actual = document.documentElement.classList.contains('tema-oscuro') ? 'oscuro' : 'claro';
     const nuevo = (actual === 'oscuro') ? 'claro' : 'oscuro';
@@ -713,18 +368,11 @@ function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
   });
 })();
 
-/* =========================================================
-   Mostrar u ocultar sección admin según rol
-   ========================================================= */
 function aplicarRolAdmin() {
   const u = getUsuarioTurno();
   const seccion = document.getElementById('seccionAdmin');
   if (!seccion) return;
-  if (u && u.rol === 'admin') {
-    seccion.classList.add('visible');
-  } else {
-    seccion.classList.remove('visible');
-  }
+  if (u && u.rol === 'admin') { seccion.classList.add('visible'); } else { seccion.classList.remove('visible'); }
 }
 
 async function pintar() {
@@ -756,17 +404,8 @@ async function entrar() {
   mostrar('Comprobando...', 'aviso');
   try {
     const r = await jsonp({ accion: 'auth' }, 15000);
-    if (r && r.ok) {
-      mostrar('ACEII', '');
-      await cargarUsuarios();
-    } else {
-      borrarToken();
-      mostrar('Clave incorrecta', 'error');
-    }
-  } catch (err) {
-    borrarToken();
-    mostrar(err.message, 'error');
-  }
+    if (r && r.ok) { mostrar('ACEII', ''); await cargarUsuarios(); } else { borrarToken(); mostrar('Clave incorrecta', 'error'); }
+  } catch (err) { borrarToken(); mostrar(err.message, 'error'); }
   pintar();
 }
 
@@ -780,9 +419,7 @@ async function cargarUsuarios() {
       const sel = $('usuarioTurno');
       sel.innerHTML = '';
       sel.appendChild(new Option('Elige tu nombre...', ''));
-      r.items.forEach(function (u) {
-        sel.appendChild(new Option(u.nombre + ' (' + u.id + ')', u.id));
-      });
+      r.items.forEach(function (u) { sel.appendChild(new Option(u.nombre + ' (' + u.id + ')', u.id)); });
     }
   } catch (e) {}
 }
@@ -800,87 +437,45 @@ async function iniciarTurno() {
       let infoAjeno = null;
       try {
         const info = await jsonp({ accion: 'info_turno_actual', id_usuario: idUsr }, 15000);
-        if (info && info.ok && info.otro_turno) {
-          hayTurnoAjeno = true;
-          infoAjeno = info.otro_turno;
-        }
+        if (info && info.ok && info.otro_turno) { hayTurnoAjeno = true; infoAjeno = info.otro_turno; }
       } catch (e) {}
-
-      // ⭐ Si es admin, salta el bloqueo del turno ajeno
       if (hayTurnoAjeno && (r.rol || 'cajero') !== 'admin') {
         usuarioPendienteAjeno = { id: r.id_usuario, nombre: r.nombre, rol: r.rol || 'cajero' };
-        $('login').style.display = 'none';
-        $('turno').style.display = 'none';
-        $('pantallaCerrarAjeno').style.display = 'block';
-        $('menu').style.display = 'none';
-        $('infoTurnoAjeno').innerHTML =
-          '<strong>Turno:</strong> ' + infoAjeno.id + '<br>' +
-          '<strong>Responsable:</strong> ' + infoAjeno.responsable + '<br>' +
-          '<strong>Desde:</strong> ' + infoAjeno.fecha_apertura + '<br>' +
-          '<strong>Base inicial:</strong> $' + Number(infoAjeno.base || 0).toLocaleString('es-CO');
-        $('saldoAjenoReal').value = '';
-        $('obsCierreAjeno').value = '';
-        mostrar('Cierra el turno de ' + infoAjeno.responsable + ' para continuar', 'aviso');
-        return;
+        $('login').style.display = 'none'; $('turno').style.display = 'none'; $('pantallaCerrarAjeno').style.display = 'block'; $('menu').style.display = 'none';
+        $('infoTurnoAjeno').innerHTML = '<strong>Turno:</strong> ' + infoAjeno.id + '<br><strong>Responsable:</strong> ' + infoAjeno.responsable + '<br><strong>Desde:</strong> ' + infoAjeno.fecha_apertura + '<br><strong>Base inicial:</strong> $' + Number(infoAjeno.base || 0).toLocaleString('es-CO');
+        $('saldoAjenoReal').value = ''; $('obsCierreAjeno').value = '';
+        mostrar('Cierra el turno de ' + infoAjeno.responsable + ' para continuar', 'aviso'); return;
       }
-
       guardarUsuarioTurno({ id: r.id_usuario, nombre: r.nombre, rol: r.rol || 'cajero' });
       $('pinTurno').value = '';
       mostrar('Bienvenido ✓ ' + r.nombre, 'ok');
       await verificarTurnoCaja(r.id_usuario, r.nombre);
-    } else {
-      mostrar(r.error || 'PIN incorrecto', 'error');
-    }
-  } catch (err) {
-    mostrar('Error de conexión: ' + err.message, 'error');
-  }
+    } else { mostrar(r.error || 'PIN incorrecto', 'error'); }
+  } catch (err) { mostrar('Error de conexión: ' + err.message, 'error'); }
 }
 
 $('btnTurno').addEventListener('click', iniciarTurno);
 $('pinTurno').addEventListener('keydown', function (e) { if (e.key === 'Enter') iniciarTurno(); });
 
 async function verificarTurnoCaja(idUsuario, nombre) {
-  // ⭐ Si es admin, no exigir turno — va directo al menú
   const u = getUsuarioTurno();
-  if (u && u.rol === 'admin') {
-    mostrar('Bienvenido ' + nombre, 'ok');
-    setTimeout(pintar, 300);
-    return;
-  }
-
+  if (u && u.rol === 'admin') { mostrar('Bienvenido ' + nombre, 'ok'); setTimeout(pintar, 300); return; }
   mostrar('Verificando turno...', 'aviso');
   try {
     const r = await jsonp({ accion: 'mi_turno', id_usuario: idUsuario }, 20000);
-    if (r && r.ok && r.turno) {
-      guardarTurnoActual(r.turno);
-      mostrar('Turno recuperado ✓ Base: ' + fmt(r.turno.base), 'ok');
-      setTimeout(pintar, 800);
-    } else {
-      await pedirBaseInicial(nombre);
-    }
-  } catch (err) {
-    mostrar('Error al verificar turno: ' + err.message, 'error');
-    await pedirBaseInicial(nombre);
-  }
+    if (r && r.ok && r.turno) { guardarTurnoActual(r.turno); mostrar('Turno recuperado ✓ Base: ' + fmt(r.turno.base), 'ok'); setTimeout(pintar, 800); } else { await pedirBaseInicial(nombre); }
+  } catch (err) { mostrar('Error al verificar turno: ' + err.message, 'error'); await pedirBaseInicial(nombre); }
 }
 
 async function pedirBaseInicial(nombre) {
-  $('login').style.display = 'none';
-  $('turno').style.display = 'none';
-  $('pantallaCerrarAjeno').style.display = 'none';
-  $('abrirTurno').style.display = 'block';
-  $('menu').style.display = 'none';
+  $('login').style.display = 'none'; $('turno').style.display = 'none'; $('pantallaCerrarAjeno').style.display = 'none'; $('abrirTurno').style.display = 'block'; $('menu').style.display = 'none';
   mostrar('Hola ' + nombre + ', abre tu turno');
   try {
     const r = await jsonp({ accion: 'base_sugerida' }, 20000);
     if (r && r.ok) {
       const sugerida = Number(r.base_sugerida || 0);
       $('baseInicial').value = sugerida;
-      if (r.ultimo_cierre) {
-        $('avisoBaseSugerida').innerHTML = 'Último cierre: ' + r.ultimo_cierre + ' con ' + fmt(sugerida) + ' en caja.<br>Verifica el efectivo real antes de guardar.';
-      } else {
-        $('avisoBaseSugerida').textContent = 'No hay turnos anteriores. Cuenta el efectivo e ingrésalo.';
-      }
+      if (r.ultimo_cierre) { $('avisoBaseSugerida').innerHTML = 'Último cierre: ' + r.ultimo_cierre + ' con ' + fmt(sugerida) + ' en caja.<br>Verifica el efectivo real antes de guardar.'; } else { $('avisoBaseSugerida').textContent = 'No hay turnos anteriores. Cuenta el efectivo e ingrésalo.'; }
     }
   } catch (e) {}
 }
@@ -889,57 +484,35 @@ $('btnAbrir').addEventListener('click', async function () {
   const base = Number($('baseInicial').value);
   if (isNaN(base) || base < 0) { mostrar('Base inválida', 'error'); return; }
   const u = getUsuarioTurno();
-  $('btnAbrir').disabled = true;
-  mostrar('Abriendo turno...', 'aviso');
+  $('btnAbrir').disabled = true; mostrar('Abriendo turno...', 'aviso');
   try {
     let sugerida = 0;
-    try {
-      const s = await jsonp({ accion: 'base_sugerida' }, 15000);
-      if (s && s.ok) sugerida = Number(s.base_sugerida || 0);
-    } catch (e) {}
+    try { const s = await jsonp({ accion: 'base_sugerida' }, 15000); if (s && s.ok) sugerida = Number(s.base_sugerida || 0); } catch (e) {}
     let obs = $('obsAbrir').value.trim();
     if (base < sugerida) {
       const dif = sugerida - base;
-      if (!confirm('La base es menor a la sugerida (' + fmt(sugerida) + '). Faltan ' + fmt(dif) + '.\n\n¿Estás seguro de abrir con ' + fmt(base) + '?')) {
-        $('btnAbrir').disabled = false;
-        mostrar('Cancelado', 'aviso');
-        return;
-      }
+      if (!confirm('La base es menor a la sugerida (' + fmt(sugerida) + '). Faltan ' + fmt(dif) + '.\n\n¿Estás seguro de abrir con ' + fmt(base) + '?')) { $('btnAbrir').disabled = false; mostrar('Cancelado', 'aviso'); return; }
       obs = (obs ? obs + ' | ' : '') + 'Diferencia apertura: -' + dif;
     } else if (base > sugerida) {
       const dif = base - sugerida;
       obs = (obs ? obs + ' | ' : '') + 'Diferencia apertura: +' + dif;
     }
-    const r = await post({
-      accion: 'abrir_turno',
-      id_usuario: u.id,
-      base_inicial: base,
-      base_sugerida: sugerida,
-      observaciones: obs
-    });
+    const r = await post({ accion: 'abrir_turno', id_usuario: u.id, base_inicial: base, base_sugerida: sugerida, observaciones: obs });
     if (r.ok) {
       turnoPendiente = { id: r.id_turno, base: base };
       guardarTurnoActual(turnoPendiente);
       mostrar('Turno abierto ✓', 'ok');
       if (navigator.vibrate) navigator.vibrate(200);
       pintar();
-    } else {
-      mostrar(r.error || 'Error desconocido', 'error');
-    }
-  } catch (err) {
-    mostrar('Sin conexión: ' + err.message, 'error');
-  } finally {
-    $('btnAbrir').disabled = false;
-  }
+    } else { mostrar(r.error || 'Error desconocido', 'error'); }
+  } catch (err) { mostrar('Sin conexión: ' + err.message, 'error'); } finally { $('btnAbrir').disabled = false; }
 });
 
 $('btnCancelarApertura').addEventListener('click', function () {
   if (!confirm('Si cancelas, se cerrará tu sesión. ¿Continuar?')) return;
-  borrarUsuarioTurno();
-  borrarTurnoActual();
+  borrarUsuarioTurno(); borrarTurnoActual();
   try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
-  $('clave').value = '';
-  pintar();
+  $('clave').value = ''; pintar();
 });
 
 $('btnCerrarAjeno').addEventListener('click', async function () {
@@ -947,43 +520,18 @@ $('btnCerrarAjeno').addEventListener('click', async function () {
   const saldoReal = Number($('saldoAjenoReal').value);
   if (isNaN(saldoReal) || saldoReal < 0) { mostrar('Escribe el efectivo real contado', 'error'); return; }
   const obs = $('obsCierreAjeno').value.trim() || 'Cierre al cambiar de turno';
-
-  $('btnCerrarAjeno').disabled = true;
-  mostrar('Cerrando turno ajeno...', 'aviso');
-
+  $('btnCerrarAjeno').disabled = true; mostrar('Cerrando turno ajeno...', 'aviso');
   try {
     const info = await jsonp({ accion: 'info_turno_actual', id_usuario: usuarioPendienteAjeno.id }, 15000);
-    if (!info || !info.ok || !info.otro_turno) {
-      await continuarLogin();
-      return;
-    }
-    const r = await post({
-      accion: 'cerrar_turno',
-      id_usuario: usuarioPendienteAjeno.id,
-      id_turno: info.otro_turno.id,
-      saldo_real: saldoReal,
-      observaciones: obs
-    });
-    if (r.ok) {
-      mostrar('Turno ajeno cerrado ✓', 'ok');
-      await continuarLogin();
-    } else {
-      mostrar(r.error || 'Error al cerrar turno ajeno', 'error');
-      $('btnCerrarAjeno').disabled = false;
-    }
-  } catch (err) {
-    mostrar('Error: ' + err.message, 'error');
-    $('btnCerrarAjeno').disabled = false;
-  }
+    if (!info || !info.ok || !info.otro_turno) { await continuarLogin(); return; }
+    const r = await post({ accion: 'cerrar_turno', id_usuario: usuarioPendienteAjeno.id, id_turno: info.otro_turno.id, saldo_real: saldoReal, observaciones: obs });
+    if (r.ok) { mostrar('Turno ajeno cerrado ✓', 'ok'); await continuarLogin(); } else { mostrar(r.error || 'Error al cerrar turno ajeno', 'error'); $('btnCerrarAjeno').disabled = false; }
+  } catch (err) { mostrar('Error: ' + err.message, 'error'); $('btnCerrarAjeno').disabled = false; }
 });
 
 $('btnCancelarAjeno').addEventListener('click', function () {
-  usuarioPendienteAjeno = null;
-  $('pantallaCerrarAjeno').style.display = 'none';
-  $('clave').value = '';
-  borrarToken();
-  borrarUsuarioTurno();
-  pintar();
+  usuarioPendienteAjeno = null; $('pantallaCerrarAjeno').style.display = 'none'; $('clave').value = '';
+  borrarToken(); borrarUsuarioTurno(); pintar();
 });
 
 async function continuarLogin() {
@@ -991,77 +539,52 @@ async function continuarLogin() {
   guardarUsuarioTurno({ id: usuarioPendienteAjeno.id, nombre: usuarioPendienteAjeno.nombre, rol: usuarioPendienteAjeno.rol || 'cajero' });
   $('pantallaCerrarAjeno').style.display = 'none';
   mostrar('Bienvenido ✓ ' + usuarioPendienteAjeno.nombre, 'ok');
-  const id = usuarioPendienteAjeno.id;
-  usuarioPendienteAjeno = null;
+  const id = usuarioPendienteAjeno.id; usuarioPendienteAjeno = null;
   await verificarTurnoCaja(id, '');
 }
 
 async function cargarBannerTurno() {
   const u = getUsuarioTurno();
   if (!u) { $('bannerTurno').style.display = 'none'; return; }
-
   try {
     const cache = JSON.parse(localStorage.getItem('caf_banner_cache') || 'null');
     if (cache && cache.turno_id) {
-      $('bannerTurno').style.display = 'block';
-      $('bannerMiTurno').style.display = 'block';
-      $('bannerOtroTurno').style.display = 'none';
+      $('bannerTurno').style.display = 'block'; $('bannerMiTurno').style.display = 'block'; $('bannerOtroTurno').style.display = 'none';
       $('bannerSaldo').textContent = '$' + Number(cache.saldo_esperado || 0).toLocaleString('es-CO');
-      $('bannerTurnoId').textContent = 'Turno ' + cache.turno_id + '\nBase $' + Number(cache.base || 0).toLocaleString('es-CO');
     }
   } catch (e) {}
-
   try {
     const r = await jsonp({ accion: 'info_turno_actual', id_usuario: u.id }, 20000);
     if (!r || !r.ok) return;
-
     $('bannerTurno').style.display = 'block';
-
     if (r.mi_turno) {
-      $('bannerMiTurno').style.display = 'block';
-      $('bannerOtroTurno').style.display = 'none';
+      $('bannerMiTurno').style.display = 'block'; $('bannerOtroTurno').style.display = 'none';
       $('bannerSaldo').textContent = '$' + Number(r.saldo_esperado || 0).toLocaleString('es-CO');
-      $('bannerTurnoId').textContent = 'Turno ' + r.mi_turno.id + '\nBase $' + Number(r.mi_turno.base || 0).toLocaleString('es-CO');
-
-      try {
-        localStorage.setItem('caf_banner_cache', JSON.stringify({
-          turno_id: r.mi_turno.id,
-          base: r.mi_turno.base,
-          saldo_esperado: r.saldo_esperado,
-          ts: Date.now()
-        }));
-      } catch (e) {}
+      try { localStorage.setItem('caf_banner_cache', JSON.stringify({ turno_id: r.mi_turno.id, base: r.mi_turno.base, saldo_esperado: r.saldo_esperado, ts: Date.now() })); } catch (e) {}
     } else if (r.otro_turno) {
-      $('bannerMiTurno').style.display = 'none';
-      $('bannerOtroTurno').style.display = 'block';
+      $('bannerMiTurno').style.display = 'none'; $('bannerOtroTurno').style.display = 'block';
       $('bannerOtroTexto').textContent = 'Turno abierto por ' + r.otro_turno.responsable + ' desde ' + r.otro_turno.fecha_apertura + '. No puedes abrir turno hasta que lo cierre.';
       try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
     } else {
-      $('bannerTurno').style.display = 'none';
-      try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
+      $('bannerTurno').style.display = 'none'; try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
     }
   } catch (e) {}
 }
 
 document.addEventListener('visibilitychange', function () {
-  if (!document.hidden && getUsuarioTurno() && getTurnoActual()) {
-    cargarBannerTurno();
-  }
+  if (!document.hidden && getUsuarioTurno() && getTurnoActual()) { cargarBannerTurno(); }
 });
 
 function cerrarSesion() {
   const t = getTurnoActual();
   if (t) {
     if (!confirm('⚠️ Tienes un turno ABIERTO.\n\nPara cerrar sesión primero debes cerrar el turno desde "Caja del turno".\n\n¿Quieres ir a cerrar el turno ahora?')) return;
-    location.href = 'caja.html';
-    return;
+    location.href = 'caja.html'; return;
   }
   if (!confirm('¿Cerrar la sesión general?')) return;
-  borrarUsuarioTurno();
-  borrarTurnoActual();
+  borrarUsuarioTurno(); borrarTurnoActual();
   try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
-  $('clave').value = '';
-  pintar();
+  $('clave').value = ''; pintar();
 }
 
 pintar();

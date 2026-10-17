@@ -16,7 +16,7 @@
 <script src="comun.js"></script>
 <style>
   /* =====================================================
-     REDISEÑO VISUAL v8 - Fiel a la Foto 3
+     REDISEÑO VISUAL v9 - Limpieza de blobs y flechas
      ===================================================== */
   :root {
     --ac-texto: #0F1B3D;
@@ -42,7 +42,7 @@
     --superficie: #121D3A;
   }
 
-  /* ====== ANULACIÓN DE ESTILOS VIEJOS DE estilos.css ====== */
+  /* ====== ANULACIÓN DE ESTILOS VIEJOS (Blobs y líneas) ====== */
   .panel-menu .card::before { content: none !important; display: none !important; }
   .panel-menu .card::after { content: none !important; display: none !important; }
   .card-titulo::after { content: none !important; display: none !important; }
@@ -51,7 +51,7 @@
   .app-header-saludo { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.95); margin-bottom: 2px; }
   .app-header-frase { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 4px; font-weight: 500; line-height: 1.35; }
 
-  /* ====== TARJETA FLOTANTE DE RESUMEN (FOTO 3) ====== */
+  /* ====== TARJETA FLOTANTE DE RESUMEN ====== */
   .resumen-turno-card {
     display: flex; margin: -34px 16px 0 16px; position: relative; z-index: 10;
     height: 72px; box-sizing: border-box; background: var(--superficie);
@@ -108,7 +108,7 @@
   /* Chevron (Flechita) General */
   .panel-menu .card .chev {
     position: absolute; top: 16px; right: 16px; width: 26px; height: 26px; padding: 5px;
-    border-radius: 50%; color: var(--chev-color); background: var(--chev-bg);
+    border-radius: 50% !important; color: var(--chev-color); background: var(--chev-bg);
     box-sizing: border-box; fill: none; pointer-events: none;
   }
   .grupo-operacion .card { --chev-color: #2563EB; --chev-bg: rgba(37, 99, 235, 0.10); }
@@ -151,10 +151,23 @@
   .card-ventas-ancha .card-titulo { font-size: 20px; font-weight: 800; line-height: 1.1; color: #fff; margin: 0; }
   .card-ventas-ancha .card-desc { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.92); margin: 0; }
   
+  /* Flechita de Ventas: Forzada a ser un círculo perfecto */
   .card-ventas-ancha .chev {
-    position: static; background: #fff; color: #2F5FE8 !important; width: 32px; height: 32px; padding: 6px; box-shadow: none;
+    position: static !important; 
+    background: #fff !important; 
+    color: #2F5FE8 !important; 
+    width: 36px !important; 
+    height: 36px !important; 
+    padding: 0 !important; 
+    box-shadow: none !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0;
   }
-  .card-ventas-ancha .chev path { stroke-width: 2.5; }
+  .card-ventas-ancha .chev svg { width: 20px; height: 20px; }
+  .card-ventas-ancha .chev path { stroke-width: 3; }
 
   .grid-operacion-resto { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
   .grid-operacion-resto .card { padding: 14px 12px; min-height: 132px; border-radius: 18px; }
@@ -168,6 +181,8 @@
   .panel-menu .grid-menu-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .panel-menu .grid-menu-2 .card { min-height: 80px; padding: 14px; flex-direction: row; align-items: center; gap: 12px; }
   .panel-menu .grid-menu-2 .card .texto-wrapper { display: flex; flex-direction: column; gap: 3px; flex: 1; padding-right: 10px; }
+  
+  /* Centrar el chevron verticalmente en las tarjetas de 2 columnas */
   .panel-menu .grid-menu-2 .card .chev { top: 50%; transform: translateY(-50%); right: 14px; }
 
   /* ====== BADGE ADMIN ====== */

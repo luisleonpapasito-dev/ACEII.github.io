@@ -57,16 +57,19 @@
                 html.tema-oscuro .nav-item { color: #9AA8CC; }
                 html.tema-oscuro .nav-item.active { color: #7DB1FF; }
                 html.tema-oscuro .nav-item.active span { background: rgba(125, 177, 255, 0.14); }
+
+                @media (max-width: 360px) {
+                    .bottom-nav-bar { height: 76px; padding: 8px 4px 0 4px; }
+                    .nav-item span { width: 54px; height: 30px; }
+                    .nav-item svg { width: 22px; height: 22px; }
+                    .nav-item { font-size: 11px; }
+                }
             </style>
             <div class="bottom-nav-bar-container">
                 <div class="bottom-nav-bar">
                     <a href="index.html" class="nav-item" data-page="inicio" aria-label="Inicio">
                         <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>
                         <span>Inicio</span>
-                    </a>
-                    <a href="ventas.html" class="nav-item" data-page="ventas" aria-label="Ventas">
-                        <svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.4 11.2a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20 7H6"/></svg>
-                        <span>Ventas</span>
                     </a>
                     <a href="inventario.html" class="nav-item" data-page="inventario" aria-label="Inventario">
                         <svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8zM3.3 7.5L12 12.5l8.7-5M12 22v-9.5"/></svg>
@@ -76,21 +79,22 @@
                         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
                         <span>Historial</span>
                     </a>
-                    <a href="perfil.html" class="nav-item" data-page="perfil" aria-label="Más">
-                        <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
-                        <span>Más</span>
+                    <a href="perfil.html" class="nav-item" data-page="perfil" aria-label="Perfil">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                        <span>Perfil</span>
                     </a>
                 </div>
             </div>
         `;
         document.body.insertAdjacentHTML('beforeend', navHTML);
 
+        // Resaltar pestaña activa según la URL
         const path = window.location.pathname.split('/').pop() || '';
         let activePage = '';
+        
         if (path === '' || path === 'index.html') activePage = 'inicio';
-        else if (path === 'ventas.html') activePage = 'ventas';
         else if (['inventario.html', 'productos.html', 'categorias.html', 'codigos.html', 'recepcion.html'].includes(path)) activePage = 'inventario';
-        else if (['historial-caja.html', 'dashboard.html', 'caja.html', 'devoluciones.html'].includes(path)) activePage = 'historial';
+        else if (['historial-caja.html', 'dashboard.html', 'caja.html', 'ventas.html', 'devoluciones.html'].includes(path)) activePage = 'historial';
         else if (path === 'perfil.html' || ['admin-usuarios.html', 'admin-horarios.html'].includes(path)) activePage = 'perfil';
 
         if (activePage) {
@@ -102,7 +106,7 @@
         }
     }
 
-    // Esperar a que el DOM y comun.js estén listos
+    // Esperar a que el DOM y comun.js estén listos para inyectar (evita que no aparezca al inicio)
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => setTimeout(inyectarNav, 100));
     } else {

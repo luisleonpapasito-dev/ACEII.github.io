@@ -994,3 +994,29 @@ html.tema-oscuro .linea { border-bottom-color: #303b50; }
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   PARCHE FINAL: ELIMINAR CÍRCULOS Y LÍNEAS DE LAS TARJETAS
+   ============================================================ */
+.card::before, 
+.card::after,
+.panel-menu .card::before,
+.panel-menu .card::after,
+.card-icono::before,
+.card-icono::after {
+    display: none !important;
+    content: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* Forzar fondo blanco limpio en las tarjetas */
+.card {
+    background: var(--superficie) !important;
+    background-image: none !important;
+}

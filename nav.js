@@ -89,10 +89,11 @@
         }
     }
 
-    // 🚨 LA MAGIA: Esperar a que toda la página y comun.js terminen de cargar
-    if (document.readyState === 'complete') {
-        setTimeout(inyectarNav, 50);
+    // Forzar la inyección tan pronto como el DOM esté listo y también en 'load'
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => setTimeout(inyectarNav, 10));
     } else {
-        window.addEventListener('load', () => setTimeout(inyectarNav, 50));
+        setTimeout(inyectarNav, 10);
     }
+    window.addEventListener('load', () => setTimeout(inyectarNav, 10));
 })();

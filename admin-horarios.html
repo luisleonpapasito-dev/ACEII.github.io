@@ -278,20 +278,47 @@ async function cargarTurnos() {
   } catch (e) { console.error(e); }
 }
 
+// Función robusta para convertir cualquier fecha a un objeto Date válido
+function parsearFechaSegura(f) {
+  if (!f) return null;
+  
+  // 1. Si ya es un Date, lo devolvemos
+  if (f instanceof Date) return f;
+  
+  // 2. Limpiamos el string de basura como "GMT-0500" o "(hora de Colombia)"
+  let limpia = String(f).replace(/GMT.*/i, '').replace(/\(.*\)/g, '').trim();
+  
+  // 3. Intentamos formato ISO (cambiando el primer espacio por T)
+  let d = new Date(limpia.replace(' ', 'T'));
+  
+  // 4. Si falló, intentamos extraer manualmente con Regex "2026-10-17 17:12:54"
+  if (isNaN(d.getTime())) {
+    const match = String(f).match(/(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+    if (match) {
+      d = new Date(match[1], match[2]-1, match[3], match[4], match[5]);
+    }
+  }
+  
+  return isNaN(d.getTime()) ? null : d;
+}
+
 function formatearFecha(f) {
-  if (!f) return '—';
-  const d = new Date(f.replace(' ', 'T'));
-  const dia = d.getDate();
-  const mes = d.getMonth() + 1;
-  const h = String(d.getHours()).padStart(2,'0');
-  const m = String(d.getMinutes()).padStart(2,'0');
-  return `${dia}/${mes} a las ${h}:${m}`;
+  const d = parsearFechaSegura(f);
+  if (!d) return '—';
+  
+  const dia = String(d.getDate()).padStart(2, '0');
+  const mes = String(d.getMonth() + 1).padStart(2, '0');
+  const anio = d.getFullYear();
+  const h = String(d.getHours()).padStart(2, '0');
+  const m = String(d.getMinutes()).padStart(2, '0');
+  
+  return `${dia}/${mes}/${anio} · ${h}:${m}`;
 }
 
 function pintarTurnos() {
   const cont = document.getElementById('listaTurnos');
-  // Solo mostrar los abiertos
-  const abiertos = turnosData.filter(t => t.estado === 'abierto');
+  // Solo mostrar los abiertos (asegurándonos de comparar en minúsculas)
+  const abiertos = turnosData.filter(t => String(t.estado).toLowerCase() === 'abierto');
   
   if (abiertos.length === 0) {
     cont.innerHTML = '<div class="vacio"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><br>No hay turnos abiertos ahora mismo</div>';
@@ -300,11 +327,15 @@ function pintarTurnos() {
 
   cont.innerHTML = '';
   abiertos.forEach(t => {
-    // Si el turno lleva más de 10 horas abierto, es una alerta (se olvidaron de cerrar)
+    // Calculamos si lleva más de 10 horas abierto usando la fecha segura
     const ahora = new Date();
-    const apertura = new Date(t.fecha_apertura.replace(' ', 'T'));
-    const horasAbierto = (ahora - apertura) / (1000 * 60 * 60);
-    const esAlerta = horasAbierto > 10;
+    const apertura = parsearFechaSegura(t.fecha_apertura);
+    
+    let esAlerta = false;
+    if (apertura) {
+      const horasAbierto = (ahora - apertura) / (1000 * 60 * 60);
+      esAlerta = horasAbierto > 10;
+    }
 
     const card = document.createElement('div');
     card.className = 'turno-card' + (esAlerta ? ' alerta' : '');
@@ -317,7 +348,7 @@ function pintarTurnos() {
         <span class="badge ${esAlerta ? 'badge-alerta' : 'badge-abierto'}">${esAlerta ? '⚠️ Alerta' : '● Abierto'}</span>
       </div>
       <div class="turno-fila"><span class="lbl">Apertura</span><span class="val">${formatearFecha(t.fecha_apertura)}</span></div>
-      <div class="turno-fila"><span class="lbl">Base inicial</span><span class="val">$${t.base.toLocaleString('es-CO')}</span></div>
+      <div class="turno-fila"><span class="lbl">Base inicial</span><span class="val">$${Number(t.base || 0).toLocaleString('es-CO')}</span></div>
       ${esAlerta ? '<button class="btn-forzar" onclick="alert(\'El turno se cerrará automáticamente en la próxima actualización de la app.\')">⚠️ Forzar cierre urgente</button>' : ''}
     `;
     cont.appendChild(card);
@@ -381,7 +412,6 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.getElementById('panelTurnos').style.display = target === 'turnos' ? 'block' : 'none';
     document.getElementById('panelHorarios').style.display = target === 'horarios' ? 'block' : 'none';
     
-    // Mostrar/ocultar botón flotante
     document.getElementById('btnNuevoHorario').style.display = target === 'horarios' ? 'flex' : 'none';
   });
 });

@@ -41,44 +41,132 @@ function emojiTema(tema) {
   return '⚙️';
 }
 
+// ===== MENSAJES (toast) =====
+let toastTimeout_ = null;
+let toastNode_ = null;
+let toastEsCarga_ = false;
+let toastLimite_ = 0;
+
 function mostrar(texto, clase) {
+  const esToast = (clase === 'ok' || clase === 'error' || clase === 'aviso');
   const e = document.getElementById('estado');
   if (e) {
     e.textContent = texto;
     e.className = clase || '';
-    if (clase === 'ok' || clase === 'error' || clase === 'aviso') {
-      e.style.display = 'none';
-    } else {
-      e.style.display = '';
-    }
+    e.style.display = esToast ? 'none' : '';
   }
-  if (texto && (clase === 'ok' || clase === 'error' || clase === 'aviso')) {
+  if (texto && esToast) {
     mostrarToast_(texto, clase);
+  } else if (toastEsCarga_) {
+    // Si había un "Cargando..." y ahora llega un estado normal, quitarlo
+    ocultarToast_();
   }
 }
 
-let toastTimeout_ = null;
-let toastNode_ = null;
+function iconoToast_(clase, cargando) {
+  const span = document.createElement('span');
+  if (cargando) {
+    span.className = 'toast-spinner';
+    return span;
+  }
+  span.className = 'toast-ico';
+  const base = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">';
+  if (clase === 'ok') {
+    span.innerHTML = base + '<path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  } else {
+    span.innerHTML = base + '<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></svg>';
+  }
+  return span;
+}
+
+function ocultarToast_() {
+  clearTimeout(toastTimeout_);
+  toastEsCarga_ = false;
+  if (toastNode_) toastNode_.classList.remove('visible');
+}
+
+function programarOcultarToast_(esperaMs) {
+  clearTimeout(toastTimeout_);
+  toastTimeout_ = setTimeout(function () {
+    // Si sigue habiendo cargas en curso, el "Cargando..." se queda
+    if (toastEsCarga_ && cargasActivas_ > 0 && Date.now() < toastLimite_) {
+      programarOcultarToast_(400);
+    } else {
+      ocultarToast_();
+    }
+  }, esperaMs);
+}
 
 function mostrarToast_(texto, clase) {
   if (!toastNode_) {
-    toastNode_ = document.createElement('div');
-    toastNode_.id = 'toastGlobal';
-    document.body.appendChild(toastNode_);
+    toastNode_ = document.getElementById('toastGlobal');
+    if (!toastNode_) {
+      toastNode_ = document.createElement('div');
+      toastNode_.id = 'toastGlobal';
+      document.body.appendChild(toastNode_);
+    }
   }
-  let icono = '';
-  if (clase === 'ok') icono = '✅ ';
-  else if (clase === 'error') icono = '⚠️ ';
-  else if (clase === 'aviso') icono = '⏳ ';
-  toastNode_.textContent = icono + texto;
-  toastNode_.className = 'toast-global visible ' + (clase || '');
-  clearTimeout(toastTimeout_);
-  toastTimeout_ = setTimeout(function () {
-    toastNode_.classList.remove('visible');
-  }, clase === 'error' ? 4000 : 2500);
+  const cargando = (clase === 'aviso') && /(\.\.\.|…)\s*$/.test(texto);
+  toastEsCarga_ = cargando;
+  toastLimite_ = Date.now() + 30000;
+
+  toastNode_.textContent = '';
+  toastNode_.appendChild(iconoToast_(clase, cargando));
+  const t = document.createElement('span');
+  t.textContent = texto;
+  toastNode_.appendChild(t);
+
+  toastNode_.className = 'toast-global visible ' + (clase || '') + (cargando ? ' cargando' : '');
+  programarOcultarToast_(clase === 'error' ? 4000 : 2500);
+
   if (navigator.vibrate) {
     if (clase === 'ok') navigator.vibrate(60);
     else if (clase === 'error') navigator.vibrate([80, 40, 80]);
+  }
+}
+
+// ===== BARRA DE CARGA SUPERIOR =====
+// Aparece sola cuando hay peticiones al servidor en curso (si tardan más de 200 ms)
+let cargasActivas_ = 0;
+let barraNode_ = null;
+let barraTimer_ = null;
+
+function barraCarga_() {
+  if (barraNode_) return barraNode_;
+  if (!document.body) return null;
+  const st = document.createElement('style');
+  st.textContent =
+    '#barraCarga{position:fixed;top:0;left:0;right:0;height:3px;z-index:3000;pointer-events:none;opacity:0;overflow:hidden;transition:opacity .25s ease}' +
+    '#barraCarga.activa{opacity:1}' +
+    '#barraCarga::after{content:"";position:absolute;top:0;bottom:0;left:0;width:40%;background:linear-gradient(90deg,transparent,#60A5FA,#2563EB,transparent);animation:barraCargaMov 1.1s cubic-bezier(.45,0,.2,1) infinite}' +
+    '@keyframes barraCargaMov{from{transform:translateX(-100%)}to{transform:translateX(250%)}}';
+  document.head.appendChild(st);
+  barraNode_ = document.createElement('div');
+  barraNode_.id = 'barraCarga';
+  document.body.appendChild(barraNode_);
+  return barraNode_;
+}
+
+function cargaInicio_() {
+  cargasActivas_++;
+  if (cargasActivas_ === 1) {
+    clearTimeout(barraTimer_);
+    barraTimer_ = setTimeout(function () {
+      const b = barraCarga_();
+      if (b) b.classList.add('activa');
+    }, 200);
+  }
+}
+
+function cargaFin_() {
+  cargasActivas_ = Math.max(0, cargasActivas_ - 1);
+  if (cargasActivas_ === 0) {
+    clearTimeout(barraTimer_);
+    if (barraNode_) barraNode_.classList.remove('activa');
+    // Si había un "Cargando..." esperando, quitarlo al terminar todo
+    setTimeout(function () {
+      if (cargasActivas_ === 0 && toastEsCarga_) ocultarToast_();
+    }, 150);
   }
 }
 
@@ -182,6 +270,7 @@ function cerrarTurno() {
 
 function jsonp(params, limiteMs) {
   return new Promise(function (resolve, reject) {
+    cargaInicio_();
     const nombre = 'cb_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
     const s = document.createElement('script');
     let fin = false;
@@ -191,6 +280,7 @@ function jsonp(params, limiteMs) {
       clearTimeout(timeoutId);
       if (s.parentNode) s.parentNode.removeChild(s);
       delete window[nombre];
+      cargaFin_();
     }
     timeoutId = setTimeout(function () {
       if (!fin) { limpiar(); reject(new Error('El servidor no respondió a tiempo')); }
@@ -207,6 +297,7 @@ function jsonp(params, limiteMs) {
 }
 
 async function post(cuerpo) {
+  cargaInicio_();
   const ctrl = new AbortController();
   const timeoutId = setTimeout(function () { ctrl.abort(); }, 120000);
   try {
@@ -219,5 +310,6 @@ async function post(cuerpo) {
     return await r.json();
   } finally {
     clearTimeout(timeoutId);
+    cargaFin_();
   }
 }

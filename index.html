@@ -16,7 +16,7 @@
 <script src="comun.js"></script>
 <style>
   /* =====================================================
-     REDISEÑO VISUAL v7 - Fiel a la imagen de referencia
+     REDISEÑO VISUAL v8 - Fiel a la Foto 3
      ===================================================== */
   :root {
     --ac-texto: #0F1B3D;
@@ -42,36 +42,31 @@
     --superficie: #121D3A;
   }
 
+  /* ====== ANULACIÓN DE ESTILOS VIEJOS DE estilos.css ====== */
+  .panel-menu .card::before { content: none !important; display: none !important; }
+  .panel-menu .card::after { content: none !important; display: none !important; }
+  .card-titulo::after { content: none !important; display: none !important; }
+
   /* ====== HEADER ====== */
   .app-header-saludo { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.95); margin-bottom: 2px; }
   .app-header-frase { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 4px; font-weight: 500; line-height: 1.35; }
 
-  /* ====== BANNER DE TURNO ====== */
-  #bannerTurno { background: none; border: 0; box-shadow: none; padding: 0; margin: 14px auto 0; width: calc(100% - 28px); max-width: 520px; }
-  #bannerMiTurno {
-    position: relative; overflow: hidden; padding: 20px; border-radius: 24px;
-    background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: #fff;
-    box-shadow: 0 10px 28px rgba(29, 78, 216, 0.35);
+  /* ====== TARJETA FLOTANTE DE RESUMEN (FOTO 3) ====== */
+  .resumen-turno-card {
+    display: flex; margin: -34px 16px 0 16px; position: relative; z-index: 10;
+    height: 72px; box-sizing: border-box; background: var(--superficie);
+    border: 1px solid var(--ac-borde); border-radius: 18px;
+    box-shadow: 0 6px 18px rgba(30,60,140,.12); align-items: center;
   }
-  #bannerMiTurno::after {
-    content: ""; position: absolute; right: -40px; top: -40px;
-    width: 160px; height: 160px; border-radius: 50%;
-    background: rgba(255, 255, 255, 0.10); pointer-events: none;
-  }
-  .hero-fila { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-  .hero-cuerpo { flex: 1; min-width: 0; }
-  .hero-etiqueta { font-size: 13px; font-weight: 600; opacity: 0.92; }
-  .hero-monto { font-size: 34px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; margin: 2px 0; }
-  .hero-meta { font-size: 11.5px; font-weight: 500; opacity: 0.85; margin-top: 2px; word-break: break-word; }
-  #bannerMiTurno .hero-btn {
-    background: #fff; color: #1649C0; border: 0; border-radius: 999px;
-    padding: 10px 14px; min-height: 40px; display: inline-flex; align-items: center;
-    font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap;
-    box-shadow: none; transition: transform 0.12s ease;
-  }
-  #bannerMiTurno .hero-btn:active { transform: scale(0.95); }
-  #bannerTurnoId { white-space: pre-line; font-size: 11px; line-height: 1.45; }
-  #bannerOtroTurno { background: var(--superficie); border: 1.5px solid rgba(234, 88, 12, 0.35); border-radius: 18px; padding: 14px 16px; }
+  .resumen-turno-card .rt-col { flex: 1; padding-left: 16px; display: flex; flex-direction: column; gap: 4px; }
+  .resumen-turno-card .rt-lbl { font-size: 11px; font-weight: 600; color: var(--ac-texto-suave); }
+  .resumen-turno-card .rt-val { font-size: 15px; font-weight: 700; color: var(--ac-texto); }
+  .resumen-turno-card .rt-val.abierto { color: #0E7A55; display: flex; align-items: center; gap: 6px; }
+  .resumen-turno-card .rt-val.abierto::before { content: ""; width: 8px; height: 8px; border-radius: 4px; background: #16A870; display: block; }
+  .resumen-turno-card .rt-div { width: 1px; height: 36px; background: var(--ac-borde); }
+
+  /* ====== BANNER ALERTA TURNO AJENO ====== */
+  #bannerOtroTurno { background: var(--superficie); border: 1.5px solid rgba(234, 88, 12, 0.35); border-radius: 18px; padding: 14px 16px; margin: 16px; }
 
   /* ====== PANEL GENERAL ====== */
   .panel-menu {
@@ -99,13 +94,6 @@
   }
   .panel-menu .card:active { transform: scale(0.97); }
   
-  /* Blob decorativo */
-  .panel-menu .card::after {
-    content: ""; position: absolute; width: 70px; height: 70px; right: -25px; top: -25px;
-    border-radius: 50%; background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0) 70%); pointer-events: none;
-  }
-
-  /* Iconos */
   .panel-menu .card .card-icono {
     width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
     background: linear-gradient(135deg, var(--g1), var(--g2));
@@ -114,11 +102,10 @@
   }
   .panel-menu .card .card-icono svg { width: 24px; height: 24px; fill: #fff; display: block; }
 
-  /* Textos */
   .panel-menu .card .card-titulo { font-size: 14px; font-weight: 800; line-height: 1.2; color: var(--ac-texto); margin: 0; }
   .panel-menu .card .card-desc { font-size: 11.5px; font-weight: 500; line-height: 1.35; color: var(--ac-texto-suave); margin: 0; }
 
-  /* Chevron (Flechita) */
+  /* Chevron (Flechita) General */
   .panel-menu .card .chev {
     position: absolute; top: 16px; right: 16px; width: 26px; height: 26px; padding: 5px;
     border-radius: 50%; color: var(--chev-color); background: var(--chev-bg);
@@ -128,6 +115,7 @@
   .grupo-catalogo  .card { --chev-color: #EA580C; --chev-bg: rgba(234, 88, 12, 0.10); }
   .grupo-analisis  .card { --chev-color: #059669; --chev-bg: rgba(5, 150, 105, 0.10); }
   .grupo-admin     .card { --chev-color: #7C3AED; --chev-bg: rgba(124, 58, 237, 0.10); }
+  
   html.tema-oscuro .grupo-operacion .card { --chev-color: #7DB1FF; --chev-bg: rgba(125, 177, 255, 0.14); }
   html.tema-oscuro .grupo-catalogo  .card { --chev-color: #FB923C; --chev-bg: rgba(251, 146, 60, 0.14); }
   html.tema-oscuro .grupo-analisis  .card { --chev-color: #4ADE80; --chev-bg: rgba(74, 222, 128, 0.14); }
@@ -162,7 +150,10 @@
   .card-ventas-ancha .texto-wrapper { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
   .card-ventas-ancha .card-titulo { font-size: 20px; font-weight: 800; line-height: 1.1; color: #fff; margin: 0; }
   .card-ventas-ancha .card-desc { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.92); margin: 0; }
-  .card-ventas-ancha .chev { position: static; background: #fff; color: #2F5FE8 !important; width: 32px; height: 32px; padding: 6px; box-shadow: none; }
+  
+  .card-ventas-ancha .chev {
+    position: static; background: #fff; color: #2F5FE8 !important; width: 32px; height: 32px; padding: 6px; box-shadow: none;
+  }
   .card-ventas-ancha .chev path { stroke-width: 2.5; }
 
   .grid-operacion-resto { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
@@ -176,7 +167,7 @@
   /* ====== DISEÑO ESPECÍFICO: CATÁLOGO / ANÁLISIS / ADMIN ====== */
   .panel-menu .grid-menu-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .panel-menu .grid-menu-2 .card { min-height: 80px; padding: 14px; flex-direction: row; align-items: center; gap: 12px; }
-  .panel-menu .grid-menu-2 .card .texto-wrapper { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+  .panel-menu .grid-menu-2 .card .texto-wrapper { display: flex; flex-direction: column; gap: 3px; flex: 1; padding-right: 10px; }
   .panel-menu .grid-menu-2 .card .chev { top: 50%; transform: translateY(-50%); right: 14px; }
 
   /* ====== BADGE ADMIN ====== */
@@ -195,6 +186,13 @@
 
   .seccion-admin { display: none; }
   .seccion-admin.visible { display: block; }
+
+  /* Ajuste para el header en móvil */
+  @media (max-width: 400px) {
+    .grid-operacion-resto .card { padding: 10px 8px; min-height: 120px; }
+    .grid-operacion-resto .card .card-titulo { font-size: 12px; }
+    .grid-operacion-resto .card .card-desc { font-size: 10px; }
+  }
 </style>
 </head>
 <body>
@@ -212,22 +210,30 @@
   </div>
 </header>
 
-<div id="bannerTurno" class="caja" style="display:none;">
-  <div id="bannerMiTurno" style="display:none;">
-    <div class="hero-fila">
-      <div class="hero-cuerpo">
-        <div class="hero-etiqueta">💰 Tu turno está abierto</div>
-        <div class="hero-monto" id="bannerSaldo">$0</div>
-        <div class="hero-meta" id="bannerTurnoId"></div>
-      </div>
-      <a href="caja.html" class="main hero-btn">Ver caja →</a>
-    </div>
+<!-- Resumen Flotante (FOTO 3) -->
+<div id="resumenFlotante" class="resumen-turno-card" style="display:none;">
+  <div class="rt-col">
+    <div class="rt-lbl">Turno</div>
+    <div class="rt-val abierto" id="rtTurno">Abierto</div>
   </div>
+  <div class="rt-div"></div>
+  <div class="rt-col">
+    <div class="rt-lbl">Caja</div>
+    <div class="rt-val" id="rtCaja">$0</div>
+  </div>
+  <div class="rt-div"></div>
+  <div class="rt-col">
+    <div class="rt-lbl">Ventas hoy</div>
+    <div class="rt-val" id="rtVentas">0</div>
+  </div>
+</div>
+
+<div id="bannerTurno" style="display:none;">
   <div id="bannerOtroTurno" style="display:none;">
     <div style="display:flex; gap:10px; align-items:flex-start;">
       <div style="font-size:22px;">⚠️</div>
       <div style="flex:1;">
-        <div style="font-weight:700; color:var(--naranja); font-size:14px;">Hay un turno abierto por otro usuario</div>
+        <div style="font-weight:700; color:#EA580C; font-size:14px;">Hay un turno abierto por otro usuario</div>
         <div id="bannerOtroTexto" style="font-size:13px; color:var(--texto-suave); margin-top:4px;"></div>
       </div>
     </div>
@@ -236,6 +242,7 @@
 
 <div id="estado" class="estado-vacio">ACEII</div>
 
+<!-- Formularios de Login (Ocultos por defecto) -->
 <div class="caja" id="login" style="display:none;">
   <label>Clave del sistema</label>
   <input type="password" id="clave" placeholder="Escribe la clave">
@@ -251,7 +258,7 @@
 </div>
 
 <div class="caja" id="pantallaCerrarAjeno" style="display:none;">
-  <h3 style="margin-top:0; color:var(--naranja);">⚠️ Turno abierto por otra persona</h3>
+  <h3 style="margin-top:0; color:#EA580C;">⚠️ Turno abierto por otra persona</h3>
   <div id="infoTurnoAjeno" style="background:var(--superficie-2); padding:12px; border-radius:10px; font-size:14px; margin:10px 0;"></div>
   <p style="font-size:13px; color:var(--texto-suave);">Para que puedas entrar, hay que cerrar ese turno primero. Escribe el efectivo real que hay en caja ahora mismo.</p>
   <label>Efectivo real en caja</label>
@@ -521,6 +528,7 @@ async function pintar() {
     pintarUsuarioTurno();
     await cargarBannerTurno();
   } else {
+    $('resumenFlotante').style.display = 'none';
     $('bannerTurno').style.display = 'none';
   }
 }
@@ -772,16 +780,18 @@ async function continuarLogin() {
 
 async function cargarBannerTurno() {
   const u = getUsuarioTurno();
-  if (!u) { $('bannerTurno').style.display = 'none'; return; }
+  if (!u) { 
+    $('bannerTurno').style.display = 'none'; 
+    $('resumenFlotante').style.display = 'none';
+    return; 
+  }
 
   try {
     const cache = JSON.parse(localStorage.getItem('caf_banner_cache') || 'null');
     if (cache && cache.turno_id) {
-      $('bannerTurno').style.display = 'block';
-      $('bannerMiTurno').style.display = 'block';
-      $('bannerOtroTurno').style.display = 'none';
-      $('bannerSaldo').textContent = '$' + Number(cache.saldo_esperado || 0).toLocaleString('es-CO');
-      $('bannerTurnoId').textContent = 'Turno ' + cache.turno_id + '\nBase $' + Number(cache.base || 0).toLocaleString('es-CO');
+      $('resumenFlotante').style.display = 'flex';
+      $('resumenFlotante').querySelector('#rtCaja').textContent = fmt(cache.saldo_esperado || 0);
+      $('resumenFlotante').querySelector('#rtVentas').textContent = cache.ventas_hoy || '0';
     }
   } catch (e) {}
 
@@ -789,28 +799,31 @@ async function cargarBannerTurno() {
     const r = await jsonp({ accion: 'info_turno_actual', id_usuario: u.id }, 20000);
     if (!r || !r.ok) return;
 
-    $('bannerTurno').style.display = 'block';
-
     if (r.mi_turno) {
-      $('bannerMiTurno').style.display = 'block';
-      $('bannerOtroTurno').style.display = 'none';
-      $('bannerSaldo').textContent = '$' + Number(r.saldo_esperado || 0).toLocaleString('es-CO');
-      $('bannerTurnoId').textContent = 'Turno ' + r.mi_turno.id + '\nBase $' + Number(r.mi_turno.base || 0).toLocaleString('es-CO');
+      $('resumenFlotante').style.display = 'flex';
+      $('bannerTurno').style.display = 'none'; // Ocultamos la alerta antigua
+      
+      $('resumenFlotante').querySelector('#rtCaja').textContent = fmt(r.saldo_esperado || 0);
+      // Nota: Asumimos que el backend envía r.ventas_hoy, si no, se queda en 0
+      $('resumenFlotante').querySelector('#rtVentas').textContent = r.ventas_hoy || '0';
 
       try {
         localStorage.setItem('caf_banner_cache', JSON.stringify({
           turno_id: r.mi_turno.id,
           base: r.mi_turno.base,
           saldo_esperado: r.saldo_esperado,
+          ventas_hoy: r.ventas_hoy || 0,
           ts: Date.now()
         }));
       } catch (e) {}
     } else if (r.otro_turno) {
-      $('bannerMiTurno').style.display = 'none';
+      $('resumenFlotante').style.display = 'none';
+      $('bannerTurno').style.display = 'block';
       $('bannerOtroTurno').style.display = 'block';
       $('bannerOtroTexto').textContent = 'Turno abierto por ' + r.otro_turno.responsable + ' desde ' + r.otro_turno.fecha_apertura + '. No puedes abrir turno hasta que lo cierre.';
       try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
     } else {
+      $('resumenFlotante').style.display = 'none';
       $('bannerTurno').style.display = 'none';
       try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
     }

@@ -260,6 +260,88 @@
     background: var(--superficie) !important;
     background-image: none !important;
   }
+
+  .panel-menu .card .chev {
+  display: none !important;
+
+  /* ===== FASE 1: PULIDO DE TARJETAS ===== */
+
+/* 1. Que "Devoluciones" quepa dentro de su tarjeta */
+.grid-operacion-resto .card {
+  min-width: 0;
+  padding: 14px 10px;
+}
+.grid-operacion-resto .card .card-titulo {
+  font-size: 11.5px;
+  letter-spacing: -0.2px;
+  overflow-wrap: anywhere;
+}
+
+/* 2. Quitar el destello gris al tocar en el celular */
+a, button, .card, .card-ventas-ancha {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 3. Evitar el hover "pegado" en pantallas táctiles */
+@media (hover: none) {
+  .card:hover {
+    transform: none;
+  }
+}
+
+/* 4. Feedback al presionar la tarjeta azul de Ventas */
+.card-ventas-ancha {
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.card-ventas-ancha:active {
+  transform: scale(0.975);
+  box-shadow: 0 4px 10px rgba(36, 84, 220, 0.25);
+}
+
+/* 5. Anillo de foco para navegación con teclado */
+.card:focus-visible,
+.card-ventas-ancha:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.45);
+  outline-offset: 2px;
+}
+}
+
+/* ===== FASE 2: DETALLES CON PERSONALIDAD ===== */
+
+/* 1. Brillo único que cruza la tarjeta de Ventas */
+.card-ventas-ancha {
+  background:
+    linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.22) 50%, transparent 65%) no-repeat,
+    linear-gradient(120deg, #1F46CC 0%, #3A74F2 100%);
+  background-size: 250% 100%, 100% 100%;
+  background-position: 150% 0, 0 0;
+  animation: brilloVentas 1.1s cubic-bezier(0.23, 1, 0.32, 1) 0.5s 1 both;
+}
+@keyframes brilloVentas {
+  from { background-position: 150% 0, 0 0; }
+  to   { background-position: -50% 0, 0 0; }
+}
+
+/* 2. La flecha de Ventas responde al toque */
+.card-ventas-ancha .chev {
+  transition: transform 0.18s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.card-ventas-ancha:active .chev {
+  transform: translateX(3px);
+}
+
+/* 3. Iconos con relieve (luz arriba, sombra abajo) */
+.panel-menu .card .card-icono {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.12),
+    0 6px 14px color-mix(in srgb, var(--g2) 30%, transparent);
+}
+
+/* 4. Números con ancho fijo en el resumen del turno */
+.resumen-turno-card .rt-val {
+  font-variant-numeric: tabular-nums;
+}
 </style>
 </head>
 <body>
@@ -922,6 +1004,13 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+</script>
+<script>
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.card, .card-ventas-ancha, button') && navigator.vibrate) {
+      navigator.vibrate(8);
+    }
+  });
 </script>
 </body>
 </html>

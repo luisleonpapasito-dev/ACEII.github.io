@@ -17,6 +17,7 @@
 <style>
   /* =====================================================
      REDISEÑO VISUAL v5 - Con sección admin condicional
+     y barra de navegación inferior
      ===================================================== */
 
   :root {
@@ -30,6 +31,7 @@
     --logout-borde: #DBEAFE;
     --logout-texto: #2563EB;
     --superficie: #FFFFFF;
+    --bottom-nav-height: 84px;
   }
   html.tema-oscuro {
     --ac-texto: #F1F5FF;
@@ -140,7 +142,7 @@
   .panel-menu {
     max-width: 520px;
     margin: 0 auto;
-    padding: 0 14px calc(40px + env(safe-area-inset-bottom));
+    padding: 0 14px calc(var(--bottom-nav-height) + 20px + env(safe-area-inset-bottom));
   }
 
   .grupo-titulo {
@@ -354,6 +356,62 @@
   /* Oculta la sección admin por defecto */
   .seccion-admin { display: none; }
   .seccion-admin.visible { display: block; }
+
+  /* ===== BARRA DE NAVEGACIÓN INFERIOR ===== */
+  .bottom-nav-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--bottom-nav-height);
+    background: var(--superficie);
+    border-top: 1px solid var(--ac-borde);
+    box-shadow: 0 -6px 18px rgba(30,60,140,.08);
+    display: flex;
+    padding: 10px 10px 0 10px;
+    z-index: 1000;
+  }
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: var(--ac-texto-suave);
+    font-size: 11px;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+  .nav-item.active {
+    color: var(--ac-flecha);
+    font-weight: 700;
+  }
+  .nav-item span {
+    width: 64px;
+    height: 32px;
+    border-radius: 16px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .nav-item.active span {
+    background: var(--ac-flecha-bg);
+  }
+  .nav-item svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .nav-item.active svg {
+    stroke-width: 2;
+  }
 
   @media (max-width: 340px) {
     .hero-monto { font-size: 28px; }
@@ -618,6 +676,7 @@
 
 </div>
 
+<script src="nav.js"></script>
 <script>
 let turnoPendiente = null;
 let usuarioPendienteAjeno = null;

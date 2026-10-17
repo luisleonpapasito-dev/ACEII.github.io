@@ -1011,3 +1011,28 @@ html.tema-oscuro .linea { border-bottom-color: #303b50; }
     scroll-behavior: auto !important;
   }
 }
+
+  /* =====================================================
+     EL DESTRUCTOR DEL CÍRCULO GRIS (Esquina superior)
+     ===================================================== */
+  .panel-menu .card::before, 
+  .panel-menu .card::after,
+  .grid-operacion-resto .card::before,
+  .grid-operacion-resto .card::after,
+  .card-ventas-ancha::before,
+  .card-ventas-ancha::after {
+    content: "" !important;
+    display: none !important; 
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+    clip-path: polygon(0 0, 0 0, 0 0) !important;
+  }
+
+  /* Aseguramos que las tarjetas tengan fondo blanco sólido */
+  .panel-menu .card {
+    background: var(--superficie) !important;
+    background-image: none !important;
+  }

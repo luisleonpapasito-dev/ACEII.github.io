@@ -248,9 +248,11 @@
   }
 
   /* 2. Quita el fondo circular a los iconos (esos "manchones" de color) */
-  .card-icono {
-    background: transparent !important;
-    box-shadow: none !important;
+  .panel-menu .card .card-icono {
+    width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--g2) 25%, transparent);
+    flex-shrink: 0; margin-bottom: 4px;
   }
   
   /* 3. Asegura que las tarjetas tengan fondo sólido y limpio */

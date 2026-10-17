@@ -889,39 +889,39 @@ html.tema-oscuro .linea { border-bottom-color: #303b50; }
    TOAST
    ============================================================ */
 
+/* ===== TOAST ELEGANTE ===== */
 #toastGlobal {
   position: fixed;
-  bottom: 22px;
+  bottom: calc(var(--bottom-nav-height, 84px) + 20px); /* Se eleva por encima del nav */
   left: 50%;
-  transform: translateX(-50%) translateY(100px);
-  background: #202733;
+  transform: translateX(-50%) translateY(20px);
+  background: #1F2937; /* Gris oscuro elegante */
   color: #fff;
-  padding: 12px 19px;
-  border-radius: 13px;
-  font-weight: 600;
+  padding: 12px 20px;
+  border-radius: 999px; /* Píldora perfecta */
+  font-family: 'Inter', sans-serif;
   font-size: 14px;
-  box-shadow: 0 7px 25px rgba(0, 0, 0, 0.20);
-  z-index: 99999;
-  transition:
-    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.3s;
-  max-width: 90vw;
-  text-align: center;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  z-index: 2000;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   opacity: 0;
   pointer-events: none;
-  line-height: 1.4;
-  word-break: break-word;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 #toastGlobal.visible {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
-  pointer-events: auto;
 }
 
-#toastGlobal.ok { background: var(--exito); }
-#toastGlobal.error { background: var(--alerta); }
-#toastGlobal.aviso { background: var(--aviso); }
+/* Colores según el tipo */
+#toastGlobal.ok { background: #059669; } /* Verde */
+#toastGlobal.error { background: #DC2626; } /* Rojo */
+#toastGlobal.aviso { background: #D97706; } /* Naranja oscuro (para cargando) */
 
 
 /* ============================================================

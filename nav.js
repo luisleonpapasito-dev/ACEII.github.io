@@ -2,15 +2,12 @@
 (function() {
     function inyectarNav() {
         if (document.querySelector('.bottom-nav-bar-container')) return;
-        
-        // Si no hay usuario logueado, no mostramos la barra
         if (typeof getUsuarioTurno === 'function' && !getUsuarioTurno()) return;
 
         const navHTML = `
             <style>
                 .bottom-nav-bar-container {
-                    position: fixed;
-                    bottom: 0; left: 0; right: 0;
+                    position: fixed; bottom: 0; left: 0; right: 0;
                     display: flex; justify-content: center;
                     z-index: 1000; pointer-events: none;
                     padding-bottom: env(safe-area-inset-bottom, 0);
@@ -27,18 +24,14 @@
                 .nav-item {
                     flex: 1; display: flex; flex-direction: column;
                     align-items: center; gap: 6px;
-                    text-decoration: none;
-                    color: var(--ac-texto-suave, #5B6785);
-                    font-size: 12px; font-weight: 600;
-                    transition: color 0.2s;
+                    text-decoration: none; color: var(--ac-texto-suave, #5B6785);
+                    font-size: 12px; font-weight: 600; transition: color 0.2s;
                     -webkit-tap-highlight-color: transparent;
                 }
                 .nav-item.active { color: var(--ac-flecha, #2563EB); font-weight: 700; }
                 .nav-item span {
-                    width: 64px; height: 36px; border-radius: 18px;
-                    background: transparent;
-                    display: flex; align-items: center; justify-content: center;
-                    transition: background 0.2s;
+                    width: 64px; height: 36px; border-radius: 18px; background: transparent;
+                    display: flex; align-items: center; justify-content: center; transition: background 0.2s;
                 }
                 .nav-item.active span { background: var(--ac-flecha-bg, rgba(37, 99, 235, 0.10)); }
                 .nav-item svg {
@@ -46,7 +39,6 @@
                     stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
                 }
                 .nav-item.active svg { stroke-width: 2.2; }
-
                 @media (prefers-color-scheme: dark) {
                     html:not(.tema-claro) .bottom-nav-bar { background: #121D3A; border-top-color: #223156; }
                     html:not(.tema-claro) .nav-item { color: #9AA8CC; }
@@ -57,13 +49,6 @@
                 html.tema-oscuro .nav-item { color: #9AA8CC; }
                 html.tema-oscuro .nav-item.active { color: #7DB1FF; }
                 html.tema-oscuro .nav-item.active span { background: rgba(125, 177, 255, 0.14); }
-
-                @media (max-width: 360px) {
-                    .bottom-nav-bar { height: 76px; padding: 8px 4px 0 4px; }
-                    .nav-item span { width: 54px; height: 30px; }
-                    .nav-item svg { width: 22px; height: 22px; }
-                    .nav-item { font-size: 11px; }
-                }
             </style>
             <div class="bottom-nav-bar-container">
                 <div class="bottom-nav-bar">
@@ -88,10 +73,8 @@
         `;
         document.body.insertAdjacentHTML('beforeend', navHTML);
 
-        // Resaltar pestaña activa según la URL
         const path = window.location.pathname.split('/').pop() || '';
         let activePage = '';
-        
         if (path === '' || path === 'index.html') activePage = 'inicio';
         else if (['inventario.html', 'productos.html', 'categorias.html', 'codigos.html', 'recepcion.html'].includes(path)) activePage = 'inventario';
         else if (['historial-caja.html', 'dashboard.html', 'caja.html', 'ventas.html', 'devoluciones.html'].includes(path)) activePage = 'historial';
@@ -106,10 +89,10 @@
         }
     }
 
-    // Esperar a que el DOM y comun.js estén listos para inyectar (evita que no aparezca al inicio)
+    // Esperar a que comun.js esté listo
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => setTimeout(inyectarNav, 100));
+        document.addEventListener('DOMContentLoaded', () => setTimeout(inyectarNav, 50));
     } else {
-        setTimeout(inyectarNav, 100);
+        setTimeout(inyectarNav, 50);
     }
 })();

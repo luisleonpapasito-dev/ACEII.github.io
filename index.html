@@ -14,9 +14,10 @@
 <meta name="theme-color" content="#2563EB" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
 <script src="comun.js"></script>
+
 <style>
   /* =====================================================
-     REDISEÑO VISUAL v12 - Cero círculos, flechas perfectas
+     REDISEÑO VISUAL v13 - Cero círculos, Toast elegante
      ===================================================== */
   :root {
     --ac-texto: #0F1B3D;
@@ -42,14 +43,54 @@
     --superficie: #121D3A;
   }
 
-  /* ====== DESTRUCCIÓN DE CÍRCULOS FANTASMAS ====== */
-  .panel-menu .card::before, 
+  /* ====== EL TOAST ELEGANTE (Mensajes de carga) ====== */
+  #toastGlobal {
+    position: fixed;
+    bottom: calc(var(--bottom-nav-height, 84px) + 20px); /* Flota arriba del nav */
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1F2937; /* Gris oscuro elegante */
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 999px; /* Píldora perfecta */
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  #toastGlobal.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  #toastGlobal.ok { background: #059669; }
+  #toastGlobal.error { background: #DC2626; }
+  #toastGlobal.aviso { background: #D97706; }
+
+  /* ====== DESTRUCCIÓN TOTAL DE CÍRCULOS ====== */
+  /* Usamos * para forzar la eliminación de cualquier pseudo-elemento en las tarjetas */
+  .card::before, 
+  .card::after,
+  .panel-menu .card::before,
   .panel-menu .card::after,
-  .card::before,
-  .card::after { 
+  .panel-menu .card .card-icono::before,
+  .panel-menu .card .card-icono::after,
+  .card-ventas-ancha::before,
+  .card-ventas-ancha::after { 
     display: none !important; 
+    content: none !important;
     visibility: hidden !important;
-    content: none !important; 
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
   }
   .card-titulo::after { content: none !important; display: none !important; }
 

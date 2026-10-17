@@ -1,297 +1,148 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="tema-claro">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Historial de Caja · ACEII</title>
 <link rel="stylesheet" href="estilos.css">
-<!-- Favicons -->
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
-<link rel="icon" href="favicon.ico">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-
-<!-- PWA -->
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1B4DB1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2563EB" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
 <script src="comun.js"></script>
 <style>
+  :root {
+    --ac-texto: #0F1B3D;
+    --ac-texto-suave: #5B6785;
+    --ac-borde: #E3E9F4;
+    --ac-flecha: #2563EB;
+    --ac-flecha-bg: rgba(37, 99, 235, 0.10);
+    --superficie: #FFFFFF;
+    --bottom-nav-height: 84px;
+  }
+  html.tema-oscuro {
+    --ac-texto: #F1F5FF;
+    --ac-texto-suave: #9AA8CC;
+    --ac-borde: #223156;
+    --ac-flecha: #7DB1FF;
+    --ac-flecha-bg: rgba(125, 177, 255, 0.14);
+    --superficie: #121D3A;
+  }
 
+  body {
+    padding-bottom: calc(var(--bottom-nav-height) + 20px + env(safe-area-inset-bottom)) !important;
+  }
 
-/* Variables para que el nav.js y la app funcionen bien */
-:root {
-  --ac-texto: #0F1B3D;
-  --ac-texto-suave: #5B6785;
-  --ac-borde: #E3E9F4;
-  --ac-flecha: #2563EB;
-  --ac-flecha-bg: rgba(37, 99, 235, 0.10);
-  --superficie: #FFFFFF;
-  --bottom-nav-height: 84px;
-}
-html.tema-oscuro {
-  --ac-texto: #F1F5FF;
-  --ac-texto-suave: #9AA8CC;
-  --ac-borde: #223156;
-  --ac-flecha: #7DB1FF;
-  --ac-flecha-bg: rgba(125, 177, 255, 0.14);
-  --superficie: #121D3A;
-}
+  /* Anulación de estilos viejos */
+  .caja .card::before, .caja .card::after { content: none !important; display: none !important; }
 
-/* Margen inferior para que la barra no tape el último elemento */
-body {
-  padding-bottom: calc(var(--bottom-nav-height) + 20px + env(safe-area-inset-bottom)) !important;
-}
   .turno {
     background: var(--superficie);
-    border-radius: var(--radio);
-    padding: 14px;
-    margin: 10px auto;
+    border: 1px solid var(--ac-borde);
+    border-radius: 18px;
+    padding: 16px;
+    margin: 12px auto;
     max-width: 480px;
-    box-shadow: var(--sombra);
+    box-shadow: 0 2px 8px rgba(30,60,140,.04);
     cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
+    transition: transform 0.15s ease;
   }
   .turno:active { transform: scale(0.98); }
-  .turno .fila {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    padding: 3px 0;
-  }
-  .turno .id {
-    color: var(--azul);
-    font-weight: 700;
-    font-size: 13px;
-    word-break: break-all;
-  }
-  .turno .resp { color: var(--texto); font-weight: 600; }
-  .turno .estado-abierto { color: var(--aviso); font-weight: 700; }
-  .turno .estado-cerrado { color: var(--exito); font-weight: 700; }
-  .turno .dif-ok { color: var(--exito); font-weight: 700; }
-  .turno .dif-mal { color: var(--alerta); font-weight: 700; }
-  .turno .fecha { color: var(--texto-claro); font-size: 12px; }
-  .turno .saldo { color: var(--texto-suave); font-size: 13px; }
+  .turno .fila { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
+  .turno .id { color: var(--ac-flecha); font-weight: 800; font-size: 14px; word-break: break-all; }
+  .turno .resp { color: var(--ac-texto); font-weight: 600; }
+  .turno .estado-abierto { color: #EA580C; font-weight: 700; }
+  .turno .estado-cerrado { color: #15803D; font-weight: 700; }
+  .turno .dif-ok { color: #15803D; font-weight: 700; }
+  .turno .dif-mal { color: #B42318; font-weight: 700; }
+  .turno .fecha { color: var(--ac-texto-suave); font-size: 12px; }
+  .turno .saldo { color: var(--ac-texto-suave); font-size: 13px; }
 
   .detalle {
     background: var(--superficie);
-    border-radius: var(--radio-sm);
-    padding: 12px;
-    margin: -6px auto 10px;
+    border: 1px solid var(--ac-borde);
+    border-radius: 18px;
+    padding: 14px;
+    margin: -6px auto 12px;
     max-width: 480px;
     font-size: 13px;
-    box-shadow: var(--sombra);
-    border-left: 3px solid var(--azul);
+    box-shadow: 0 2px 8px rgba(30,60,140,.04);
   }
-  .detalle .row {
-    display: flex;
-    justify-content: space-between;
-    padding: 4px 0;
-    border-bottom: 1px solid #F0F4FF;
-  }
+  .detalle .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--ac-borde); }
   .detalle .row:last-child { border-bottom: none; }
 
-  .filtros {
-    display: flex;
-    gap: 6px;
-    margin: 8px 0;
-    flex-wrap: wrap;
-  }
+  .filtros { display: flex; gap: 6px; margin: 12px 0; flex-wrap: wrap; }
   .filtros button {
-    flex: 1;
-    min-width: 60px;
-    padding: 8px;
-    font-size: 13px;
-    margin: 0;
-    background: var(--superficie-2);
-    color: var(--texto-suave);
-    border: 2px solid transparent;
-    font-weight: 600;
+    flex: 1; min-width: 60px; padding: 10px; font-size: 13px; margin: 0;
+    background: var(--superficie); color: var(--ac-texto-suave);
+    border: 1px solid var(--ac-borde); border-radius: 12px; font-weight: 600;
+    transition: all 0.2s;
   }
   .filtros button.on {
-    background: var(--azul);
-    color: #fff;
-    border-color: var(--azul-claro);
+    background: var(--ac-flecha); color: #fff; border-color: var(--ac-flecha); box-shadow: 0 4px 10px rgba(37,99,235,.25);
   }
 
   .btn-forzar {
-    background: var(--alerta);
-    padding: 8px 12px;
-    font-size: 13px;
-    margin-top: 8px;
-    border-radius: 8px;
-    color: #fff;
-    border: none;
-    font-weight: 600;
+    background: #FEF2F2; color: #B42318; padding: 10px 12px; font-size: 13px;
+    margin-top: 12px; border-radius: 12px; border: 1px solid #FCA5A5; font-weight: 700; width: 100%;
   }
 
-  /* ===== NUEVO: Botón "Ver ventas" ===== */
   .btn-ver-ventas {
-    background: var(--azul-suave);
-    color: var(--azul);
-    padding: 8px 12px;
-    font-size: 13px;
-    margin-top: 8px;
-    border-radius: 8px;
-    border: none;
-    font-weight: 600;
-    width: 100%;
+    background: var(--ac-flecha-bg); color: var(--ac-flecha); padding: 10px 12px;
+    font-size: 13px; margin-top: 12px; border-radius: 12px; border: none; font-weight: 700; width: 100%;
   }
-  .btn-ver-ventas:active { background: var(--azul-claro); color: #fff; }
 
-  /* ===== NUEVO: Modal de ventas ===== */
+  /* Modal */
   #modalVentas {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 200;
-    padding: 16px;
-    box-sizing: border-box;
-    overflow-y: auto;
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 27, 61, 0.6); z-index: 2000; padding: 16px;
+    box-sizing: border-box; overflow-y: auto; backdrop-filter: blur(4px);
   }
   #modalVentas.abierto { display: block; }
   #modalVentas .contenido {
-    max-width: 480px;
-    margin: 20px auto;
-    background: var(--superficie);
-    border-radius: var(--radio);
-    padding: 18px;
-    box-shadow: var(--sombra-fuerte);
+    max-width: 480px; margin: 20px auto; background: var(--superficie);
+    border-radius: 20px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,.2);
   }
-  #modalVentas .cabecera {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    gap: 8px;
-  }
-  #modalVentas .titulo {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--texto);
-    flex: 1;
-  }
-  #modalVentas .btn-cerrar {
-    padding: 6px 12px;
-    margin: 0;
-    border-radius: 8px;
-    font-weight: 700;
-  }
+  #modalVentas .cabecera { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 8px; }
+  #modalVentas .titulo { font-size: 16px; font-weight: 800; color: var(--ac-texto); flex: 1; }
+  #modalVentas .btn-cerrar { padding: 8px 12px; margin: 0; border-radius: 12px; font-weight: 700; background: var(--ac-flecha-bg); color: var(--ac-flecha); border: none; }
 
-  .venta-item {
-    background: var(--superficie-2);
-    border-radius: var(--radio-sm);
-    margin: 8px 0;
-    overflow: hidden;
-  }
-  .venta-cabecera {
-    padding: 10px 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  .venta-cabecera:active { background: var(--azul-suave); }
-  .venta-cabecera .flecha {
-    color: var(--azul);
-    font-weight: 700;
-    font-size: 12px;
-    width: 14px;
-    text-align: center;
-  }
-  .venta-cabecera .hora {
-    color: var(--texto-suave);
-    font-size: 12px;
-    width: 50px;
-  }
-  .venta-cabecera .id-v {
-    color: var(--texto-claro);
-    font-size: 11px;
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .venta-cabecera .total {
-    font-weight: 700;
-    color: var(--azul);
-    font-size: 14px;
-  }
-  .venta-cabecera .medio {
-    font-size: 11px;
-    color: var(--texto-suave);
-    margin-left: 4px;
-  }
+  .venta-item { background: var(--superficie); border: 1px solid var(--ac-borde); border-radius: 14px; margin: 8px 0; overflow: hidden; }
+  .venta-cabecera { padding: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
+  .venta-cabecera:active { background: var(--ac-flecha-bg); }
+  .venta-cabecera .flecha { color: var(--ac-flecha); font-weight: 700; font-size: 12px; width: 14px; text-align: center; }
+  .venta-cabecera .hora { color: var(--ac-texto-suave); font-size: 12px; width: 50px; font-weight: 600; }
+  .venta-cabecera .id-v { color: var(--ac-texto-suave); font-size: 11px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .venta-cabecera .total { font-weight: 800; color: var(--ac-flecha); font-size: 14px; }
+  .venta-cabecera .medio { font-size: 12px; margin-left: 4px; }
 
-  .venta-lineas {
-    display: none;
-    padding: 6px 12px 10px;
-    background: var(--superficie);
-    border-top: 1px solid #E8ECF4;
-  }
+  .venta-lineas { display: none; padding: 8px 12px 12px; background: var(--superficie); border-top: 1px solid var(--ac-borde); }
   .venta-lineas.abierto { display: block; }
-  .venta-lineas .linea-prod {
-    display: flex;
-    justify-content: space-between;
-    padding: 4px 0;
-    font-size: 13px;
-    color: var(--texto-suave);
-  }
-  .venta-lineas .linea-prod .nom {
-    color: var(--texto);
-    flex: 1;
-    padding-right: 8px;
-  }
-  .venta-lineas .linea-prod .cant {
-    color: var(--texto-claro);
-    margin-right: 8px;
-    font-size: 12px;
-  }
+  .venta-lineas .linea-prod { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; color: var(--ac-texto-suave); }
+  .venta-lineas .linea-prod .nom { color: var(--ac-texto); flex: 1; padding-right: 8px; font-weight: 600; }
+  .venta-lineas .linea-prod .cant { color: var(--ac-texto-suave); margin-right: 8px; font-size: 12px; }
 
-  .totales {
-    background: var(--azul-suave);
-    border-radius: var(--radio-sm);
-    padding: 12px;
-    margin-top: 14px;
-  }
-  .totales .fila-t {
-    display: flex;
-    justify-content: space-between;
-    padding: 4px 0;
-    font-size: 14px;
-  }
-  .totales .fila-t.total {
-    border-top: 1px solid var(--azul-claro);
-    margin-top: 6px;
-    padding-top: 8px;
-    font-weight: 700;
-    color: var(--azul);
-    font-size: 16px;
-  }
+  .totales { background: var(--ac-flecha-bg); border-radius: 14px; padding: 14px; margin-top: 16px; }
+  .totales .fila-t { display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px; color: var(--ac-texto); }
+  .totales .fila-t.total { border-top: 1px solid rgba(37,99,235,.3); margin-top: 8px; padding-top: 8px; font-weight: 800; color: var(--ac-flecha); font-size: 16px; }
 </style>
 </head>
 <body>
 
 <header class="app-header">
+  <button class="btn-tema" id="btnTema" title="Cambiar tema">☀️</button>
   <div class="app-header-contenido">
     <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
     <div class="app-header-texto">
-      <div class="app-header-titulo">Historial de caja</div>
-      <div class="app-header-sub">
-        <a href="index.html" style="color:rgba(255,255,255,0.9); text-decoration:underline;">← Volver al menú</a>
-      </div>
+      <div class="app-header-titulo" style="font-size:22px;">Historial</div>
+      <div class="app-header-sub">Cierres y movimientos</div>
     </div>
   </div>
 </header>
 
-<div id="estado">Cargando...</div>
+<div id="estado" style="margin-top:12px;">Cargando...</div>
 
-<div class="caja">
+<div class="caja" style="margin-top:16px;">
   <label>Filtrar por</label>
   <div class="filtros">
     <button id="fHoy" class="on">Hoy</button>
@@ -300,23 +151,43 @@ body {
     <button id="fMes">30 días</button>
     <button id="fTodo">Todo</button>
   </div>
-  <button class="main" id="btnActualizar" style="width:100%;">Actualizar</button>
+  <button class="main" id="btnActualizar" style="width:100%; border-radius:12px; height:48px;">Actualizar</button>
 </div>
 
 <div id="listaTurnos"></div>
 
-<!-- ===== NUEVO: Modal de ventas del turno ===== -->
 <div id="modalVentas">
   <div class="contenido">
     <div class="cabecera">
       <div class="titulo" id="tituloModal">Ventas del turno</div>
       <button class="btn-cerrar" id="btnCerrarModal">✕</button>
     </div>
-    <div id="cuerpoModal" style="color:var(--texto-suave); font-size:13px;">Cargando...</div>
+    <div id="cuerpoModal" style="color:var(--ac-texto-suave); font-size:13px;">Cargando...</div>
   </div>
 </div>
 
+<script src="nav.js"></script>
 <script>
+// --- TEMA (Igual que el index) ---
+(function inicializarBotonTema() {
+  const btn = document.getElementById('btnTema');
+  if (!btn) return;
+  function aplicarTema(t) {
+    document.documentElement.classList.remove('tema-claro', 'tema-oscuro', 'tema-auto');
+    document.documentElement.classList.add('tema-' + t);
+    try { localStorage.setItem('caf_tema', t); } catch (e) {}
+    btn.textContent = (t === 'oscuro') ? '🌙' : '☀️';
+  }
+  let temaInicial = 'claro';
+  try { const g = localStorage.getItem('caf_tema'); if (g === 'oscuro' || g === 'claro') temaInicial = g; } catch (e) {}
+  aplicarTema(temaInicial);
+  btn.addEventListener('click', function () {
+    const actual = document.documentElement.classList.contains('tema-oscuro') ? 'oscuro' : 'claro';
+    aplicarTema(actual === 'oscuro' ? 'claro' : 'oscuro');
+    if (navigator.vibrate) navigator.vibrate(30);
+  });
+})();
+
 exigirSesion();
 pintarUsuarioTurno();
 
@@ -333,23 +204,18 @@ function rangoFechas() {
   const hoy = new Date();
   const hasta = fmtFechaCorta(hoy) + ' 23:59:59';
 
-  if (filtro === 'hoy') {
-    return { desde: fmtFechaCorta(hoy) + ' 00:00:00', hasta: hasta };
-  }
+  if (filtro === 'hoy') return { desde: fmtFechaCorta(hoy) + ' 00:00:00', hasta: hasta };
   if (filtro === 'ayer') {
-    const ayer = new Date(hoy);
-    ayer.setDate(ayer.getDate() - 1);
+    const ayer = new Date(hoy); ayer.setDate(ayer.getDate() - 1);
     const dia = fmtFechaCorta(ayer);
     return { desde: dia + ' 00:00:00', hasta: dia + ' 23:59:59' };
   }
   if (filtro === 'semana') {
-    const hace7 = new Date(hoy);
-    hace7.setDate(hace7.getDate() - 6);
+    const hace7 = new Date(hoy); hace7.setDate(hace7.getDate() - 6);
     return { desde: fmtFechaCorta(hace7) + ' 00:00:00', hasta: hasta };
   }
   if (filtro === 'mes') {
-    const hace30 = new Date(hoy);
-    hace30.setDate(hace30.getDate() - 29);
+    const hace30 = new Date(hoy); hace30.setDate(hace30.getDate() - 29);
     return { desde: fmtFechaCorta(hace30) + ' 00:00:00', hasta: hasta };
   }
   return { desde: '', hasta: '' };
@@ -374,7 +240,7 @@ function pintar(items) {
   const cont = $('listaTurnos');
   cont.innerHTML = '';
   if (!items.length) {
-    cont.innerHTML = '<div class="caja" style="text-align:center; color:var(--texto-suave);">(no hay turnos en este rango)</div>';
+    cont.innerHTML = '<div class="caja" style="text-align:center; color:var(--ac-texto-suave); padding:30px;">(no hay turnos en este rango)</div>';
     return;
   }
   items.forEach(function (t) {
@@ -401,7 +267,6 @@ function pintar(items) {
       d.appendChild(btnForzar);
     }
 
-    // ===== NUEVO: Botón "Ver ventas" =====
     const btnVentas = document.createElement('button');
     btnVentas.className = 'btn-ver-ventas';
     btnVentas.textContent = '📋 Ver ventas del turno';
@@ -411,9 +276,7 @@ function pintar(items) {
     });
     d.appendChild(btnVentas);
 
-    d.addEventListener('click', function () {
-      mostrarDetalle(t.id_turno, d);
-    });
+    d.addEventListener('click', function () { mostrarDetalle(t.id_turno, d); });
     cont.appendChild(d);
   });
 }
@@ -428,32 +291,18 @@ async function forzarCierre(idTurno, responsable) {
   const obs = 'CIERRE FORZADO por ' + (u ? u.nombre : '') + '. ' + (prompt('Observación (opcional):') || '');
   mostrar('Cerrando turno...', 'aviso');
   try {
-    const r = await post({
-      accion: 'cerrar_turno',
-      id_usuario: u.id,
-      id_turno: idTurno,
-      saldo_real: saldoReal,
-      observaciones: obs
-    });
+    const r = await post({ accion: 'cerrar_turno', id_usuario: u.id, id_turno: idTurno, saldo_real: saldoReal, observaciones: obs });
     if (r.ok) {
       let msj = 'Turno cerrado ✓\nEsperado: ' + fmt(r.saldo_esperado) + '\nReal: ' + fmt(r.saldo_real);
       if (r.diferencia !== 0) msj += '\nDIFERENCIA: ' + (r.diferencia > 0 ? '+' : '') + fmt(r.diferencia);
-      alert(msj);
-      cargar();
-    } else {
-      alert('Error: ' + (r.error || 'desconocido'));
-    }
-  } catch (err) {
-    alert('Error: ' + err.message);
-  }
+      alert(msj); cargar();
+    } else { alert('Error: ' + (r.error || 'desconocido')); }
+  } catch (err) { alert('Error: ' + err.message); }
 }
 
 async function mostrarDetalle(idTurno, nodo) {
   const sig = nodo.nextSibling;
-  if (sig && sig.classList && sig.classList.contains('detalle')) {
-    sig.remove();
-    return;
-  }
+  if (sig && sig.classList && sig.classList.contains('detalle')) { sig.remove(); return; }
   document.querySelectorAll('.detalle').forEach(function (d) { d.remove(); });
 
   const d = document.createElement('div');
@@ -464,21 +313,16 @@ async function mostrarDetalle(idTurno, nodo) {
     const r = await jsonp({ accion: 'movimientos_turno', id_turno: idTurno }, 30000);
     if (!r || !r.ok) { d.textContent = 'Error al cargar movimientos'; return; }
     if (!r.items.length) { d.textContent = '(sin movimientos)'; return; }
-    let html = '<strong style="color:var(--azul);">Movimientos del turno:</strong>';
+    let html = '<strong style="color:var(--ac-flecha); font-size:14px; display:block; margin-bottom:8px;">Movimientos del turno:</strong>';
     r.items.forEach(function (m) {
       const signo = m.tipo === 'Ingreso' ? '+' : '-';
-      const color = m.tipo === 'Ingreso' ? 'var(--exito)' : 'var(--alerta)';
+      const color = m.tipo === 'Ingreso' ? '#15803D' : '#B42318';
       html += '<div class="row"><span>' + m.fecha_hora + ' · ' + m.categoria + (m.descripcion ? ' (' + m.descripcion + ')' : '') + '</span><span style="color:' + color + ';font-weight:700;">' + signo + fmt(m.monto) + '</span></div>';
     });
     d.innerHTML = html;
-  } catch (err) {
-    d.textContent = 'Error: ' + err.message;
-  }
+  } catch (err) { d.textContent = 'Error: ' + err.message; }
 }
 
-// =====================================================================
-// NUEVO: Modal de ventas del turno (con desglose plegable)
-// =====================================================================
 async function abrirModalVentas(idTurno, responsable, fecha) {
   $('tituloModal').textContent = 'Ventas · ' + idTurno;
   $('cuerpoModal').innerHTML = 'Cargando...';
@@ -487,11 +331,11 @@ async function abrirModalVentas(idTurno, responsable, fecha) {
   try {
     const r = await jsonp({ accion: 'ventas_del_turno', id_turno: idTurno }, 30000);
     if (!r || !r.ok) {
-      $('cuerpoModal').innerHTML = '<div style="color:var(--alerta);">Error: ' + (r && r.error ? r.error : 'desconocido') + '</div>';
+      $('cuerpoModal').innerHTML = '<div style="color:#B42318;">Error: ' + (r && r.error ? r.error : 'desconocido') + '</div>';
       return;
     }
     if (!r.items.length) {
-      $('cuerpoModal').innerHTML = '<div style="text-align:center; padding:20px; color:var(--texto-suave);">No hay ventas registradas en este turno.</div>';
+      $('cuerpoModal').innerHTML = '<div style="text-align:center; padding:20px; color:var(--ac-texto-suave);">No hay ventas registradas en este turno.</div>';
       return;
     }
 
@@ -513,7 +357,7 @@ async function abrirModalVentas(idTurno, responsable, fecha) {
               return '<div class="linea-prod">' +
                 '<span class="nom">' + l.producto + '</span>' +
                 '<span class="cant">' + l.cantidad + '× $' + l.precio.toLocaleString('es-CO') + '</span>' +
-                '<span style="font-weight:600;color:var(--texto);">$' + l.subtotal.toLocaleString('es-CO') + '</span>' +
+                '<span style="font-weight:600;color:var(--ac-texto);">$' + l.subtotal.toLocaleString('es-CO') + '</span>' +
               '</div>';
             }).join('') +
           '</div>' +
@@ -529,7 +373,6 @@ async function abrirModalVentas(idTurno, responsable, fecha) {
 
     $('cuerpoModal').innerHTML = html;
 
-    // Listeners para plegar/desplegar
     $('cuerpoModal').querySelectorAll('.venta-cabecera').forEach(function (cab) {
       cab.addEventListener('click', function () {
         const idx = cab.getAttribute('data-idx');
@@ -545,23 +388,16 @@ async function abrirModalVentas(idTurno, responsable, fecha) {
       });
     });
   } catch (err) {
-    $('cuerpoModal').innerHTML = '<div style="color:var(--alerta);">Error: ' + err.message + '</div>';
+    $('cuerpoModal').innerHTML = '<div style="color:#B42318;">Error: ' + err.message + '</div>';
   }
 }
 
-$('btnCerrarModal').addEventListener('click', function () {
-  $('modalVentas').classList.remove('abierto');
-});
-
-// Cerrar modal al tocar el fondo
-$('modalVentas').addEventListener('click', function (e) {
-  if (e.target === $('modalVentas')) $('modalVentas').classList.remove('abierto');
-});
+$('btnCerrarModal').addEventListener('click', function () { $('modalVentas').classList.remove('abierto'); });
+$('modalVentas').addEventListener('click', function (e) { if (e.target === $('modalVentas')) $('modalVentas').classList.remove('abierto'); });
 
 function marcarActivo(btn) {
   ['fHoy', 'fAyer', 'fSemana', 'fMes', 'fTodo'].forEach(function (id) {
-    const el = $(id);
-    if (el) el.className = '';
+    const el = $(id); if (el) el.className = '';
   });
   btn.className = 'on';
 }
@@ -577,11 +413,7 @@ cargar();
 </script>
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('service-worker.js').catch(function (e) {
-      console.warn('SW no registrado:', e);
-    });
-  });
+  window.addEventListener('load', function () { navigator.serviceWorker.register('service-worker.js').catch(function (e) {}); });
 }
 </script>
 </body>

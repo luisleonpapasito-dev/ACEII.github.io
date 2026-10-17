@@ -1,147 +1,106 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="tema-claro">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Inventario · ACEII</title>
 <link rel="stylesheet" href="estilos.css">
-<!-- Favicons -->
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
-<link rel="icon" href="favicon.ico">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-
-<!-- PWA -->
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1B4DB1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2563EB" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
 <script src="comun.js"></script>
 <style>
-/* Variables para que el nav.js y la app funcionen bien */
-:root {
-  --ac-texto: #0F1B3D;
-  --ac-texto-suave: #5B6785;
-  --ac-borde: #E3E9F4;
-  --ac-flecha: #2563EB;
-  --ac-flecha-bg: rgba(37, 99, 235, 0.10);
-  --superficie: #FFFFFF;
-  --bottom-nav-height: 84px;
-}
-html.tema-oscuro {
-  --ac-texto: #F1F5FF;
-  --ac-texto-suave: #9AA8CC;
-  --ac-borde: #223156;
-  --ac-flecha: #7DB1FF;
-  --ac-flecha-bg: rgba(125, 177, 255, 0.14);
-  --superficie: #121D3A;
-}
-
-/* Margen inferior para que la barra no tape el último elemento */
-body {
-  padding-bottom: calc(var(--bottom-nav-height) + 20px + env(safe-area-inset-bottom)) !important;
-}
-
-  #resultados {
-    max-height: 300px;
-    overflow-y: auto;
-    margin-top: 8px;
+  :root {
+    --ac-texto: #0F1B3D;
+    --ac-texto-suave: #5B6785;
+    --ac-borde: #E3E9F4;
+    --ac-flecha: #2563EB;
+    --ac-flecha-bg: rgba(37, 99, 235, 0.10);
+    --superficie: #FFFFFF;
+    --bottom-nav-height: 84px;
   }
-  .resultado {
-    padding: 12px;
-    border-bottom: 1px solid #E8ECF4;
-    cursor: pointer;
-    transition: background 0.15s;
-    display: flex;
-    gap: 12px;
-    align-items: center;
+  html.tema-oscuro {
+    --ac-texto: #F1F5FF;
+    --ac-texto-suave: #9AA8CC;
+    --ac-borde: #223156;
+    --ac-flecha: #7DB1FF;
+    --ac-flecha-bg: rgba(125, 177, 255, 0.14);
+    --superficie: #121D3A;
   }
-  .resultado:hover { background: var(--superficie-2); }
+
+  body {
+    padding-bottom: calc(var(--bottom-nav-height) + 20px + env(safe-area-inset-bottom)) !important;
+  }
+
+  #resultados { max-height: 300px; overflow-y: auto; margin-top: 8px; }
+  .resultado { padding: 12px; border-bottom: 1px solid var(--ac-borde); cursor: pointer; display: flex; gap: 12px; align-items: center; transition: background 0.15s; }
+  .resultado:hover { background: var(--ac-flecha-bg); }
   .resultado:last-child { border-bottom: none; }
 
-  .thumb {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
-    flex-shrink: 0;
-    overflow: hidden;
-    background: var(--superficie-2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 18px;
-    color: var(--azul);
-  }
-  .thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+  .thumb { width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0; overflow: hidden; background: var(--ac-flecha-bg); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; color: var(--ac-flecha); }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
 
   .info { flex: 1; min-width: 0; }
-  .info .nombre { font-size: 14px; font-weight: 600; color: var(--texto); }
-  .info .meta { font-size: 12px; color: var(--texto-suave); margin-top: 2px; }
-  .info .badge {
-    font-size: 11px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 10px;
-    margin-left: 4px;
-  }
-  .badge-ok { background: #E0F7EC; color: var(--exito); }
-  .badge-bajo { background: #FFF4DC; color: var(--naranja); }
-  .badge-cero { background: #FFE5E5; color: var(--alerta); }
+  .info .nombre { font-size: 14px; font-weight: 800; color: var(--ac-texto); }
+  .info .meta { font-size: 12px; color: var(--ac-texto-suave); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+  
+  .badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 8px; }
+  .badge-ok { background: #DCFCE7; color: #15803D; }
+  .badge-bajo { background: #FEF3C7; color: #B45309; }
+  .badge-cero { background: #FEE2E2; color: #B42318; }
 
-  #infoProducto {
-    background: var(--superficie-2);
-    padding: 12px;
-    border-radius: var(--radio-sm);
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  #infoProducto .stock-num {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--azul);
-  }
+  #infoProducto { background: var(--superficie); border: 1px solid var(--ac-borde); padding: 16px; border-radius: 14px; font-size: 14px; line-height: 1.5; margin-bottom: 16px; }
+  #infoProducto .stock-num { font-size: 24px; font-weight: 800; color: var(--ac-flecha); }
+
+  /* Estilo para los toggle buttons (Modo Inicial / Ajuste) */
+  .fila-tog { display: flex; gap: 4px; padding: 4px; background: var(--ac-flecha-bg); border-radius: 14px; margin-bottom: 16px; }
+  .fila-tog .tog { flex: 1; padding: 10px; border-radius: 10px; border: none; font-weight: 700; font-size: 13px; color: var(--ac-texto-suave); background: transparent; cursor: pointer; transition: all 0.2s; }
+  .fila-tog .tog.on { background: var(--superficie); color: var(--ac-flecha); box-shadow: 0 2px 6px rgba(37,99,235,.15); }
 </style>
 </head>
 <body>
 
 <header class="app-header">
+  <button class="btn-tema" id="btnTema" title="Cambiar tema">☀️</button>
   <div class="app-header-contenido">
     <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
     <div class="app-header-texto">
-      <div class="app-header-titulo">Inventario</div>
-      <div class="app-header-sub">
-        <a href="index.html" style="color:rgba(255,255,255,0.9); text-decoration:underline;">← Volver al menú</a>
-      </div>
+      <div class="app-header-titulo" style="font-size:22px;">Inventario</div>
+      <div class="app-header-sub">Stock y ajustes</div>
     </div>
   </div>
 </header>
 
-<div id="estado">Cargando...</div>
+<div id="estado" style="margin-top:12px;">Cargando...</div>
 
-<div class="caja">
+<div class="caja" style="margin-top:16px;">
   <label>Modo</label>
-  <div class="fila">
+  <div class="fila-tog">
     <button id="modoInicial" class="tog on">Inventario inicial</button>
-    <button id="modoAjuste" class="tog">Ajuste</button>
+    <button id="modoAjuste" class="tog">Ajuste de stock</button>
   </div>
+  
   <label>Busca el producto</label>
-  <input type="text" id="buscar" placeholder="Escribe 2 letras o más..." autocomplete="off">
-  <label><input type="checkbox" id="soloPendientes"> Mostrar solo productos con stock 0</label>
+  <input type="text" id="buscar" placeholder="Escribe 2 letras o más..." autocomplete="off" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--ac-borde); background:var(--superficie); font-size:14px;">
+  
+  <label style="display:flex; align-items:center; gap:8px; margin-top:12px; font-size:13px; font-weight:600; color:var(--ac-texto);">
+    <input type="checkbox" id="soloPendientes" style="width:18px; height:18px; accent-color:var(--ac-flecha);"> 
+    Mostrar solo productos con stock 0
+  </label>
+  
   <div id="resultados"></div>
 </div>
 
-<div class="caja" id="panel" style="display:none;">
+<div class="caja" id="panel" style="display:none; margin-top:16px;">
   <div id="infoProducto"></div>
-  <label style="margin-top:12px;">Conteo físico real (unidades)</label>
-  <input type="number" id="conteo" min="0" step="1" inputmode="numeric" placeholder="Escribe cuántas unidades hay">
+  
+  <label style="margin-top:12px; display:block; font-weight:700; font-size:13px;">Conteo físico real (unidades)</label>
+  <input type="number" id="conteo" min="0" step="1" inputmode="numeric" placeholder="Escribe cuántas unidades hay" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--ac-borde); font-size:14px;">
 
-  <div id="bloqueMotivo" style="display:none;">
-    <label>Motivo del ajuste</label>
-    <select id="motivo">
+  <div id="bloqueMotivo" style="display:none; margin-top:12px;">
+    <label style="display:block; font-weight:700; font-size:13px;">Motivo del ajuste</label>
+    <select id="motivo" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--ac-borde); font-size:14px; margin-top:4px;">
       <option value="">Elige el motivo...</option>
       <option value="Venta no registrada">Venta no registrada</option>
       <option value="Consumo interno">Consumo interno (sin pago)</option>
@@ -152,13 +111,34 @@ body {
     </select>
   </div>
 
-  <label>Observaciones (opcional)</label>
-  <input type="text" id="obs" maxlength="200" placeholder="Ej: Faltaron 3 por error de registro">
+  <label style="margin-top:12px; display:block; font-weight:700; font-size:13px;">Observaciones (opcional)</label>
+  <input type="text" id="obs" maxlength="200" placeholder="Ej: Faltaron 3 por error de registro" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--ac-borde); font-size:14px; margin-top:4px;">
 
-  <button class="main" id="btnGuardar" style="width:100%; margin-top:10px;">Guardar</button>
+  <button class="main" id="btnGuardar" style="width:100%; margin-top:20px; border-radius:12px; height:52px; font-size:15px;">Guardar</button>
 </div>
 
+<script src="nav.js"></script>
 <script>
+// --- TEMA (Igual que el index) ---
+(function inicializarBotonTema() {
+  const btn = document.getElementById('btnTema');
+  if (!btn) return;
+  function aplicarTema(t) {
+    document.documentElement.classList.remove('tema-claro', 'tema-oscuro', 'tema-auto');
+    document.documentElement.classList.add('tema-' + t);
+    try { localStorage.setItem('caf_tema', t); } catch (e) {}
+    btn.textContent = (t === 'oscuro') ? '🌙' : '☀️';
+  }
+  let temaInicial = 'claro';
+  try { const g = localStorage.getItem('caf_tema'); if (g === 'oscuro' || g === 'claro') temaInicial = g; } catch (e) {}
+  aplicarTema(temaInicial);
+  btn.addEventListener('click', function () {
+    const actual = document.documentElement.classList.contains('tema-oscuro') ? 'oscuro' : 'claro';
+    aplicarTema(actual === 'oscuro' ? 'claro' : 'oscuro');
+    if (navigator.vibrate) navigator.vibrate(30);
+  });
+})();
+
 exigirSesion();
 pintarUsuarioTurno();
 
@@ -186,20 +166,7 @@ async function cargarDatos() {
   }
 }
 
-function colorPorCategoria(cat) {
-  const colores = {
-    'Bebidas': '#E3ECFF',
-    'Lácteos y avena': '#FFF4DC',
-    'Dulces y confitería': '#FCE4EC',
-    'Galletas y ponqués': '#EFE7FB',
-    'Pasabocas salados': '#E0F7EC',
-    'Preparados': '#FFE5E5',
-    'Comida instantánea': '#D6F5FA',
-    'Combos': '#EFE7FB',
-    'Empanadas': '#FFF4DC'
-  };
-  return colores[cat] || '#F0F4FF';
-}
+function norm(s) { return String(s || '').toLowerCase().trim(); }
 
 function pintarResultados() {
   const q = norm($('buscar').value);
@@ -211,14 +178,12 @@ function pintarResultados() {
 
   let items = productos.slice();
   if (soloPend) items = items.filter(function (p) { return p.stock_actual === 0; });
-  if (q) items = items.filter(function (p) {
-    return norm(p.id + ' ' + p.nombre).indexOf(q) >= 0;
-  });
+  if (q) items = items.filter(function (p) { return norm(p.id + ' ' + p.nombre).indexOf(q) >= 0; });
 
   items = items.slice(0, 15);
 
   if (!items.length) {
-    cont.innerHTML = '<div style="padding:14px; text-align:center; color:var(--texto-suave); font-size:13px;">Sin resultados.</div>';
+    cont.innerHTML = '<div style="padding:14px; text-align:center; color:var(--ac-texto-suave); font-size:13px;">Sin resultados.</div>';
     return;
   }
 
@@ -239,7 +204,7 @@ function pintarResultados() {
     else if (p.stock_actual <= 5) stockClase = 'badge-bajo';
 
     d.innerHTML =
-      '<div class="thumb" style="background:' + (p.imagen_url ? '#fff' : '#F0F4FF') + ';">' + thumbHTML + '</div>' +
+      '<div class="thumb">' + thumbHTML + '</div>' +
       '<div class="info">' +
         '<div class="nombre">' + p.nombre + '</div>' +
         '<div class="meta">' + p.id + ' · Sistema: <span class="badge ' + stockClase + '">' + p.stock_actual + '</span></div>' +
@@ -262,8 +227,7 @@ function pintarPanel() {
   if (!elegido) return;
   $('infoProducto').innerHTML =
     '<strong>' + elegido.id + ' · ' + elegido.nombre + '</strong><br>' +
-    '<span style="color:var(--texto-suave);">Stock del sistema: <span class="stock-num">' + elegido.stock_actual + '</span></span><br>' +
-    '<span style="color:var(--texto-claro); font-size:12px;">Inicial: ' + elegido.stock_inicial + ' + Entradas: ' + elegido.entradas + ' - Ventas: ' + elegido.ventas + ' + Ajustes: ' + elegido.ajustes + '</span>';
+    '<span style="color:var(--ac-texto-suave); font-size:13px;">Stock actual: <span class="stock-num">' + elegido.stock_actual + '</span></span>';
   $('conteo').value = '';
   $('obs').value = '';
   $('motivo').value = '';
@@ -292,14 +256,10 @@ $('btnGuardar').addEventListener('click', async function () {
   if (modo === 'ajuste') {
     if (!$('motivo').value) { mostrar('Elige el motivo del ajuste', 'error'); return; }
     const dif = conteo - elegido.stock_actual;
-    const costo = Math.abs(dif) * elegido.costo;
-    const precio = Math.abs(dif) * elegido.precio;
     const signo = dif >= 0 ? '+' : '';
     const mensaje = 'Vas a ajustar ' + signo + dif + ' unidad(es) de ' + elegido.nombre + '.\n\n' +
       'Motivo: ' + $('motivo').value + '\n' +
       'Stock del sistema: ' + elegido.stock_actual + ' → Conteo real: ' + conteo + '\n\n' +
-      'Costo de la pérdida: $' + costo.toLocaleString('es-CO') + '\n' +
-      'Lucro cesante (precio venta): $' + precio.toLocaleString('es-CO') + '\n\n' +
       '¿Confirmas el ajuste?';
     if (!confirm(mensaje)) return;
   }
@@ -345,11 +305,7 @@ $('btnGuardar').addEventListener('click', async function () {
 </script>
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('service-worker.js').catch(function (e) {
-      console.warn('SW no registrado:', e);
-    });
-  });
+  window.addEventListener('load', function () { navigator.serviceWorker.register('service-worker.js').catch(function (e) {}); });
 }
 </script>
 </body>

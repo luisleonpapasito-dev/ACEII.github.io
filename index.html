@@ -16,7 +16,7 @@
 <script src="comun.js"></script>
 <style>
   /* =====================================================
-     REDISEÑO VISUAL v10 - Minimalista y Limpio
+     REDISEÑO VISUAL v11 - Limpieza total
      ===================================================== */
   :root {
     --ac-texto: #0F1B3D;
@@ -42,7 +42,7 @@
     --superficie: #121D3A;
   }
 
-  /* ====== ANULACIÓN TOTAL DE ESTILOS VIEJOS (Círculos, líneas, etc) ====== */
+  /* ====== DESTRUCCIÓN DE CÍRCULOS Y BARRAS DE ESTILOS.CSS ====== */
   .panel-menu .card::before, 
   .panel-menu .card::after,
   .card::before,
@@ -89,7 +89,7 @@
   .grupo-analisis  { --g-acento: #059669; }
   .grupo-admin     { --g-acento: #7C3AED; }
 
-  /* ====== TARJETAS BASE (Minimalistas) ====== */
+  /* ====== TARJETAS BASE ====== */
   .panel-menu .card {
     position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
     background: var(--superficie); border: 1px solid var(--ac-borde); border-radius: 18px;
@@ -110,7 +110,7 @@
   .panel-menu .card .card-titulo { font-size: 14px; font-weight: 800; line-height: 1.2; color: var(--ac-texto); margin: 0; }
   .panel-menu .card .card-desc { font-size: 11.5px; font-weight: 500; line-height: 1.35; color: var(--ac-texto-suave); margin: 0; }
 
-  /* Chevron (Flechita) General */
+  /* Chevron General */
   .panel-menu .card .chev {
     position: absolute; top: 16px; right: 16px; width: 26px; height: 26px; padding: 5px;
     border-radius: 50% !important; color: var(--chev-color); background: var(--chev-bg);
@@ -156,6 +156,7 @@
   .card-ventas-ancha .card-titulo { font-size: 20px; font-weight: 800; line-height: 1.1; color: #fff; margin: 0; }
   .card-ventas-ancha .card-desc { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.92); margin: 0; }
   
+  /* FORZANDO EL CÍRCULO PERFECTO EN VENTAS */
   .card-ventas-ancha .chev {
     position: static !important; background: #fff !important; color: #2F5FE8 !important; 
     width: 36px !important; height: 36px !important; padding: 0 !important; box-shadow: none !important;
@@ -195,12 +196,6 @@
 
   .seccion-admin { display: none; }
   .seccion-admin.visible { display: block; }
-
-  @media (max-width: 400px) {
-    .grid-operacion-resto .card { padding: 10px 8px; min-height: 120px; }
-    .grid-operacion-resto .card .card-titulo { font-size: 12px; }
-    .grid-operacion-resto .card .card-desc { font-size: 10px; }
-  }
 </style>
 </head>
 <body>

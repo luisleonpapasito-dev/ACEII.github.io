@@ -89,10 +89,10 @@
         }
     }
 
-    // Esperar a que comun.js esté listo
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => setTimeout(inyectarNav, 50));
-    } else {
+    // 🚨 LA MAGIA: Esperar a que toda la página y comun.js terminen de cargar
+    if (document.readyState === 'complete') {
         setTimeout(inyectarNav, 50);
+    } else {
+        window.addEventListener('load', () => setTimeout(inyectarNav, 50));
     }
 })();

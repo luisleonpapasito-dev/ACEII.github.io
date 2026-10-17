@@ -369,7 +369,7 @@ html.tema-oscuro .app-header {
 
 
 /* ============================================================
-   TARJETAS — Blancas con acento azul
+   TARJETAS — Blancas y limpias (Sin círculos ni líneas)
    ============================================================ */
 
 .card {
@@ -381,13 +381,8 @@ html.tema-oscuro .app-header {
   gap: 13px;
   padding: 15px 14px 14px;
 
-  /* Fondo blanco limpio con gradiente sutil */
-  background:
-    radial-gradient(
-      circle at 20% 0%,
-      rgba(255, 255, 255, 1) 0%,
-      rgba(248, 250, 253, 1) 100%
-    );
+  /* Fondo blanco sólido y limpio */
+  background: var(--superficie);
 
   color: var(--texto);
   text-decoration: none;
@@ -405,39 +400,7 @@ html.tema-oscuro .app-header {
     border-color 0.18s ease;
 }
 
-
-/* Línea lateral azul (TODAS las tarjetas) */
-.card::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 15px;
-  bottom: 15px;
-  width: 3px;
-  border-radius: 0 4px 4px 0;
-
-  /* Por defecto: azul claro */
-  background: var(--azul-claro);
-
-  transition: width 0.16s ease, background 0.16s ease;
-}
-
-
-/* Blob de esquina azul muy sutil (todas) */
-.card::after {
-  content: '';
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  right: -22px;
-  top: -22px;
-  border-radius: 50%;
-  background: rgba(37, 99, 235, 0.06);
-  pointer-events: none;
-}
-
-
-/* Hover */
+/* Hover suave, sin pseudo-elementos */
 .card:hover {
   transform: translateY(-2px);
   box-shadow:
@@ -445,18 +408,12 @@ html.tema-oscuro .app-header {
     0 14px 28px rgba(37, 99, 235, 0.10);
   border-color: rgba(37, 99, 235, 0.15);
 }
-.card:hover::before { width: 4px; }
 .card:active { transform: scale(0.975); }
 
 
 /* Tema oscuro */
 html.tema-oscuro .card {
-  background:
-    radial-gradient(
-      circle at 20% 0%,
-      #1e2a3f 0%,
-      #192231 100%
-    );
+  background: var(--superficie);
   border-color: rgba(255, 255, 255, 0.055);
   box-shadow:
     0 2px 7px rgba(0, 0, 0, 0.25),
@@ -464,12 +421,7 @@ html.tema-oscuro .card {
 }
 @media (prefers-color-scheme: dark) {
   html.tema-auto .card {
-    background:
-      radial-gradient(
-        circle at 20% 0%,
-        #1e2a3f 0%,
-        #192231 100%
-      );
+    background: var(--superficie);
     border-color: rgba(255, 255, 255, 0.055);
     box-shadow:
       0 2px 7px rgba(0, 0, 0, 0.25),
@@ -520,17 +472,6 @@ html.tema-oscuro .card {
   box-shadow:
     0 3px 8px rgba(37, 99, 235, 0.08),
     0 10px 23px rgba(37, 99, 235, 0.10);
-}
-
-.card.destacada::before {
-  width: 4px;
-  top: 12px;
-  bottom: 12px;
-  background: var(--azul); /* Azul fuerte */
-}
-
-.card.destacada::after {
-  background: rgba(37, 99, 235, 0.10);
 }
 
 html.tema-oscuro .card.destacada {
@@ -585,7 +526,6 @@ html.tema-oscuro .card.destacada {
 
 
 /* ===== TODOS los iconos en azul corporativo ===== */
-/* Los colores específicos que tenías en HTML ahora se ven IGUALES */
 
 .card-icono.azul,
 .card-icono.cyan,
@@ -628,16 +568,6 @@ html.tema-oscuro .card.destacada {
   font-weight: 650;
   line-height: 1.25;
   letter-spacing: -0.1px;
-}
-
-.card-titulo::after {
-  content: '›';
-  flex-shrink: 0;
-  color: var(--texto-claro);
-  font-size: 21px;
-  font-weight: 400;
-  line-height: 1;
-  transition: transform 0.15s ease, color 0.15s ease;
 }
 
 .card:hover .card-titulo::after {

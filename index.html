@@ -74,26 +74,6 @@
   #toastGlobal.error { background: #DC2626; }
   #toastGlobal.aviso { background: #D97706; }
 
-  /* ====== DESTRUCCIÓN TOTAL DE CÍRCULOS ====== */
-  /* Usamos * para forzar la eliminación de cualquier pseudo-elemento en las tarjetas */
-  .card::before, 
-  .card::after,
-  .panel-menu .card::before,
-  .panel-menu .card::after,
-  .panel-menu .card .card-icono::before,
-  .panel-menu .card .card-icono::after,
-  .card-ventas-ancha::before,
-  .card-ventas-ancha::after { 
-    display: none !important; 
-    content: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    background: transparent !important;
-  }
-  .card-titulo::after { content: none !important; display: none !important; }
-
   /* ====== HEADER ====== */
   .app-header-saludo { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.95); margin-bottom: 2px; }
   .app-header-frase { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 4px; font-weight: 500; line-height: 1.35; }

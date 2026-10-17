@@ -89,11 +89,27 @@
         }
     }
 
-    // Forzar la inyección tan pronto como el DOM esté listo y también en 'load'
+    // 1. Intentar inyectar cuando el DOM esté listo
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => setTimeout(inyectarNav, 10));
+        document.addEventListener('DOMContentLoaded', inyectarNav);
     } else {
-        setTimeout(inyectarNav, 10);
+        inyectarNav();
     }
-    window.addEventListener('load', () => setTimeout(inyectarNav, 10));
+
+    // 2. EL TRUCO MAESTRO: Observar si el menú se vuelve visible y meter la barra en ese instante
+    const observer = new MutationObserver(function(mutations) {
+        const menu = document.getElementById('menu');
+        if (menu && menu.style.display === 'block' && !document.querySelector('.bottom-nav-bar-container')) {
+            inyectarNav();
+        }
+    });
+
+    window.addEventListener('load', function() {
+        const menu = document.getElementById('menu');
+        if (menu) {
+            observer.observe(menu, { attributes: true, attributeFilter: ['style'] });
+        }
+        // Por si acaso, intentar de nuevo
+        inyectarNav();
+    });
 })();

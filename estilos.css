@@ -383,6 +383,7 @@ html.tema-oscuro .app-header {
 
   /* Fondo blanco sólido y limpio */
   background: var(--superficie);
+  background-image: none !important;
 
   color: var(--texto);
   text-decoration: none;
@@ -400,7 +401,24 @@ html.tema-oscuro .app-header {
     border-color 0.18s ease;
 }
 
-/* Hover suave, sin pseudo-elementos */
+/* ===== EL DESTRUCTOR DE CÍRCULOS (Aplastado total) ===== */
+.card::before, 
+.card::after,
+.panel-menu .card::before,
+.panel-menu .card::after,
+.grid-operacion-resto .card::before,
+.grid-operacion-resto .card::after {
+  content: none !important;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  clip-path: polygon(0 0, 0 0, 0 0) !important;
+}
+
+/* Hover suave */
 .card:hover {
   transform: translateY(-2px);
   box-shadow:
@@ -413,7 +431,7 @@ html.tema-oscuro .app-header {
 
 /* Tema oscuro */
 html.tema-oscuro .card {
-  background: var(--superficie);
+  background: var(--superficie) !important;
   border-color: rgba(255, 255, 255, 0.055);
   box-shadow:
     0 2px 7px rgba(0, 0, 0, 0.25),
@@ -421,7 +439,7 @@ html.tema-oscuro .card {
 }
 @media (prefers-color-scheme: dark) {
   html.tema-auto .card {
-    background: var(--superficie);
+    background: var(--superficie) !important;
     border-color: rgba(255, 255, 255, 0.055);
     box-shadow:
       0 2px 7px rgba(0, 0, 0, 0.25),
@@ -459,7 +477,6 @@ html.tema-oscuro .card {
    ============================================================ */
 
 .card.destacada {
-  /* Fondo azul pastel muy sutil */
   background:
     radial-gradient(
       circle at 20% 0%,
@@ -993,30 +1010,4 @@ html.tema-oscuro .linea { border-bottom-color: #303b50; }
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* ============================================================
-   PARCHE FINAL: ELIMINAR CÍRCULOS Y LÍNEAS DE LAS TARJETAS
-   ============================================================ */
-.card::before, 
-.card::after,
-.panel-menu .card::before,
-.panel-menu .card::after,
-.card-icono::before,
-.card-icono::after {
-    display: none !important;
-    content: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    border: none !important;
-}
-
-/* Forzar fondo blanco limpio en las tarjetas */
-.card {
-    background: var(--superficie) !important;
-    background-image: none !important;
 }

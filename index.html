@@ -380,6 +380,70 @@ a, button, .card, .card-ventas-ancha {
 .resumen-turno-card .rt-val {
   font-variant-numeric: tabular-nums;
 }
+
+/* ===== FASE 4: VENTAS ===== */
+.link-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  padding: 4px 12px 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.15s ease, background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.link-volver:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.26);
+}
+.link-volver svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Botones de cobro: icono + texto en una sola línea */
+.bf-cobro button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 6px;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.bf-cobro button svg,
+#btnCam svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#btnCam {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.bf-total {
+  font-variant-numeric: tabular-nums;
+}
 </style>
 </head>
 <body>
@@ -678,6 +742,15 @@ function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
   });
 })();
 
+
+function pintarSaludo() {
+  const el = document.querySelector('.app-header-saludo');
+  if (!el) return;
+  const u = getUsuarioTurno();
+  const primero = (u && u.nombre) ? String(u.nombre).trim().split(' ')[0] : '';
+  const pareceCodigo = /^usr[-_ ]?\d+$/i.test(primero);
+  el.textContent = (primero && !pareceCodigo) ? '¡Hola, ' + primero + '! 👋' : '¡Hola! 👋';
+}
 /* =========================================================
    LÓGICA DE SESIÓN Y TURNOS
    ========================================================= */
@@ -707,6 +780,7 @@ async function pintar() {
 
   if (hayToken && hayUsuario && (hayTurno || esAdmin)) {
     aplicarRolAdmin();
+    pintarSaludo();
     pintarUsuarioTurno();
     await cargarBannerTurno();
   } else {

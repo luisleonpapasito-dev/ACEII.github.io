@@ -997,6 +997,70 @@
   html.tema-oscuro .resultado .nombre { color: var(--texto); }
   html.tema-oscuro .resultado .meta { color: var(--texto-suave); }
   html.tema-oscuro .resultado .meta .precio { color: var(--azul-claro); }
+  /* ===== FASE 4: VENTAS ===== */
+.link-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  padding: 4px 12px 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.15s ease, background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.link-volver:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.26);
+}
+.link-volver svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Botones de cobro: icono + texto en una sola línea */
+.bf-cobro button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 6px;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.bf-cobro button svg,
+#btnCam svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#btnCam {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.bf-total {
+  font-variant-numeric: tabular-nums;
+}
+
 </style>
 </head>
 <body>
@@ -1007,7 +1071,7 @@
     <div class="app-header-texto">
       <div class="app-header-titulo">Ventas <span class="carrito-badge" id="badgeCarrito" style="display:none;">🛒 0</span></div>
       <div class="app-header-sub">
-        <a href="#" id="linkMenu" style="color:rgba(255,255,255,0.9); text-decoration:underline;">← Volver al menú</a>
+                <a href="#" id="linkMenu" class="link-volver"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>Volver al menú</a>
       </div>
     </div>
   </div>
@@ -1018,7 +1082,7 @@
 <div class="caja">
   <label>Buscar producto</label>
   <input type="text" id="buscar" placeholder="Escribe 2 letras o más..." autocomplete="off">
-  <button class="main" id="btnCam" style="width:100%; margin-top:8px;">📷 Escanear con cámara</button>
+    <button class="main" id="btnCam" style="width:100%; margin-top:8px;"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Escanear con cámara</button>
   <div id="resultados"></div>
 
   <div id="panelCantidad">
@@ -1127,8 +1191,8 @@
     </div>
 
     <div class="pago-fila">
-      <button id="mcEfectivo">💵 Efectivo</button>
-      <button id="mcTransferencia">📱 Transferencia</button>
+            <button id="bfEfectivo"><svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.8"/></svg>EFECTIVO</button>
+      <button id="bfTransferencia"><svg viewBox="0 0 24 24"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg>TRANSFERENCIA</button>
     </div>
 
     <div class="seccion-cambio" id="mcSeccionCambio">

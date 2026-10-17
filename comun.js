@@ -129,8 +129,31 @@ function exigirSesion() {
 async function exigirTurnoCajaAbierto() {
   const u = getUsuarioTurno();
   if (!u) return false;
+
   if (u.rol === 'admin') return true;
-  if (getTurnoActual()) return true;
+
+  // Si hay turno local, confirmar con el servidor que sigue abierto
+  const turnoLocal = getTurnoActual();
+  if (turnoLocal) {
+    try {
+      const r = await jsonp({ accion: 'mi_turno', id_usuario: u.id }, 15000);
+      if (r && r.ok && r.turno) {
+        // Sigue abierto → OK
+        guardarTurnoActual(r.turno);
+        return true;
+      } else {
+        // 🚨 El servidor dice que NO hay turno → limpiar local y salir
+        borrarTurnoActual();
+        location.href = 'index.html';
+        return false;
+      }
+    } catch (e) {
+      // Si no hay conexión, confiamos en el local (no bloquear)
+      return true;
+    }
+  }
+
+  // No hay turno local → verificar con el servidor
   try {
     const r = await jsonp({ accion: 'mi_turno', id_usuario: u.id }, 15000);
     if (r && r.ok && r.turno) {
@@ -138,6 +161,7 @@ async function exigirTurnoCajaAbierto() {
       return true;
     }
   } catch (e) {}
+
   location.href = 'caja.html';
   return false;
 }

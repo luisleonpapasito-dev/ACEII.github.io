@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es" class="tema-claro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Horarios y turnos · ACEII</title>
+<link rel="stylesheet" href="estilos.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563EB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
+<script src="comun.js"></script>
+<style>
+  :root {
+    --ac-texto: #0F1B3D;
+    --ac-texto-suave: #5B6785;
+    --ac-borde: #E3E9F4;
+    --superficie: #FFFFFF;
+    --superficie-2: #EEF3FB;
+    --ac-acento: #7C3AED;
+    --ac-acento-bg: rgba(124, 58, 237, 0.10);
+    --ok-bg: rgba(16, 185, 129, 0.12);
+    --ok-txt: #059669;
+    --warn-bg: rgba(217, 119, 6, 0.12);
+    --warn-txt: #D97706;
+    --err-bg: rgba(220, 38, 38, 0.12);
+    --err-txt: #DC2626;
+  }
+  html.tema-oscuro {
+    --ac-texto: #F1F5FF;
+    --ac-texto-suave: #9AA8CC;
+    --ac-borde: #223156;
+    --superficie: #121D3A;
+    --superficie-2: #1C2A4A;
+    --ac-acento: #A78BFA;
+    --ac-acento-bg: rgba(167, 139, 250, 0.14);
+    --ok-bg: rgba(52, 211, 153, 0.18);
+    --ok-txt: #6EE7B7;
+    --warn-bg: rgba(251, 191, 36, 0.18);
+    --warn-txt: #FCD34D;
+    --err-bg: rgba(248, 113, 113, 0.18);
+    --err-txt: #FCA5A5;
+  }
+
+  body {
+    background: var(--fondo, #F4F7FC);
+    color: var(--ac-texto);
+  }
+
+  .admin-wrap {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 14px 14px calc(40px + env(safe-area-inset-bottom));
+  }
+
+  .admin-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 16px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+    color: #fff;
+    box-shadow: 0 10px 28px rgba(109, 40, 217, 0.35);
+  }
+  .admin-header-icono {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .admin-header-icono svg { width: 24px; height: 24px; fill: #fff; }
+  .admin-header-texto { flex: 1; }
+  .admin-header-titulo { font-size: 18px; font-weight: 800; line-height: 1.2; }
+  .admin-header-sub { font-size: 12.5px; font-weight: 500; opacity: 0.9; margin-top: 2px; }
+
+  .filtros {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .filtros::-webkit-scrollbar { display: none; }
+  .filtro-chip {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: var(--superficie);
+    border: 1.5px solid var(--ac-borde);
+    color: var(--ac-texto-suave);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .filtro-chip.activa {
+    background: var(--ac-acento);
+    border-color: var(--ac-acento);
+    color: #fff;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat-card {
+    padding: 14px;
+    border-radius: 14px;
+    background: var(--superficie);
+    border: 1px solid var(--ac-borde);
+  }
+  .stat-num {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--ac-acento);
+    line-height: 1.1;
+  }
+  .stat-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ac-texto-suave);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .busqueda {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--superficie);
+    border: 1.5px solid var(--ac-borde);
+    color: var(--ac-texto);
+    font-size: 14px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+  }
+  .busqueda:focus {
+    outline: none;
+    border-color: var(--ac-acento);
+  }
+
+  .lista-turnos {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .turno-card {
+    background: var(--superficie);
+    border: 1px solid var(--ac-borde);
+    border-radius: 14px;
+    padding: 14px;
+    transition: transform 0.12s ease;
+  }
+
+  .turno-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .turno-id {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ac-acento);
+    font-family: monospace;
+    word-break: break-all;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .badge-estado {
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+  }
+  .badge-abierto { background: var(--ok-bg); color: var(--ok-txt); }
+  .badge-cerrado { background: var(--ac-acento-bg); color: var(--ac-acento); }
+
+  .turno-fila {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 13px;
+    padding: 4px 0;
+  }
+  .turno-fila .label {
+    color: var(--ac-texto-suave);
+    font-weight: 500;
+  }
+  .turno-fila .valor {
+    color: var(--ac-texto);
+    font-weight: 600;
+    text-align: right;
+    word-break: break-word;
+  }
+  .turno-fila .valor.mono {
+    font-family: monospace;
+    font-size: 12.5px;
+  }
+
+  .turno-divisor {
+    height: 1px;
+    background: var(--ac-borde);
+    margin: 8px 0;
+  }
+
+  .turno-totales {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .turno-total-item {
+    flex: 1;
+    text-align: center;
+    padding: 8px 4px;
+    border-radius: 10px;
+    background: var(--superficie-2);
+  }
+  .turno-total-item .num {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--ac-texto);
+    font-family: monospace;
+  }
+  .turno-total-item .lbl {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--ac-texto-suave);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .turno-total-item.dif-ok .num { color: var(--ok-txt); }
+  .turno-total-item.dif-warn .num { color: var(--warn-txt); }
+  .turno-total-item.dif-err .num { color: var(--err-txt); }
+
+  .vacio {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--ac-texto-suave);
+    font-size: 14px;
+  }
+
+  .link-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ac-acento);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-bottom: 12px;
+  }
+
+  .spinner-carga {
+    text-align: center;
+    padding: 30px;
+    color: var(--ac-texto-suave);
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<div class="admin-wrap">
+
+  <a href="index.html" class="link-volver">← Volver al menú</a>
+
+  <div class="admin-header">
+    <div class="admin-header-icono">
+      <svg viewBox="0 -960 960 960"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-80q-25 0-42.5-17.5T420-300q0-25 17.5-42.5T480-360q25 0 42.5 17.5T540-300q0 25-17.5 42.5T480-240Zm-40-160v-320h80v320h-80Z"/></svg>
+    </div>
+    <div class="admin-header-texto">
+      <div class="admin-header-titulo">Horarios y turnos</div>
+      <div class="admin-header-sub" id="contadorTurnos">Cargando...</div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-num" id="statAbiertos">0</div>
+      <div class="stat-label">Abiertos ahora</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statTotal">0</div>
+      <div class="stat-label">Turnos totales</div>
+    </div>
+  </div>
+
+  <div class="filtros">
+    <div class="filtro-chip activa" data-filtro="todos">Todos</div>
+    <div class="filtro-chip" data-filtro="abiertos">Abiertos</div>
+    <div class="filtro-chip" data-filtro="cerrados">Cerrados</div>
+    <div class="filtro-chip" data-filtro="hoy">Hoy</div>
+    <div class="filtro-chip" data-filtro="semana">Últimos 7 días</div>
+  </div>
+
+  <input type="text" id="buscar" class="busqueda" placeholder="🔎 Buscar por responsable o ID de turno...">
+
+  <div class="lista-turnos" id="listaTurnos">
+    <div class="spinner-carga">⏳ Cargando turnos...</div>
+  </div>
+
+</div>
+
+<script>
+exigirSesion();
+
+let turnos = [];
+let filtroActual = 'todos';
+
+function fmt(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
+
+function formatearFecha(fecha) {
+  if (!fecha) return '—';
+  try {
+    const d = new Date(fecha.replace(' ', 'T'));
+    if (isNaN(d.getTime())) return fecha;
+    const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+    const dia = d.getDate();
+    const mes = meses[d.getMonth()];
+    const anio = String(d.getFullYear()).slice(2);
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    return dia + ' ' + mes + ' ' + anio + ' · ' + hh + ':' + mm;
+  } catch (e) { return fecha; }
+}
+
+function formatearDuracion(min) {
+  if (min == null || min <= 0) return '—';
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  if (h === 0) return m + ' min';
+  if (m === 0) return h + ' h';
+  return h + ' h ' + m + ' min';
+}
+
+(async function init() {
+  const u = getUsuarioTurno();
+  if (!u || u.rol !== 'admin') {
+    mostrar('Acceso solo para administradores', 'error');
+    location.href = 'index.html';
+    return;
+  }
+  await cargarTurnos();
+})();
+
+async function cargarTurnos() {
+  const u = getUsuarioTurno();
+  try {
+    const r = await jsonp({ accion: 'horarios_turnos', id_usuario: u.id }, 25000);
+    if (r && r.error === 'Token inválido') { borrarToken(); location.href = 'index.html'; return; }
+    if (r && r.ok) {
+      turnos = r.items;
+      const abiertos = turnos.filter(function (t) { return t.estado === 'abierto'; }).length;
+      $('statAbiertos').textContent = abiertos;
+      $('statTotal').textContent = turnos.length;
+      $('contadorTurnos').textContent = turnos.length + ' turno' + (turnos.length === 1 ? '' : 's') + ' registrados';
+      pintarLista();
+    } else {
+      mostrar(r.error || 'Error al cargar', 'error');
+      $('listaTurnos').innerHTML = '<div class="vacio">' + (r.error || 'Error al cargar') + '</div>';
+    }
+  } catch (err) {
+    mostrar('Error: ' + err.message, 'error');
+    $('listaTurnos').innerHTML = '<div class="vacio">Error: ' + err.message + '</div>';
+  }
+}
+
+function pintarLista() {
+  const cont = $('listaTurnos');
+  const q = norm($('buscar').value);
+
+  let lista = turnos.slice();
+
+  // Filtro de chips
+  if (filtroActual === 'abiertos') {
+    lista = lista.filter(function (t) { return t.estado === 'abierto'; });
+  } else if (filtroActual === 'cerrados') {
+    lista = lista.filter(function (t) { return t.estado !== 'abierto'; });
+  } else if (filtroActual === 'hoy') {
+    const hoy = new Date();
+    const y = hoy.getFullYear();
+    const m = String(hoy.getMonth() + 1).padStart(2, '0');
+    const d = String(hoy.getDate()).padStart(2, '0');
+    const prefijo = y + '-' + m + '-' + d;
+    lista = lista.filter(function (t) {
+      return t.fecha_apertura.indexOf(prefijo) === 0;
+    });
+  } else if (filtroActual === 'semana') {
+    const ahora = new Date();
+    const hace7 = new Date(ahora.getTime() - 7 * 24 * 60 * 60 * 1000);
+    lista = lista.filter(function (t) {
+      try {
+        const f = new Date(t.fecha_apertura.replace(' ', 'T'));
+        return f >= hace7;
+      } catch (e) { return false; }
+    });
+  }
+
+  // Filtro de búsqueda
+  if (q) {
+    lista = lista.filter(function (t) {
+      return norm(t.responsable + ' ' + t.id_turno).indexOf(q) >= 0;
+    });
+  }
+
+  if (lista.length === 0) {
+    cont.innerHTML = '<div class="vacio">No hay turnos que coincidan con el filtro</div>';
+    return;
+  }
+
+  cont.innerHTML = '';
+  lista.forEach(function (t) {
+    const card = document.createElement('div');
+    card.className = 'turno-card';
+
+    const badgeEstado = t.estado === 'abierto'
+      ? '<span class="badge-estado badge-abierto">● Abierto</span>'
+      : '<span class="badge-estado badge-cerrado">✓ Cerrado</span>';
+
+    const difClase = t.diferencia === 0 ? 'dif-ok' : (Math.abs(t.diferencia) <= 5000 ? 'dif-warn' : 'dif-err');
+
+    let html =
+      '<div class="turno-top">' +
+        '<div class="turno-id">' + t.id_turno + '</div>' +
+        badgeEstado +
+      '</div>' +
+      '<div class="turno-fila">' +
+        '<span class="label">Responsable</span>' +
+        '<span class="valor">' + t.responsable + '</span>' +
+      '</div>' +
+      '<div class="turno-fila">' +
+        '<span class="label">Apertura</span>' +
+        '<span class="valor">' + formatearFecha(t.fecha_apertura) + '</span>' +
+      '</div>';
+
+    if (t.fecha_cierre) {
+      html +=
+        '<div class="turno-fila">' +
+          '<span class="label">Cierre</span>' +
+          '<span class="valor">' + formatearFecha(t.fecha_cierre) + '</span>' +
+        '</div>' +
+        '<div class="turno-fila">' +
+          '<span class="label">Duración</span>' +
+          '<span class="valor">' + formatearDuracion(t.duracion_min) + '</span>' +
+        '</div>';
+    }
+
+    html += '<div class="turno-divisor"></div>';
+
+    html +=
+      '<div class="turno-totales">' +
+        '<div class="turno-total-item">' +
+          '<div class="num">' + fmt(t.base) + '</div>' +
+          '<div class="lbl">Base</div>' +
+        '</div>' +
+        '<div class="turno-total-item">' +
+          '<div class="num">' + fmt(t.saldo_real) + '</div>' +
+          '<div class="lbl">Real</div>' +
+        '</div>' +
+        '<div class="turno-total-item ' + difClase + '">' +
+          '<div class="num">' + (t.diferencia >= 0 ? '+' : '') + fmt(t.diferencia) + '</div>' +
+          '<div class="lbl">Diferencia</div>' +
+        '</div>' +
+      '</div>';
+
+    card.innerHTML = html;
+    cont.appendChild(card);
+  });
+}
+
+$('buscar').addEventListener('input', pintarLista);
+
+document.querySelectorAll('.filtro-chip').forEach(function (chip) {
+  chip.addEventListener('click', function () {
+    document.querySelectorAll('.filtro-chip').forEach(function (c) {
+      c.classList.remove('activa');
+    });
+    chip.classList.add('activa');
+    filtroActual = chip.getAttribute('data-filtro');
+    pintarLista();
+  });
+});
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('service-worker.js').catch(function (e) {
+      console.warn('SW no registrado:', e);
+    });
+  });
+}
+</script>
+</body>
+</html>

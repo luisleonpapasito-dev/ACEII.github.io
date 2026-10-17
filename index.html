@@ -16,21 +16,14 @@
 <script src="comun.js"></script>
 <style>
   /* =====================================================
-     REDISEÑO VISUAL v6 - basado en ACEII rediseño
-     · Header con frase motivacional
-     · Hero de turno con monto grande
-     · Grupos con acento de color
-     · Tarjetas con iconos degradados por categoría
-     · Barra inferior (la inyecta nav.js)
+     REDISEÑO VISUAL v7 - Fiel a la imagen de referencia
      ===================================================== */
-
   :root {
     --ac-texto: #0F1B3D;
     --ac-texto-suave: #5B6785;
     --ac-borde: #E3E9F4;
     --ac-flecha: #2563EB;
     --ac-flecha-bg: rgba(37, 99, 235, 0.10);
-    --ac-sombra-icono: 0 6px 14px rgba(29, 78, 216, 0.28);
     --logout-bg: #EFF6FF;
     --logout-borde: #DBEAFE;
     --logout-texto: #2563EB;
@@ -43,364 +36,165 @@
     --ac-borde: #223156;
     --ac-flecha: #7DB1FF;
     --ac-flecha-bg: rgba(125, 177, 255, 0.14);
-    --ac-sombra-icono: 0 6px 14px rgba(0, 0, 0, 0.35);
     --logout-bg: rgba(96, 165, 250, 0.12);
     --logout-borde: rgba(96, 165, 250, 0.28);
     --logout-texto: #93C5FD;
     --superficie: #121D3A;
   }
 
-  /* ====== HEADER: saludo + frase ====== */
-  .app-header-saludo {
-    font-size: 13px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.85);
-    margin-bottom: 2px;
-    letter-spacing: 0.2px;
-  }
-  .app-header-frase {
-    font-size: 11px;
-    color: rgba(255,255,255,0.65);
-    margin-top: 2px;
-    font-weight: 500;
-    line-height: 1.3;
-  }
+  /* ====== HEADER ====== */
+  .app-header-saludo { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.95); margin-bottom: 2px; }
+  .app-header-frase { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 4px; font-weight: 500; line-height: 1.35; }
 
-  /* ====== BANNER DE TURNO: hero ====== */
-  #bannerTurno {
-    background: none;
-    border: 0;
-    box-shadow: none;
-    padding: 0;
-    margin: 14px auto 0;
-    width: calc(100% - 28px);
-    max-width: 520px;
-  }
+  /* ====== BANNER DE TURNO ====== */
+  #bannerTurno { background: none; border: 0; box-shadow: none; padding: 0; margin: 14px auto 0; width: calc(100% - 28px); max-width: 520px; }
   #bannerMiTurno {
-    position: relative;
-    overflow: hidden;
-    padding: 20px;
-    border-radius: 24px;
-    background: linear-gradient(135deg, #3B82F6, #1D4ED8);
-    color: #fff;
+    position: relative; overflow: hidden; padding: 20px; border-radius: 24px;
+    background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: #fff;
     box-shadow: 0 10px 28px rgba(29, 78, 216, 0.35);
   }
   #bannerMiTurno::after {
-    content: "";
-    position: absolute;
-    right: -40px;
-    top: -40px;
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.10);
-    pointer-events: none;
+    content: ""; position: absolute; right: -40px; top: -40px;
+    width: 160px; height: 160px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.10); pointer-events: none;
   }
-  .hero-fila {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-  }
+  .hero-fila { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
   .hero-cuerpo { flex: 1; min-width: 0; }
   .hero-etiqueta { font-size: 13px; font-weight: 600; opacity: 0.92; }
-  .hero-monto {
-    font-size: 34px;
-    font-weight: 800;
-    letter-spacing: -1px;
-    line-height: 1.1;
-    margin: 2px 0;
-  }
+  .hero-monto { font-size: 34px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; margin: 2px 0; }
   .hero-meta { font-size: 11.5px; font-weight: 500; opacity: 0.85; margin-top: 2px; word-break: break-word; }
   #bannerMiTurno .hero-btn {
-    background: #fff;
-    color: #1649C0;
-    border: 0;
-    border-radius: 999px;
-    padding: 10px 14px;
-    min-height: 40px;
-    display: inline-flex;
-    align-items: center;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
-    white-space: nowrap;
-    box-shadow: none;
-    transition: transform 0.12s ease;
+    background: #fff; color: #1649C0; border: 0; border-radius: 999px;
+    padding: 10px 14px; min-height: 40px; display: inline-flex; align-items: center;
+    font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap;
+    box-shadow: none; transition: transform 0.12s ease;
   }
   #bannerMiTurno .hero-btn:active { transform: scale(0.95); }
+  #bannerTurnoId { white-space: pre-line; font-size: 11px; line-height: 1.45; }
+  #bannerOtroTurno { background: var(--superficie); border: 1.5px solid rgba(234, 88, 12, 0.35); border-radius: 18px; padding: 14px 16px; }
 
-  #bannerTurnoId {
-    white-space: pre-line;
-    font-size: 11px;
-    line-height: 1.45;
-  }
-
-  #bannerOtroTurno {
-    background: var(--superficie);
-    border: 1.5px solid rgba(234, 88, 12, 0.35);
-    border-radius: 18px;
-    padding: 14px 16px;
-  }
-
-  /* ====== PANEL: padding inferior para la barra ====== */
+  /* ====== PANEL GENERAL ====== */
   .panel-menu {
-    max-width: 520px;
-    margin: 0 auto;
+    max-width: 520px; margin: 0 auto;
     padding: 0 14px calc(var(--bottom-nav-height) + 20px + env(safe-area-inset-bottom));
   }
 
-  /* ====== TÍTULOS DE GRUPO con acento ====== */
-  .grupo-titulo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 26px 4px 2px;
-    font-size: 16px;
-    font-weight: 800;
-    letter-spacing: 0;
-    text-transform: none;
-    color: var(--ac-texto);
-  }
-  .grupo-titulo::before {
-    content: "";
-    width: 4px;
-    height: 18px;
-    border-radius: 4px;
-    background: var(--g-acento);
-  }
-  .grupo-sub {
-    margin: 0 4px 12px 18px;
-    font-size: 12.5px;
-    font-weight: 500;
-    color: var(--ac-texto-suave);
-  }
+  /* ====== TÍTULOS DE GRUPO ====== */
+  .grupo-titulo { display: flex; align-items: center; gap: 8px; margin: 24px 4px 2px; font-size: 17px; font-weight: 800; color: var(--ac-texto); }
+  .grupo-titulo::before { content: ""; width: 4px; height: 18px; border-radius: 4px; background: var(--g-acento); }
+  .grupo-sub { margin: 0 4px 12px 12px; font-size: 12px; font-weight: 500; color: var(--ac-texto-suave); }
 
   .grupo-operacion { --g-acento: #2563EB; }
   .grupo-catalogo  { --g-acento: #EA580C; }
   .grupo-analisis  { --g-acento: #059669; }
   .grupo-admin     { --g-acento: #7C3AED; }
 
-  /* ====== GRID ====== */
-  .panel-menu .grid-menu {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin: 0;
-  }
-
-  /* ====== TARJETAS: estilo rediseño ====== */
+  /* ====== TARJETAS BASE ====== */
   .panel-menu .card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    min-height: 140px;
-    padding: 16px;
-    margin: 0;
-    background: var(--superficie);
-    border: 1px solid var(--ac-borde);
-    border-radius: 18px;
-    color: var(--ac-texto);
-    text-decoration: none;
-    text-align: left;
-    transition: transform 0.15s ease, box-shadow 0.2s ease;
-    overflow: hidden;
+    position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+    background: var(--superficie); border: 1px solid var(--ac-borde); border-radius: 18px;
+    color: var(--ac-texto); text-decoration: none; text-align: left;
+    transition: transform 0.15s ease, box-shadow 0.2s ease; overflow: hidden;
+    padding: 16px; box-shadow: 0 2px 8px rgba(30,60,140,.04);
   }
   .panel-menu .card:active { transform: scale(0.97); }
-  @media (hover: hover) {
-    .panel-menu .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 22px rgba(15, 27, 61, 0.14);
-    }
-  }
-
+  
   /* Blob decorativo */
   .panel-menu .card::after {
-    content: "";
-    position: absolute;
-    width: 90px;
-    height: 90px;
-    right: -35px;
-    top: -35px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, rgba(59, 130, 246, 0) 70%);
-    pointer-events: none;
-  }
-  html.tema-oscuro .panel-menu .card::after {
-    background: radial-gradient(circle, rgba(96, 165, 250, 0.08) 0%, rgba(96, 165, 250, 0) 70%);
+    content: ""; position: absolute; width: 70px; height: 70px; right: -25px; top: -25px;
+    border-radius: 50%; background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0) 70%); pointer-events: none;
   }
 
-  /* Sin barra lateral (el rediseño usa iconos + chevron en pastilla) */
-  .panel-menu .card::before { content: none !important; display: none !important; }
+  /* Iconos */
+  .panel-menu .card .card-icono {
+    width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    box-shadow: 0 6px 14px color-mix(in srgb, var(--g2) 35%, transparent);
+    flex-shrink: 0; margin-bottom: 4px;
+  }
+  .panel-menu .card .card-icono svg { width: 24px; height: 24px; fill: #fff; display: block; }
 
-  .panel-menu .card .texto-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    margin-top: 4px;
-    padding-right: 36px;
-  }
+  /* Textos */
+  .panel-menu .card .card-titulo { font-size: 14px; font-weight: 800; line-height: 1.2; color: var(--ac-texto); margin: 0; }
+  .panel-menu .card .card-desc { font-size: 11.5px; font-weight: 500; line-height: 1.35; color: var(--ac-texto-suave); margin: 0; }
 
-  .panel-menu .card .card-titulo {
-    font-size: 15px;
-    font-weight: 700;
-    line-height: 1.2;
-    color: var(--ac-texto);
-    margin: 0;
-  }
-  .panel-menu .card .card-desc {
-    font-size: 11.5px;
-    font-weight: 500;
-    line-height: 1.35;
-    color: var(--ac-texto-suave);
-    margin: 0;
-  }
-  .panel-menu .card .card-titulo::after {
-    content: none !important;
-    display: none !important;
-  }
-
-  /* Chevron en pastilla */
+  /* Chevron (Flechita) */
   .panel-menu .card .chev {
-    position: absolute;
-    top: 20px;
-    right: 14px;
-    width: 28px;
-    height: 28px;
-    padding: 6px;
-    border-radius: 50%;
-    color: var(--chev-color, var(--ac-flecha));
-    background: var(--chev-bg, var(--ac-flecha-bg));
-    box-sizing: border-box;
-    fill: none;
-    pointer-events: none;
+    position: absolute; top: 16px; right: 16px; width: 26px; height: 26px; padding: 5px;
+    border-radius: 50%; color: var(--chev-color); background: var(--chev-bg);
+    box-sizing: border-box; fill: none; pointer-events: none;
   }
-
   .grupo-operacion .card { --chev-color: #2563EB; --chev-bg: rgba(37, 99, 235, 0.10); }
   .grupo-catalogo  .card { --chev-color: #EA580C; --chev-bg: rgba(234, 88, 12, 0.10); }
   .grupo-analisis  .card { --chev-color: #059669; --chev-bg: rgba(5, 150, 105, 0.10); }
   .grupo-admin     .card { --chev-color: #7C3AED; --chev-bg: rgba(124, 58, 237, 0.10); }
-
   html.tema-oscuro .grupo-operacion .card { --chev-color: #7DB1FF; --chev-bg: rgba(125, 177, 255, 0.14); }
   html.tema-oscuro .grupo-catalogo  .card { --chev-color: #FB923C; --chev-bg: rgba(251, 146, 60, 0.14); }
   html.tema-oscuro .grupo-analisis  .card { --chev-color: #4ADE80; --chev-bg: rgba(74, 222, 128, 0.14); }
   html.tema-oscuro .grupo-admin     .card { --chev-color: #A78BFA; --chev-bg: rgba(167, 139, 250, 0.14); }
 
-  /* Iconos con gradiente por categoría */
-  .panel-menu .card .card-icono {
-    width: 44px;
-    height: 44px;
-    margin: 0;
-    border-radius: 12px;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(135deg, var(--g1), var(--g2));
-    box-shadow: 0 6px 14px color-mix(in srgb, var(--g2) 40%, transparent);
-    flex-shrink: 0;
-  }
-  .panel-menu .card .card-icono svg {
-    width: 24px;
-    height: 24px;
-    fill: #fff;
-    color: #fff;
-    display: block;
-    margin: 0 auto;
-  }
-
-  /* OPERACIÓN */
+  /* Iconos Gradientes */
   .ico-caja       { --g1: #0C4A9E; --g2: #062B5C; }
   .ico-ventas     { --g1: #2563EB; --g2: #1E40AF; }
   .ico-recepcion  { --g1: #00A6E0; --g2: #0284C7; }
   .ico-devol      { --g1: #38BDF8; --g2: #0EA5E9; }
-
-  /* CATÁLOGO */
   .ico-inventario { --g1: #FBBF24; --g2: #F59E0B; }
   .ico-productos  { --g1: #14B8A6; --g2: #0D9488; }
   .ico-categorias { --g1: #EC4899; --g2: #DB2777; }
   .ico-codigos    { --g1: #F97316; --g2: #EA580C; }
-
-  /* ANÁLISIS */
   .ico-historial  { --g1: #4ADE80; --g2: #16A34A; }
   .ico-dashboard  { --g1: #B4FF9A; --g2: #71C55B; }
-
-  /* ADMIN */
   .ico-admin-usuarios  { --g1: #8B5CF6; --g2: #6D28D9; }
   .ico-admin-horarios  { --g1: #A78BFA; --g2: #7C3AED; }
 
-  /* ====== Badge SOLO ADMIN en el título del grupo ====== */
-  .badge-admin {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-left: auto;
-    background: #EDE7FE;
-    color: #6D28D9;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 3px 9px;
-    border-radius: 10px;
-    white-space: nowrap;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
+  /* ====== DISEÑO ESPECÍFICO: OPERACIÓN ====== */
+  .card-ventas-ancha {
+    display: flex; align-items: center; gap: 14px; padding: 16px; height: 86px; box-sizing: border-box;
+    background: linear-gradient(120deg, #1F46CC 0%, #3A74F2 100%);
+    border-radius: 20px; box-shadow: 0 8px 18px rgba(36,84,220,.28);
+    text-decoration: none; color: #fff; margin-bottom: 12px;
   }
-  html.tema-oscuro .badge-admin {
-    background: rgba(167, 139, 250, 0.18);
-    color: #C4B5FD;
+  .card-ventas-ancha .card-icono {
+    width: 54px; height: 54px; border-radius: 16px; background: rgba(255,255,255,.2) !important;
+    box-shadow: none !important; margin: 0;
   }
+  .card-ventas-ancha .card-icono svg { width: 28px; height: 28px; }
+  .card-ventas-ancha .texto-wrapper { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .card-ventas-ancha .card-titulo { font-size: 20px; font-weight: 800; line-height: 1.1; color: #fff; margin: 0; }
+  .card-ventas-ancha .card-desc { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.92); margin: 0; }
+  .card-ventas-ancha .chev { position: static; background: #fff; color: #2F5FE8 !important; width: 32px; height: 32px; padding: 6px; box-shadow: none; }
+  .card-ventas-ancha .chev path { stroke-width: 2.5; }
 
-  /* ====== Animación de entrada ====== */
-  @keyframes ac-subir {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: none; }
-  }
-  #bannerMiTurno, .panel-menu .card { animation: ac-subir 0.45s ease both; }
-  .panel-menu .card:nth-child(2) { animation-delay: 0.05s; }
-  .panel-menu .card:nth-child(3) { animation-delay: 0.10s; }
-  .panel-menu .card:nth-child(4) { animation-delay: 0.15s; }
-  @media (prefers-reduced-motion: reduce) {
-    #bannerMiTurno, .panel-menu .card { animation: none !important; }
-  }
+  .grid-operacion-resto { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+  .grid-operacion-resto .card { padding: 14px 12px; min-height: 132px; border-radius: 18px; }
+  .grid-operacion-resto .card .card-icono { width: 40px; height: 40px; border-radius: 10px; }
+  .grid-operacion-resto .card .card-icono svg { width: 20px; height: 20px; }
+  .grid-operacion-resto .card .card-titulo { font-size: 13px; margin-top: 4px; }
+  .grid-operacion-resto .card .card-desc { font-size: 10.5px; }
+  .grid-operacion-resto .card .chev { width: 20px; height: 20px; top: 12px; right: 12px; padding: 4px; }
 
-  /* ====== Cerrar sesión (pill) ====== */
+  /* ====== DISEÑO ESPECÍFICO: CATÁLOGO / ANÁLISIS / ADMIN ====== */
+  .panel-menu .grid-menu-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .panel-menu .grid-menu-2 .card { min-height: 80px; padding: 14px; flex-direction: row; align-items: center; gap: 12px; }
+  .panel-menu .grid-menu-2 .card .texto-wrapper { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+  .panel-menu .grid-menu-2 .card .chev { top: 50%; transform: translateY(-50%); right: 14px; }
+
+  /* ====== BADGE ADMIN ====== */
+  .badge-admin { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; background: #EDE7FE; color: #6D28D9; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 10px; white-space: nowrap; text-transform: uppercase; }
+  html.tema-oscuro .badge-admin { background: rgba(167, 139, 250, 0.18); color: #C4B5FD; }
+
+  /* ====== CERRAR SESIÓN ====== */
   .cerrar-sesion-box {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: auto;
-    min-width: 220px;
-    max-width: 100%;
-    min-height: 48px;
-    margin: 0;
-    padding: 12px 24px;
-    border-radius: 999px;
-    background: var(--logout-bg);
-    border: 1.5px solid var(--logout-borde);
-    color: var(--logout-texto);
-    font-size: 15px;
-    font-weight: 700;
-    box-shadow: none;
-    cursor: pointer;
-    transition: transform .12s ease, background .18s ease;
-    text-align: center;
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    width: auto; min-width: 220px; max-width: 100%; min-height: 48px; margin: 0; padding: 12px 24px;
+    border-radius: 999px; background: var(--logout-bg); border: 1.5px solid var(--logout-borde);
+    color: var(--logout-texto); font-size: 15px; font-weight: 700; box-shadow: none; cursor: pointer;
+    transition: transform .12s ease, background .18s ease; text-align: center;
   }
   .cerrar-sesion-box:active { transform: scale(.98); }
 
-  /* Oculta la sección admin por defecto */
   .seccion-admin { display: none; }
   .seccion-admin.visible { display: block; }
-
-  /* ====== Ajustes responsivos ====== */
-  @media (max-width: 340px) {
-    .hero-monto { font-size: 28px; }
-    .panel-menu .grid-menu { gap: 10px; }
-    .panel-menu .card { padding: 14px; min-height: 130px; }
-    .panel-menu .card .card-desc { font-size: 11px; }
-  }
 </style>
 </head>
 <body>
@@ -486,52 +280,49 @@
   <section class="grupo grupo-operacion">
     <h2 class="grupo-titulo">Operación</h2>
     <p class="grupo-sub">Lo que usas en cada turno</p>
-    <div class="grid-menu">
+    
+    <!-- Botón Ancho: Ventas -->
+    <a class="card-ventas-ancha" href="ventas.html">
+      <div class="card-icono ico-ventas">
+        <svg viewBox="0 -960 960 960"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM40-800v-80h130l148 310h368l166-310h88L740-560q-11 20-30 30t-40 10H320L240-620 160-440h560v80H160q-26 0-40-22t-2-46l80-160L60-880l-20-40v80Z"/></svg>
+      </div>
+      <div class="texto-wrapper">
+        <div class="card-titulo">Ventas</div>
+        <div class="card-desc">Registra y consulta tus ventas</div>
+      </div>
+      <div class="chev">
+        <svg viewBox="0 0 24 24" style="width:100%; height:100%; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round;"><path d="M9 6l6 6-6 6"/></svg>
+      </div>
+    </a>
 
+    <!-- Fila de 3: Caja, Recepción, Devoluciones -->
+    <div class="grid-operacion-resto">
       <a class="card" href="caja.html">
         <div class="card-icono ico-caja">
           <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
         </div>
-        <div class="texto-wrapper">
-          <div class="card-titulo">Caja del turno</div>
-          <div class="card-desc">Movimientos y cierre del turno</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-      </a>
-
-      <a class="card" href="ventas.html">
-        <div class="card-icono ico-ventas">
-          <svg viewBox="0 -960 960 960"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM40-800v-80h130l148 310h368l166-310h88L740-560q-11 20-30 30t-40 10H320L240-620 160-440h560v80H160q-26 0-40-22t-2-46l80-160L60-880l-20-40v80Z"/></svg>
-        </div>
-        <div class="texto-wrapper">
-          <div class="card-titulo">Ventas</div>
-          <div class="card-desc">Registra y consulta tus ventas</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        <div class="card-titulo">Caja del turno</div>
+        <div class="card-desc">Movimientos y cierre</div>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
       </a>
 
       <a class="card" href="recepcion.html">
         <div class="card-icono ico-recepcion">
           <svg viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-120H640q-30 38-71.5 59T480-240q-47 0-88.5-21T320-320H200v120Zm280-120q38 0 69-22t43-58h168v-360H200v360h168q12 36 43 58t69 22ZM200-200h560-560Z"/></svg>
         </div>
-        <div class="texto-wrapper">
-          <div class="card-titulo">Recepción</div>
-          <div class="card-desc">Controla ingresos de productos</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        <div class="card-titulo">Recepción</div>
+        <div class="card-desc">Ingresos de productos</div>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
       </a>
 
       <a class="card" href="devoluciones.html">
         <div class="card-icono ico-devol">
           <svg viewBox="0 -960 960 960"><path d="M280-200q-17 0-28.5-11.5T240-240q0-17 11.5-28.5T280-280h280q50 0 85-35t35-85q0-50-35-85t-85-35H320l64 64q11 11 11 28t-11 28q-11 11-28 11t-28-11L184-544q-12-12-12-28t12-28l144-144q11-11 28-11t28 11q11 11 11 28t-11 28l-64 64h240q83 0 141.5 58.5T760-400q0 83-58.5 141.5T560-200H280Z"/></svg>
         </div>
-        <div class="texto-wrapper">
-          <div class="card-titulo">Devoluciones</div>
-          <div class="card-desc">Gestiona devoluciones de productos</div>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        <div class="card-titulo">Devoluciones</div>
+        <div class="card-desc">Productos devueltos</div>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
       </a>
-
     </div>
   </section>
 
@@ -539,7 +330,7 @@
   <section class="grupo grupo-catalogo">
     <h2 class="grupo-titulo">Catálogo</h2>
     <p class="grupo-sub">Productos, categorías y códigos</p>
-    <div class="grid-menu">
+    <div class="grid-menu-2">
 
       <a class="card" href="inventario.html">
         <div class="card-icono ico-inventario">
@@ -547,9 +338,9 @@
         </div>
         <div class="texto-wrapper">
           <div class="card-titulo">Inventario</div>
-          <div class="card-desc">Consulta y administra el stock</div>
+          <div class="card-desc">Consulta el stock</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
       </a>
 
       <a class="card" href="productos.html">
@@ -558,9 +349,9 @@
         </div>
         <div class="texto-wrapper">
           <div class="card-titulo">Productos</div>
-          <div class="card-desc">Consulta y edita el catálogo</div>
+          <div class="card-desc">Edita el catálogo</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
       </a>
 
       <a class="card" href="categorias.html">
@@ -569,9 +360,9 @@
         </div>
         <div class="texto-wrapper">
           <div class="card-titulo">Categorías</div>
-          <div class="card-desc">Organiza tus productos por tipo</div>
+          <div class="card-desc">Organiza por tipo</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
       </a>
 
       <a class="card" href="codigos.html">
@@ -579,12 +370,11 @@
           <svg viewBox="0 -960 960 960"><path d="M120-680v-120q0-33 23.5-56.5T200-880h120q17 0 28.5 11.5T360-840q0 17-11.5 28.5T320-800H200v120q0 17-11.5 28.5T160-640q-17 0-28.5-11.5T120-680Zm720 0q0 17-11.5 28.5T800-640q-17 0-28.5-11.5T760-680v-120H640q-17 0-28.5-11.5T600-840q0-17 11.5-28.5T640-880h120q33 0 56.5 23.5T840-800v120ZM200-120q-33 0-56.5-23.5T120-200v-120q0-17 11.5-28.5T160-360q17 0 28.5 11.5T200-320v120h120q17 0 28.5 11.5T360-160q0 17-11.5 28.5T320-120H200Zm440 0q-17 0-28.5-11.5T600-160q0-17 11.5-28.5T640-200h120v-120q0-17 11.5-28.5T800-360q17 0 28.5 11.5T840-320v120q0 33-23.5 56.5T760-120H640ZM200-760v120q0 17-11.5 28.5T160-600q-17 0-28.5-11.5T120-640v-120q0-33 23.5-56.5T200-840h120q17 0 28.5 11.5T360-800q0 17-11.5 28.5T320-760H200Zm560 0H640q-17 0-28.5-11.5T600-800q0-17 11.5-28.5T640-840h120q33 0 56.5 23.5T840-760v120q0 17-11.5 28.5T800-600q-17 0-28.5-11.5T760-640v-120ZM240-240v-120q0-17 11.5-28.5T280-400h120q17 0 28.5 11.5T440-360v120q0 17-11.5 28.5T400-200H280q-17 0-28.5-11.5T240-240Zm280-200q-17 0-28.5-11.5T480-480q0-17 11.5-28.5T520-520q17 0 28.5 11.5T560-480q0 17-11.5 28.5T520-440Zm160 0q-17 0-28.5-11.5T640-480q0-17 11.5-28.5T680-520q17 0 28.5 11.5T720-480q0 17-11.5 28.5T680-440ZM520-280q-17 0-28.5-11.5T480-320q0-17 11.5-28.5T520-360q17 0 28.5 11.5T560-320q0 17-11.5 28.5T520-280Zm160 0q-17 0-28.5-11.5T640-320q0-17 11.5-28.5T680-360q17 0 28.5 11.5T720-320q0 17-11.5 28.5T680-280Z"/></svg>
         </div>
         <div class="texto-wrapper">
-          <div class="card-titulo">Registrar códigos</div>
-          <div class="card-desc">Asocia códigos de barra a productos</div>
+          <div class="card-titulo">Códigos</div>
+          <div class="card-desc">Barras a productos</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
       </a>
-
     </div>
   </section>
 
@@ -592,7 +382,7 @@
   <section class="grupo grupo-analisis">
     <h2 class="grupo-titulo">Análisis</h2>
     <p class="grupo-sub">Consulta y reportes</p>
-    <div class="grid-menu">
+    <div class="grid-menu-2">
 
       <a class="card" href="historial-caja.html">
         <div class="card-icono ico-historial">
@@ -600,9 +390,9 @@
         </div>
         <div class="texto-wrapper">
           <div class="card-titulo">Historial</div>
-          <div class="card-desc">Movimientos y cierres anteriores</div>
+          <div class="card-desc">Cierres anteriores</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
       </a>
 
       <a class="card" href="dashboard.html">
@@ -611,11 +401,10 @@
         </div>
         <div class="texto-wrapper">
           <div class="card-titulo">Dashboard</div>
-          <div class="card-desc">Análisis y estadísticas del negocio</div>
+          <div class="card-desc">Estadísticas</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
       </a>
-
     </div>
   </section>
 
@@ -626,7 +415,7 @@
       <span class="badge-admin">👑 Solo admin</span>
     </h2>
     <p class="grupo-sub">Solo visible para administradores</p>
-    <div class="grid-menu">
+    <div class="grid-menu-2">
 
       <a class="card" href="admin-usuarios.html">
         <div class="card-icono ico-admin-usuarios">
@@ -634,9 +423,9 @@
         </div>
         <div class="texto-wrapper">
           <div class="card-titulo">Usuarios</div>
-          <div class="card-desc">Crea, edita y asigna roles</div>
+          <div class="card-desc">Roles y accesos</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
       </a>
 
       <a class="card" href="admin-horarios.html">
@@ -645,11 +434,10 @@
         </div>
         <div class="texto-wrapper">
           <div class="card-titulo">Horarios y turnos</div>
-          <div class="card-desc">Historial de aperturas y cierres</div>
+          <div class="card-desc">Historial de aperturas</div>
         </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
       </a>
-
     </div>
   </section>
 
@@ -660,6 +448,9 @@
   </div>
 
 </div>
+
+<!-- Toast global -->
+<div id="toastGlobal"></div>
 
 <script src="nav.js"></script>
 <script>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es" class="tema-claro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ACEII · Mi perfil</title>
+<link rel="stylesheet" href="estilos.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563EB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
+<script src="comun.js"></script>
+<style>
+  /* =====================================================
+     CSS ESPECÍFICO PARA PERFIL.HTML
+     ===================================================== */
+  :root {
+    --ac-texto: #0F1B3D;
+    --ac-texto-suave: #5B6785;
+    --ac-borde: #E3E9F4;
+    --ac-flecha: #2563EB;
+    --ac-flecha-bg: rgba(37, 99, 235, 0.10);
+    --logout-bg: #EFF6FF;
+    --logout-borde: #DBEAFE;
+    --logout-texto: #2563EB;
+    --superficie: #FFFFFF;
+    --bottom-nav-height: 84px;
+    --admin-acento: #7C3AED;
+    --admin-bg: #EDE7FE;
+    --admin-texto: #6D28D9;
+  }
+  html.tema-oscuro {
+    --ac-texto: #F1F5FF;
+    --ac-texto-suave: #9AA8CC;
+    --ac-borde: #223156;
+    --ac-flecha: #7DB1FF;
+    --ac-flecha-bg: rgba(125, 177, 255, 0.14);
+    --logout-bg: rgba(96, 165, 250, 0.12);
+    --logout-borde: rgba(96, 165, 250, 0.28);
+    --logout-texto: #93C5FD;
+    --superficie: #121D3A;
+    --admin-bg: rgba(167, 139, 250, 0.18);
+    --admin-texto: #C4B5FD;
+  }
+
+  .perfil-wrap {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 16px 14px calc(var(--bottom-nav-height) + 20px + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* Tarjeta de usuario */
+  .perfil-card {
+    background: var(--superficie);
+    border: 1px solid var(--ac-borde);
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(30,60,140,.06);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .perfil-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #2563EB, #1D4ED8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 26px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .perfil-info { flex: 1; min-width: 0; }
+  .perfil-nombre { font-size: 20px; font-weight: 800; color: var(--ac-texto); }
+  .perfil-meta { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .perfil-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--ac-flecha-bg); color: var(--ac-flecha);
+    font-size: 11px; font-weight: 700; padding: 3px 9px;
+    border-radius: 10px; white-space: nowrap; text-transform: uppercase;
+  }
+  .perfil-badge.rol-admin { background: var(--admin-bg); color: var(--admin-texto); }
+
+  /* Card genérica */
+  .perfil-block {
+    background: var(--superficie);
+    border: 1px solid var(--ac-borde);
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(30,60,140,.06);
+    padding: 16px;
+  }
+  .perfil-block h3 {
+    margin: 0 0 12px 0; font-size: 15px; font-weight: 800;
+    color: var(--ac-texto); display: flex; align-items: center; gap: 8px;
+  }
+  .perfil-block h3 svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .perfil-block label { display: block; font-size: 13px; font-weight: 700; color: var(--ac-texto); margin: 10px 0 4px; }
+  .perfil-block input {
+    width: 100%; padding: 12px 14px; border-radius: 12px;
+    border: 1.5px solid var(--ac-borde); background: var(--superficie);
+    color: var(--ac-texto); font-size: 15px; font-family: inherit; box-sizing: border-box;
+  }
+  .perfil-block input:focus { outline: none; border-color: var(--ac-flecha); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+
+  .btn-primary {
+    width: 100%; min-height: 48px; border: 0; border-radius: 14px;
+    background: linear-gradient(135deg, var(--ac-flecha), #1D4ED8); color: #fff;
+    font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer;
+    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.28); margin-top: 12px; transition: transform .12s ease;
+  }
+  .btn-primary:active { transform: scale(.97); }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+  .btn-logout {
+    width: 100%; min-height: 48px; border: 1.5px solid #FCA5A5;
+    border-radius: 14px; background: rgba(220, 38, 38, 0.06); color: #DC2626;
+    font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer;
+    transition: transform .12s ease;
+  }
+  .btn-logout:active { transform: scale(.97); }
+  html.tema-oscuro .btn-logout { border-color: rgba(248, 113, 113, 0.4); background: rgba(220, 38, 38, 0.12); color: #FCA5A5; }
+
+  /* Sección admin (morada) */
+  .admin-block {
+    background: var(--superficie); border: 1.5px solid rgba(124, 58, 237, 0.30);
+    border-radius: 20px; box-shadow: 0 2px 8px rgba(124, 58, 237, 0.08);
+    padding: 16px; display: none;
+  }
+  .admin-block.visible { display: block; }
+  .admin-block h3 { margin: 0 0 12px 0; font-size: 15px; font-weight: 800; color: var(--admin-texto); display: flex; align-items: center; gap: 8px; }
+  .admin-block h3::before { content: "👑"; font-size: 16px; }
+  .admin-link {
+    display: flex; align-items: center; gap: 14px; padding: 12px 4px;
+    border-bottom: 1px solid var(--ac-borde); text-decoration: none;
+    color: var(--ac-texto); font-weight: 700; font-size: 14px;
+  }
+  .admin-link:last-child { border-bottom: 0; }
+  .admin-link-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: linear-gradient(145deg, #8B5CF6, #6D28D9);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .admin-link-icon svg { width: 20px; height: 20px; fill: #fff; }
+  .admin-link span { flex: 1; }
+  .admin-link .chev { width: 20px; height: 20px; fill: none; stroke: #9AA6C2; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Mini banner de turno */
+  .turno-mini { display: flex; align-items: center; gap: 12px; padding: 14px; background: linear-gradient(135deg, #3B82F6, #1D4ED8); border-radius: 16px; color: #fff; text-decoration: none; }
+  .turno-mini-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.20); display: flex; align-items: center; justify-content: center; }
+  .turno-mini-icon svg { width: 24px; height: 24px; fill: #fff; }
+  .turno-mini-texto { flex: 1; min-width: 0; }
+  .turno-mini-titulo { font-size: 14px; font-weight: 800; }
+  .turno-mini-desc { font-size: 12px; opacity: 0.9; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <button class="btn-tema" id="btnTema" title="Cambiar tema">☀️</button>
+  <div class="app-header-contenido">
+    <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
+    <div class="app-header-texto">
+      <div class="app-header-titulo" style="font-size:24px;">Mi perfil</div>
+      <div class="app-header-sub">Cuenta y ajustes</div>
+    </div>
+  </div>
+</header>
+
+<div class="perfil-wrap" id="perfilWrap" style="display:none;">
+
+  <!-- Datos del usuario -->
+  <div class="perfil-card">
+    <div class="perfil-avatar" id="perfilAvatar">?</div>
+    <div class="perfil-info">
+      <div class="perfil-nombre" id="perfilNombre">—</div>
+      <div class="perfil-meta">
+        <span class="perfil-badge" id="perfilId">—</span>
+        <span class="perfil-badge rol-admin" id="perfilRol" style="display:none;">ADMIN</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Turno actual (si lo hay) -->
+  <a href="caja.html" class="turno-mini" id="turnoMini" style="display:none;">
+    <div class="turno-mini-icon">
+      <svg viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
+    </div>
+    <div class="turno-mini-texto">
+      <div class="turno-mini-titulo">Mi turno actual</div>
+      <div class="turno-mini-desc" id="turnoMiniDesc">Ver caja del turno →</div>
+    </div>
+  </a>
+
+  <!-- Cambiar PIN -->
+  <div class="perfil-block">
+    <h3>
+      <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Cambiar mi PIN
+    </h3>
+    <label for="pinActual">PIN actual</label>
+    <input type="password" id="pinActual" inputmode="numeric" placeholder="••••" autocomplete="current-password">
+    <label for="pinNuevo">PIN nuevo (mín. 4 dígitos)</label>
+    <input type="password" id="pinNuevo" inputmode="numeric" placeholder="••••" autocomplete="new-password">
+    <label for="pinConfirmar">Confirmar PIN nuevo</label>
+    <input type="password" id="pinConfirmar" inputmode="numeric" placeholder="••••" autocomplete="new-password">
+    <button class="btn-primary" id="btnCambiarPin">Actualizar PIN</button>
+  </div>
+
+  <!-- Cerrar sesión -->
+  <button class="btn-logout" id="btnLogout">Cerrar sesión</button>
+
+  <!-- ===== SECCIÓN ADMIN (solo admin) ===== -->
+  <div class="admin-block" id="adminBlock">
+    <h3>Administración</h3>
+    <a href="admin-usuarios.html" class="admin-link">
+      <div class="admin-link-icon">
+        <svg viewBox="0 -960 960 960"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"/></svg>
+      </div>
+      <span>Usuarios</span>
+      <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+    </a>
+    <a href="admin-horarios.html" class="admin-link">
+      <div class="admin-link-icon">
+        <svg viewBox="0 -960 960 960"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-80q-25 0-42.5-17.5T420-300q0-25 17.5-42.5T480-360q25 0 42.5 17.5T540-300q0 25-17.5 42.5T480-240Zm-40-160v-320h80v320h-80Z"/></svg>
+      </div>
+      <span>Horarios y turnos</span>
+      <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+
+</div>
+
+<!-- Toasts / Mensajes -->
+<div id="toastGlobal"></div>
+
+<script src="nav.js"></script>
+<script>
+/* =========================================================
+   1. UTILIDADES BÁSICAS (para que funcione si comun.js no las tiene)
+   ========================================================= */
+// Función mostrar (Toast) - Por si no está en comun.js
+if (typeof window.mostrar !== 'function') {
+  window.mostrar = function(msg, tipo) {
+    let t = document.getElementById('toastGlobal');
+    if (!t) return;
+    t.textContent = msg;
+    t.className = 'visible ' + (tipo || '');
+    clearTimeout(window._toastTimeout);
+    window._toastTimeout = setTimeout(() => { t.classList.remove('visible'); }, 3000);
+  };
+}
+
+// Función cerrarSesion - Por si no está global en comun.js
+if (typeof window.cerrarSesion !== 'function') {
+  window.cerrarSesion = function() {
+    if (!confirm('¿Cerrar la sesión general?')) return;
+    try { borrarUsuarioTurno(); } catch (e) {}
+    try { borrarTurnoActual(); } catch (e) {}
+    try { localStorage.removeItem('caf_banner_cache'); } catch (e) {}
+    location.href = 'index.html';
+  };
+}
+
+/* =========================================================
+   2. TEMA (Día/Noche)
+   ========================================================= */
+(function inicializarBotonTema() {
+  const btn = document.getElementById('btnTema');
+  if (!btn) return;
+  function aplicarTema(t) {
+    document.documentElement.classList.remove('tema-claro', 'tema-oscuro', 'tema-auto');
+    document.documentElement.classList.add('tema-' + t);
+    try { localStorage.setItem('caf_tema', t); } catch (e) {}
+    btn.textContent = (t === 'oscuro') ? '🌙' : '☀️';
+  }
+  let temaInicial = 'claro';
+  try {
+    const guardado = localStorage.getItem('caf_tema');
+    if (guardado === 'oscuro' || guardado === 'claro') temaInicial = guardado;
+  } catch (e) {}
+  aplicarTema(temaInicial);
+  btn.addEventListener('click', function () {
+    const actual = document.documentElement.classList.contains('tema-oscuro') ? 'oscuro' : 'claro';
+    aplicarTema(actual === 'oscuro' ? 'claro' : 'oscuro');
+    if (navigator.vibrate) navigator.vibrate(30);
+  });
+})();
+
+/* =========================================================
+   3. PINTAR PERFIL
+   ========================================================= */
+function pintarPerfil() {
+  const u = typeof getUsuarioTurno === 'function' ? getUsuarioTurno() : null;
+  if (!u) {
+    location.href = 'index.html';
+    return;
+  }
+  document.getElementById('perfilWrap').style.display = 'flex';
+  document.getElementById('perfilAvatar').textContent = (u.nombre || '?').trim().charAt(0).toUpperCase();
+  document.getElementById('perfilNombre').textContent = u.nombre || '—';
+  document.getElementById('perfilId').textContent = u.id || '—';
+
+  if (u.rol === 'admin') {
+    document.getElementById('perfilRol').style.display = 'inline-flex';
+    document.getElementById('adminBlock').classList.add('visible');
+  }
+
+  const t = typeof getTurnoActual === 'function' ? getTurnoActual() : null;
+  if (t) {
+    document.getElementById('turnoMini').style.display = 'flex';
+    document.getElementById('turnoMiniDesc').textContent = 'Turno ' + (t.id || '') + ' · Base $' + Number(t.base || 0).toLocaleString('es-CO');
+  }
+}
+
+/* =========================================================
+   4. CAMBIAR PIN
+   ========================================================= */
+document.getElementById('btnCambiarPin').addEventListener('click', async function () {
+  const u = getUsuarioTurno();
+  if (!u) return;
+
+  const actual = document.getElementById('pinActual').value.trim();
+  const nuevo = document.getElementById('pinNuevo').value.trim();
+  const conf = document.getElementById('pinConfirmar').value.trim();
+
+  if (!actual) { mostrar('Escribe tu PIN actual', 'error'); return; }
+  if (!nuevo || nuevo.length < 4) { mostrar('El PIN nuevo debe tener al menos 4 dígitos', 'error'); return; }
+  if (nuevo !== conf) { mostrar('Los PIN nuevos no coinciden', 'error'); return; }
+  if (nuevo === actual) { mostrar('El PIN nuevo debe ser distinto al actual', 'error'); return; }
+
+  const btn = this;
+  btn.disabled = true;
+  mostrar('Actualizando PIN...', 'aviso');
+
+  try {
+    // ⚠️ AJUSTA EL NOMBRE DE LA ACCIÓN SEGÚN TU BACKEND
+    const r = await post({
+      accion: 'cambiar_pin',
+      id_usuario: u.id,
+      pin_actual: actual,
+      pin_nuevo: nuevo
+    });
+
+    if (r && r.ok) {
+      mostrar('✅ PIN actualizado', 'ok');
+      document.getElementById('pinActual').value = '';
+      document.getElementById('pinNuevo').value = '';
+      document.getElementById('pinConfirmar').value = '';
+      if (navigator.vibrate) navigator.vibrate(100);
+    } else {
+      mostrar(r && r.error ? r.error : 'No se pudo actualizar el PIN', 'error');
+    }
+  } catch (err) {
+    mostrar('Error de conexión: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+/* =========================================================
+   5. CERRAR SESIÓN Y ARRANQUE
+   ========================================================= */
+document.getElementById('btnLogout').addEventListener('click', function () {
+  cerrarSesion();
+});
+
+// Iniciar al cargar
+document.addEventListener('DOMContentLoaded', () => {
+  pintarPerfil();
+});
+</script>
+</body>
+</html>

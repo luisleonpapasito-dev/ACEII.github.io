@@ -14,6 +14,18 @@
 <meta name="theme-color" content="#1B4DB1" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
 <script src="comun.js"></script>
+<script>
+window.addEventListener('error', function (e) {
+  if (typeof mostrar === 'function') {
+    mostrar('Error JS: ' + e.message + ' (línea ' + e.lineno + ')', 'error');
+  }
+});
+window.addEventListener('unhandledrejection', function (e) {
+  if (typeof mostrar === 'function') {
+    mostrar('Error: ' + (e.reason && e.reason.message ? e.reason.message : e.reason), 'error');
+  }
+});
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
 <style>
   /* ===== Buscador ===== */
@@ -206,7 +218,6 @@
     border-color: var(--azul);
   }
 
-  /* Barra lateral izquierda azul (indica card interactiva) */
   .btn-rapido::before {
     content: '';
     position: absolute;
@@ -221,7 +232,6 @@
   }
   .btn-rapido:active::before { width: 6px; opacity: 1; }
 
-  /* Animación de "agregado" */
   .btn-rapido.agregado {
     animation: pulsoAgregar 0.4s ease;
   }
@@ -292,7 +302,6 @@
     box-shadow: 0 3px 8px rgba(37, 99, 235, 0.35);
   }
 
-  /* Estado presionado (mantener para cobro rápido) */
   .btn-rapido.presionado,
   .btn-variante.presionado {
     background: var(--exito) !important;
@@ -973,7 +982,6 @@
     box-shadow: 0 4px 12px rgba(30, 100, 240, 0.4);
   }
 
-  /* Espacio extra al final para que la barra flotante no tape contenido */
   body { padding-bottom: 130px; }
 
   /* ===== Dark mode ===== */
@@ -997,70 +1005,120 @@
   html.tema-oscuro .resultado .nombre { color: var(--texto); }
   html.tema-oscuro .resultado .meta { color: var(--texto-suave); }
   html.tema-oscuro .resultado .meta .precio { color: var(--azul-claro); }
+
   /* ===== FASE 4: VENTAS ===== */
-.link-volver {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 2px;
-  padding: 4px 12px 4px 8px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: transform 0.15s ease, background 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-.link-volver:active {
-  transform: scale(0.95);
-  background: rgba(255, 255, 255, 0.26);
-}
-.link-volver svg {
-  width: 16px;
-  height: 16px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
+  .link-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+    padding: 4px 12px 4px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.15s ease, background 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .link-volver:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.26);
+  }
+  .link-volver svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 
-/* Botones de cobro: icono + texto en una sola línea */
-.bf-cobro button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 6px;
-  font-size: 13px;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-  -webkit-tap-highlight-color: transparent;
-}
-.bf-cobro button svg,
-#btnCam svg {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-#btnCam {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-.bf-total {
-  font-variant-numeric: tabular-nums;
-}
+  .bf-cobro button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 6px;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bf-cobro button svg,
+  #btnCam svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  #btnCam {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .bf-total {
+    font-variant-numeric: tabular-nums;
+  }
 
+  /* ===== AVISO DE SALIDA ===== */
+  #modalSalir {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 400;
+    background: rgba(0, 0, 0, 0.55);
+    align-items: flex-end;
+    justify-content: center;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+  #modalSalir.abierto { display: flex; }
+  #modalSalir .ms-panel {
+    width: 100%;
+    max-width: 440px;
+    background: var(--superficie);
+    color: var(--texto);
+    border-radius: 22px;
+    padding: 22px 20px 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    animation: msEntra 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes msEntra {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: none; }
+  }
+  #modalSalir .ms-titulo { font-size: 17px; font-weight: 800; margin: 0 0 6px; }
+  #modalSalir .ms-texto { font-size: 14px; line-height: 1.4; color: var(--texto-suave); margin: 0 0 16px; }
+  #modalSalir .ms-botones { display: flex; flex-direction: column; gap: 8px; }
+  #modalSalir .ms-botones button { margin: 0; padding: 14px; font-size: 15px; font-weight: 700; border-radius: 14px; border: none; }
+  #modalSalir #msQuedarme { background: var(--azul); color: #fff; }
+  #modalSalir #msSalir { background: rgba(220, 38, 38, 0.10); color: var(--alerta); }
+
+  .titulo-con-icono {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ico-registradora {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.95;
+  }
 </style>
 </head>
 <body>
@@ -1069,9 +1127,9 @@
   <div class="app-header-contenido">
     <img src="logo_ACEII.png" alt="ACEII" class="app-header-logo">
     <div class="app-header-texto">
-      <div class="app-header-titulo">Ventas <span class="carrito-badge" id="badgeCarrito" style="display:none;">🛒 0</span></div>
+      <div class="app-header-titulo titulo-con-icono"><svg class="ico-registradora" viewBox="0 0 24 24"><rect x="8" y="2.5" width="8" height="4.5" rx="1"/><path d="M12 7v2.5"/><path d="M5 9.5h14a1 1 0 0 1 1 1V14H4v-3.5a1 1 0 0 1 1-1z"/><rect x="3" y="14" width="18" height="6.5" rx="1.5"/><path d="M8 17.2h.01M12 17.2h.01M16 17.2h.01"/></svg>Ventas <span class="carrito-badge" id="badgeCarrito" style="display:none;">🛒 0</span></div>
       <div class="app-header-sub">
-                <a href="#" id="linkMenu" class="link-volver"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>Volver al menú</a>
+        <a href="#" id="linkMenu" class="link-volver"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>Volver al menú</a>
       </div>
     </div>
   </div>
@@ -1082,7 +1140,7 @@
 <div class="caja">
   <label>Buscar producto</label>
   <input type="text" id="buscar" placeholder="Escribe 2 letras o más..." autocomplete="off">
-    <button class="main" id="btnCam" style="width:100%; margin-top:8px;"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Escanear con cámara</button>
+  <button class="main" id="btnCam" style="width:100%; margin-top:8px;"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>Escanear con cámara</button>
   <div id="resultados"></div>
 
   <div id="panelCantidad">
@@ -1191,8 +1249,8 @@
     </div>
 
     <div class="pago-fila">
-            <button id="bfEfectivo"><svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.8"/></svg>EFECTIVO</button>
-      <button id="bfTransferencia"><svg viewBox="0 0 24 24"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg>TRANSFERENCIA</button>
+      <button id="mcEfectivo">💵 EFECTIVO</button>
+      <button id="mcTransferencia">📱 TRANSFERENCIA</button>
     </div>
 
     <div class="seccion-cambio" id="mcSeccionCambio">
@@ -1207,6 +1265,17 @@
     <div class="acciones">
       <button id="mcCancelar">Cancelar</button>
       <button id="mcConfirmar" disabled>Confirmar cobro</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalSalir">
+  <div class="ms-panel">
+    <p class="ms-titulo">Tienes productos sin cobrar</p>
+    <p class="ms-texto">Si sales ahora, se pierde el carrito. ¿Quieres seguir vendiendo?</p>
+    <div class="ms-botones">
+      <button id="msQuedarme">Seguir en Ventas</button>
+      <button id="msSalir">Salir y vaciar carrito</button>
     </div>
   </div>
 </div>
@@ -1264,9 +1333,9 @@ let ocupado = false;
 let ultimoIntento = 0;
 let numFrame = 0;
 let detector = null;
-let productoPendiente = null;
+let productoPendiente = null;   // usado por el panel de cantidad del buscador
 let pausaLectura = false;
-let productoEscaneado = null;
+let productoEscaneado = null;   // usado por el panel de escaneo
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d', { willReadFrequently: true });
 const INTERVALO_MS = 40;
@@ -1870,6 +1939,8 @@ function cargarCarritoGuardado() {
 }
 
 // ===== Cobro =====
+let salidaConfirmada = false;
+
 function nuevoIdVenta() {
   const d = new Date();
   const p = function (n) { return ('0' + n).slice(-2); };
@@ -1914,8 +1985,10 @@ async function cobrar(medio) {
       if (navigator.vibrate) navigator.vibrate(200);
       if (cambio !== null && cambio > 0) alert('Cambio: ' + fmt(cambio));
       carrito = [];
+      salidaConfirmada = true;
       pintarBarraFlotante();
       guardarCarrito();
+      setTimeout(function () { salidaConfirmada = false; }, 1000);
     } else if (r.error === 'Token inválido') {
       borrarToken(); location.href = 'index.html';
     } else {
@@ -2388,16 +2461,32 @@ $('escAgregar').addEventListener('click', function () {
 
 function hayCarrito() { return carrito && carrito.length > 0; }
 
+function irAlMenu() {
+  salidaConfirmada = true;
+  location.href = 'index.html';
+}
+
 $('linkMenu').addEventListener('click', function (e) {
   e.preventDefault();
   if (hayCarrito()) {
-    if (!confirm('⚠️ Tienes productos en el carrito sin cobrar.\n\nSi sales, se perderán.\n\n¿Seguro quieres salir?')) return;
+    $('modalSalir').classList.add('abierto');
+  } else {
+    irAlMenu();
   }
-  location.href = 'index.html';
+});
+
+$('msQuedarme').addEventListener('click', function () {
+  $('modalSalir').classList.remove('abierto');
+});
+$('msSalir').addEventListener('click', function () {
+  irAlMenu();
+});
+$('modalSalir').addEventListener('click', function (e) {
+  if (e.target === $('modalSalir')) $('modalSalir').classList.remove('abierto');
 });
 
 window.addEventListener('beforeunload', function (e) {
-  if (hayCarrito()) {
+  if (hayCarrito() && !salidaConfirmada) {
     e.preventDefault();
     e.returnValue = '';
     return '';

@@ -299,10 +299,11 @@ html.tema-oscuro #bannerOtroTurno .aviso-titulo { color: #FCD34D; }
     background-image: none !important;
   }
 
-  .panel-menu .card .chev {
+ .panel-menu .card .chev {
   display: none !important;
+} /* <--- ESTA ES LA LLAVE QUE FALTABA */
 
-  /* ===== FASE 1: PULIDO DE TARJETAS ===== */
+/* ===== FASE 1: PULIDO DE TARJETAS ===== */
 
 /* 1. Que "Devoluciones" quepa dentro de su tarjeta */
 .grid-operacion-resto .card {
@@ -342,8 +343,7 @@ a, button, .card, .card-ventas-ancha {
   outline: 3px solid rgba(37, 99, 235, 0.45);
   outline-offset: 2px;
 }
-}
-
+/* (Nota: eliminé la llave extra que estaba aquí al final) */
 /* ===== FASE 2: DETALLES CON PERSONALIDAD ===== */
 
 /* 1. Brillo único que cruza la tarjeta de Ventas */
@@ -414,18 +414,11 @@ a, button, .card, .card-ventas-ancha {
 </head>
 <body>
 
-<body>
-
 <!-- ===== PANTALLA DE CARGA (SPLASH) ===== -->
 <div id="splashScreen">
   <img src="logo_ACEII.png" alt="ACEII Cargando..." id="splashLogo">
 </div>
 <!-- ======================================= -->
-
-<header class="app-header">
-
-
-
 
 <header class="app-header">
   <button class="btn-tema" id="btnTema" title="Cambiar tema">☀️</button>

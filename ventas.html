@@ -1288,15 +1288,13 @@ window.addEventListener('unhandledrejection', function (e) {
 }
 
 /* Dulces: cada dulce se mueve distinto */
-.ic-dulce #dulce-amarillo,
-.ic-dulce #dulce-azul,
-.ic-dulce #paquete-rosado {
+/* Dulces: animación global suave para evitar que se rompa el dibujo */
+.ic-dulce #dulce-amarillo {
   transform-box: fill-box;
   transform-origin: 50% 50%;
+  animation: icDulceA var(--vel) ease-in-out infinite;
 }
-.ic-dulce #dulce-amarillo { animation: icDulceA var(--vel) ease-in-out infinite; }
-.ic-dulce #dulce-azul     { animation: icDulceB var(--vel) ease-in-out infinite; }
-.ic-dulce #paquete-rosado { animation: icDulceC var(--vel) ease-in-out infinite; }
+/* Quitamos las animaciones de dulce-azul y paquete-rosado porque esos IDs ya no existen en el SVG nuevo */
 @keyframes icDulceA {
   0%, 100% { transform: rotate(0deg) translateY(0); }
   50%      { transform: rotate(-10deg) translateY(-4%); }

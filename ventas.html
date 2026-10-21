@@ -1447,7 +1447,9 @@ function iconoPill(cat) {
 }
 
 // ===== Detector tap / scroll =====
+// ===== Detector tap / scroll =====
 const TAP_THRESHOLD = 10;
+let bloqueoGlobalTap = false; // NUEVO: Evita clics fantasma
 
 function crearDetectorTap(elemento, onTap, onLongPress) {
   let startX = 0, startY = 0;
@@ -1457,6 +1459,7 @@ function crearDetectorTap(elemento, onTap, onLongPress) {
   let clickReciente = false;
 
   elemento.addEventListener('touchstart', function (e) {
+    if (bloqueoGlobalTap) return; // NUEVO
     const touch = e.touches[0];
     startX = touch.clientX;
     startY = touch.clientY;
@@ -1492,8 +1495,10 @@ function crearDetectorTap(elemento, onTap, onLongPress) {
     const dx = Math.abs(touch.clientX - startX);
     const dy = Math.abs(touch.clientY - startY);
     if (dx > TAP_THRESHOLD || dy > TAP_THRESHOLD) return;
+    
     clickReciente = true;
     setTimeout(function () { clickReciente = false; }, 500);
+    
     if (fueLargo && onLongPress) onLongPress();
     else onTap();
   });
@@ -1505,11 +1510,12 @@ function crearDetectorTap(elemento, onTap, onLongPress) {
     elemento.classList.remove('presionado');
   });
 
-  elemento.addEventListener('click', function () {
-    if (clickReciente) return;
+  elemento.addEventListener('click', function (e) {
+    if (clickReciente || bloqueoGlobalTap) return; // NUEVO
     onTap();
   });
 }
+
 
 // ===== Arranque =====
 (async function () {
@@ -1838,14 +1844,18 @@ function mostrarVariantes(nombre, items) {
       '</span>';
 
     const onTap = function () {
+      bloqueoGlobalTap = true; // NUEVO: Bloquea toques
       agregarProductoAlCarrito(p, 1);
       $('panelVariantes').classList.remove('abierto');
+      setTimeout(function () { bloqueoGlobalTap = false; }, 300); // NUEVO: Libera el toque
     };
 
     const onLongPress = function () {
+      bloqueoGlobalTap = true; // NUEVO
       if (navigator.vibrate) navigator.vibrate(80);
       $('panelVariantes').classList.remove('abierto');
       abrirCobroRapido(p, 1);
+      setTimeout(function () { bloqueoGlobalTap = false; }, 300); // NUEVO
     };
 
     crearDetectorTap(btn, onTap, onLongPress);
@@ -1855,7 +1865,6 @@ function mostrarVariantes(nombre, items) {
   $('panelVariantes').classList.add('abierto');
   $('panelVariantes').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
-
 $('btnCerrarVariantes').addEventListener('click', function () {
   $('panelVariantes').classList.remove('abierto');
 });
@@ -1904,17 +1913,43 @@ function pintarBarraFlotante() {
   carrito.forEach(function (it, i) {
     const row = document.createElement('div');
     row.className = 'bf-item';
+    
+    // Agregamos botones de - y + junto a la cantidad
     row.innerHTML =
       '<span class="bf-nom">' + it.nombre + '</span>' +
-      '<span class="bf-cant">×' + it.cantidad + '</span>' +
-      '<span class="bf-precio">' + fmt(it.precio * it.cantidad) + '</span>' +
-      '<button class="bf-quitar">✕</button>';
-    row.querySelector('.bf-quitar').addEventListener('click', function (e) {
+      '<div style="display:flex; align-items:center; gap:6px;">' +
+        '<button class="bf-quitar" style="padding:2px 8px; font-size:14px;">−</button>' +
+        '<span class="bf-cant">' + it.cantidad + '</span>' +
+        '<button class="bf-quitar" style="padding:2px 8px; font-size:14px; background:var(--azul); color:#fff;">+</button>' +
+      '</div>' +
+      '<span class="bf-precio">' + fmt(it.precio * it.cantidad) + '</span>';
+
+    // Botón de restar
+    row.querySelectorAll('.bf-quitar')[0].addEventListener('click', function (e) {
       e.stopPropagation();
-      carrito.splice(i, 1);
+      if (it.cantidad > 1) {
+        it.cantidad -= 1;
+      } else {
+        carrito.splice(i, 1);
+      }
       pintarBarraFlotante();
       guardarCarrito();
     });
+
+    // Botón de sumar
+    row.querySelectorAll('.bf-quitar')[1].addEventListener('click', function (e) {
+      e.stopPropagation();
+      // Validar stock antes de sumar
+      const prodOriginal = productos.find(p => p.id === it.id);
+      if (prodOriginal && it.cantidad < prodOriginal.stock) {
+        it.cantidad += 1;
+        pintarBarraFlotante();
+        guardarCarrito();
+      } else {
+        mostrar('No hay más stock disponible', 'error');
+      }
+    });
+
     det.appendChild(row);
   });
 

@@ -261,6 +261,11 @@
     <button class="main" id="btnNuevo" style="flex:1;">➕ Nuevo producto</button>
     <button id="btnRecargar" style="flex:0 0 auto;">🔄</button>
   </div>
+  <div style="margin-bottom:8px;">
+    <button id="btnAutoImagenes" style="width:100%; background:linear-gradient(135deg, #F97316 0%, #EA580C 100%); color:#fff; border:none; padding:12px; font-weight:700; border-radius:10px; font-size:14px;">
+    🪄 Autocompletar imágenes con IA
+    </button>
+  </div>
   <input type="text" id="buscar" placeholder="Buscar por nombre, ID o código..." autocomplete="off">
   <label><input type="checkbox" id="soloActivos" checked> Mostrar solo activos</label>
   <div id="listaProductos"></div>
@@ -961,6 +966,56 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+// ===== AUTOCOMPLETAR IMÁGENES CON IA =====
+$('btnAutoImagenes').addEventListener('click', async function () {
+  const btn = $('btnAutoImagenes');
+  
+  // Filtramos los productos que NO tienen imagen y están activos
+    let sinImagen = productos.filter(p => !p.imagen_url && p.activo !== 'No');
+  sinImagen = sinImagen.slice(0, 10); // <--- Pon el número que quieras (o bórralo si no quieres límite)
+  
+  if (sinImagen.length === 0) {
+    mostrar('Todos los productos activos ya tienen imagen ✨', 'aviso');
+    return;
+  }
+
+  if (!confirm(`Se buscarán imágenes para ${sinImagen.length} productos sin foto.\n\nEsto puede tardar unos minutos y consumirá tus créditos de SerpApi. ¿Continuar?`)) return;
+
+  btn.disabled = true;
+  let exitos = 0;
+  let errores = 0;
+
+  // Procesamos uno por uno para no saturar la API
+  for (let i = 0; i < sinImagen.length; i++) {
+    const p = sinImagen[i];
+    btn.textContent = `Buscando ${i + 1}/${sinImagen.length}...`;
+    
+    try {
+      const r = await post({ accion: 'autocompletar_imagenes', id: p.id, nombre: p.nombre });
+      
+      if (r.ok) {
+        exitos++;
+        mostrar(`✅ Imagen añadida: ${p.nombre}`, 'ok');
+      } else {
+        errores++;
+        mostrar(`⚠️ ${p.nombre}: ${r.error}`, 'error');
+      }
+    } catch (e) {
+      errores++;
+    }
+    
+    // Pausa de 1.5 segundos entre peticiones para no ser bloqueados por SerpApi
+    await new Promise(r => setTimeout(r, 1500));
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🪄 Autocompletar imágenes con IA';
+  mostrar(`Proceso terminado. Éxitos: ${exitos}, Errores: ${errores}`, 'ok');
+  
+  // Recargamos la lista para ver las nuevas fotos
+  await cargarTodo();
+});
 </script>
 </body>
 </html>

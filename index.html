@@ -384,24 +384,27 @@ a, button, .card, .card-ventas-ancha {
 
 /* ===== PANTALLA DE CARGA ANIMADA ===== */
 /* ===== PANTALLA DE CARGA ANIMADA ===== */
+/* ===== PANTALLA DE CARGA ANIMADA ===== */
 #splashScreen {
   position: fixed;
   inset: 0;
-  background: linear-gradient(135deg, #1B4DB1 0%, #2563EB 100%); /* Fondo degradado hermoso */
-  z-index: 99999;
-  display: flex; /* Esto se controlará desde JS */
+  background: linear-gradient(135deg, #1B4DB1 0%, #2563EB 100%);
+  z-index: 99999; /* Por encima de todo */
+  display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.4s ease-out; /* Se desvanece más rápido */
+  transition: opacity 0.3s ease-out; /* Desvanecimiento rápido */
 }
 #splashScreen.oculto {
   opacity: 0;
+  pointer-events: none;
 }
 #splashLogo {
-  width: 160px; /* Un poquito más pequeño */
+  width: 160px;
   height: auto;
   border-radius: 20px;
-  animation: animacionLogo 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; /* Animación más rápida y fluida (1.2s) */
+  /* Animación de solo 0.8 segundos */
+  animation: animacionLogo 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 @keyframes animacionLogo {
@@ -413,8 +416,9 @@ a, button, .card, .card-ventas-ancha {
 </head>
 <body>
 
+
 <!-- ===== PANTALLA DE CARGA (SPLASH) ===== -->
-<div id="splashScreen" style="display: none;">
+<div id="splashScreen">
   <img src="logo_ACEII.png" alt="ACEII" id="splashLogo">
 </div>
 <!-- ======================================= -->
@@ -1110,30 +1114,22 @@ if ('serviceWorker' in navigator) {
   });
 </script>
 <script>
-  // Esperamos a que la app cargue por completo
-  window.addEventListener('load', function() {
+  document.addEventListener('DOMContentLoaded', function() {
     var splash = document.getElementById('splashScreen');
-    var logo = document.getElementById('splashLogo');
-    
-    if (splash && logo) {
-      // 1. Lo mostramos justo cuando la app está lista (tapando el logo feo de Android)
-      splash.style.display = 'flex';
-      
-      // 2. La animación del logo dura 1.2 segundos
-      // 3. Apenas termina la animación, quitamos la pantalla de carga
+    if (splash) {
+      // Esperamos solo 900 milisegundos (0.9s) para que termine la animación de 0.8s
       setTimeout(function() {
         splash.classList.add('oculto');
-        
-        // Lo eliminamos del HTML después de que termine la transición (0.4s)
+        // Eliminamos el elemento del HTML justo después
         setTimeout(function() {
           splash.remove();
-        }, 400); 
-        
-      }, 1300); // 1300 ms (1.3 segundos) para darle un micro-respiro
+        }, 300);
+      }, 900);
     }
   });
 </script>
 </body>
 </html>
+
 
 

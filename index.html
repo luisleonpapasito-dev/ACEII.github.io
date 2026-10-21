@@ -412,57 +412,62 @@ a, button, .card, .card-ventas-ancha {
 
 /* ===== PANTALLA DE CARGA ANIMADA ===== */
 /* ===== PANTALLA DE CARGA ANIMADA ===== */
+/* ===== PANTALLA DE CARGA ANIMADA ===== */
+
 #splashScreen {
   position: fixed;
   inset: 0;
   background: linear-gradient(135deg, #1B4DB1 0%, #2563EB 100%);
   z-index: 99999;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  transition: opacity 0.25s ease-out;
-}
-#splashScreen.oculto { opacity: 0; pointer-events: none; }
-html.sin-splash #splashScreen { display: none; }
 
-/* Glow suave detrás del logo */
-#splashScreen::before {
-  content: '';
-  position: absolute;
-  width: 320px;
-  height: 320px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(147, 197, 253, 0.55) 0%, rgba(147, 197, 253, 0) 70%);
+  /* El splash existe desde el primer render */
+  opacity: 1;
+  visibility: visible;
+
+  transition:
+    opacity 0.25s ease-out,
+    visibility 0.25s ease-out;
+}
+
+#splashScreen.oculto {
   opacity: 0;
-  animation: splashGlow 0.9s ease-out 0.05s forwards;
-  will-change: opacity, transform;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 #splashLogo {
-  position: relative;
   width: 160px;
   height: auto;
   border-radius: 20px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+
+  /* La animación empieza inmediatamente */
   opacity: 0;
-  animation: animacionLogo 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-  will-change: opacity, transform;
+  transform: scale(0.75) translateY(12px);
+
+  animation: animacionLogo 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
 @keyframes animacionLogo {
-  0%   { opacity: 0; transform: translateY(14px) scale(0.82); }
-  60%  { opacity: 1; }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-@keyframes splashGlow {
-  0%   { opacity: 0; transform: scale(0.6); }
-  50%  { opacity: 1; }
-  100% { opacity: 0.7; transform: scale(1.1); }
-}
+  0% {
+    opacity: 0;
+    transform: scale(0.75) translateY(12px);
+  }
 
-@media (prefers-reduced-motion: reduce) {
-  #splashLogo, #splashScreen::before { animation-duration: 0.01s; }
+  70% {
+    opacity: 1;
+    transform: scale(1.04) translateY(-2px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 </style>

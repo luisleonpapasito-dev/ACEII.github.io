@@ -1632,10 +1632,10 @@ async function pintarRapidos() {
       });
       listaIds = prodsCat.map(p => p.id);
     } else {
-      // "Todas"
-      listaIds = getRapidosDeCategoria('');
-      if (!listaIds || listaIds.length === 0) {
-        // Respaldo: si está vacío, muestra los primeros 8 productos
+      // "Todas": favoritos guardados (productos y grupos), solo los válidos
+      listaIds = getRapidosDeCategoria('').filter(idRapidoEsValido);
+      if (!listaIds.length) {
+        // Respaldo: primeros 8 productos
         listaIds = productos.slice(0, 8).map(function (p) { return p.id; });
       }
     }
@@ -1646,32 +1646,46 @@ async function pintarRapidos() {
   }
 
   cont.innerHTML = '';
-
-  if (listaIds.length === 0) {
-    cont.innerHTML =
-      '<div style="grid-column: span 2; text-align:center; color:var(--texto-suave); font-size:13px; padding:20px;">' +
-      (modoMasVendidos ? 'Aún no hay ventas registradas.' : 'Sin botones rápidos. Toca ⚙️ Configurar.') +
-      '</div>';
-    return;
-  }
+  let pintados = 0;
 
   listaIds.forEach(function (rid) {
+    // Grupo de categoría (ej: GRUPO_Bebidas)
+    if (String(rid).indexOf('GRUPO_') === 0) {
+      const cat = rid.replace('GRUPO_', '');
+      const items = productos.filter(function (x) {
+        return norm_(x.categoria) === norm_(cat);
+      });
+      if (!items.length) return;
+      const nombreCat = items[0].categoria || cat;
+      cont.appendChild(crearBotonRapido(nombreCat, true, items));
+      pintados++;
+      return;
+    }
+
+    // Producto normal
     const p = productos.find(function (x) { return x.id === rid; });
     if (!p) return;
-    
+
     const btn = crearBotonRapido(p, false, null);
-    
+
     if (modoMasVendidos) {
       const badge = document.createElement('span');
       badge.className = 'badge-vendidos';
       badge.textContent = '🔥 Top';
       btn.appendChild(badge);
     }
-    
-    cont.appendChild(btn);
-  });
-}
 
+    cont.appendChild(btn);
+    pintados++;
+  });
+
+  if (pintados === 0) {
+    cont.innerHTML =
+      '<div style="grid-column: span 2; text-align:center; color:var(--texto-suave); font-size:13px; padding:20px;">' +
+      (modoMasVendidos ? 'Aún no hay ventas registradas.' : 'Sin botones rápidos. Toca ⚙️ Configurar.') +
+      '</div>';
+  }
+}
 // ===== Buscador =====
 function pintarResultados() {
   const q = norm_($('buscar').value);

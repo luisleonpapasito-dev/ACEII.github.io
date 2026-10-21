@@ -1672,41 +1672,6 @@ async function pintarRapidos() {
   });
 }
 
-function mostrarVariantes(nombre, items) {
-  $('tituloVariantes').textContent = nombre;
-  const cont = $('listaVariantes');
-  cont.innerHTML = '';
-
-  items.forEach(function (p) {
-    const btn = document.createElement('button');
-    btn.className = 'btn-variante';
-    btn.innerHTML =
-      '<span class="icono-v">' + iconoParaProducto(p) + '</span>' +
-      '<span class="texto-v">' +
-        '<span class="nom-v">' + p.nombre + '</span>' +
-        '<span class="pre-v">' + fmt(p.precio) + '</span>' +
-      '</span>';
-
-    const onTap = function () {
-      bloqueoGlobalTap = true;
-      agregarProductoAlCarrito(p, 1);
-      setTimeout(function () { bloqueoGlobalTap = false; }, 300);
-    };
-
-    const onLongPress = function () {
-      bloqueoGlobalTap = true;
-      if (navigator.vibrate) navigator.vibrate(80);
-      abrirCobroRapido(p, 1);
-      setTimeout(function () { bloqueoGlobalTap = false; }, 300);
-    };
-
-    crearDetectorTap(btn, onTap, onLongPress);
-    cont.appendChild(btn);
-  });
-
-  $('panelVariantes').classList.add('abierto');
-  $('panelVariantes').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
 // ===== Buscador =====
 function pintarResultados() {
   const q = norm_($('buscar').value);

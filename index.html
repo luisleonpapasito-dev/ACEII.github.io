@@ -450,12 +450,11 @@ a, button, .card, .card-ventas-ancha {
 }
 
 #splashLogo {
-  width: 260px; /* ¡Aumentamos el tamaño para que iguale al nativo de Android! */
+  width: 200px; /* Ajusta este tamaño hasta que sea igual al de la foto 1 */
   height: auto;
-  border-radius: 50px; /* Un poco más redondeado para que se parezca al ícono */
-  /* La animación hace un zoom suave desde el mismo tamaño */
+  border-radius: 22%; /* Simula el cuadrado redondeado de Android */
   animation: animacionLogo 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); /* La sombrita que se ve en la foto 2 */
 }
 
 @keyframes animacionLogo {
@@ -477,7 +476,7 @@ a, button, .card, .card-ventas-ancha {
 
 <!-- ===== PANTALLA DE CARGA (SPLASH) ===== -->
 <div id="splashScreen">
-  <img src="logo_ACEII.png" alt="ACEII" id="splashLogo" decoding="sync" fetchpriority="high">
+   <img src="icon-192.png" alt="ACEII" id="splashLogo" decoding="sync" fetchpriority="high">
 </div>
 <script>
 (function () {

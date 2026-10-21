@@ -1606,49 +1606,41 @@ function pintarPillsCategorias() {
 // ===== Pills de categorías =====
 async function pintarRapidos() {
   const cont = $('botonesRapidos');
-  
-  if (!cont) {
-    console.error('No se encontró el contenedor botonesRapidos');
-    return;
-  }
-
   cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--texto-suave); font-size:13px; padding:20px;">Cargando...</div>';
 
   let listaIds = [];
 
-  try {
-    if (modoMasVendidos) {
+  if (modoMasVendidos) {
+    try {
       const r = await jsonp({ accion: 'productos_mas_vendidos', dias: 30, limite: 20 });
       if (r && r.ok && r.items) {
         listaIds = r.items.map(item => item.id);
       } else {
-        cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--alerta); font-size:13px; padding:20px;">Error al cargar más vendidos</div>';
+        cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--alerta); font-size:13px; padding:20px;">Error al cargar</div>';
         return;
       }
-    } else if (categoriaFiltro) {
-      const prodsCat = productos.filter(p => norm_(p.categoria) === norm_(categoriaFiltro));
-      const favoritos = getRapidosDeCategoria(categoriaFiltro);
-      prodsCat.sort((a, b) => {
-        const idxA = favoritos.indexOf(a.id);
-        const idxB = favoritos.indexOf(b.id);
-        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-        if (idxA !== -1) return -1;
-        if (idxB !== -1) return 1;
-        return a.nombre.localeCompare(b.nombre);
-      });
-      listaIds = prodsCat.map(p => p.id);
-    } else {
-      // Estamos en "Todas"
-      listaIds = getRapidosDeCategoria('');
-      if (!listaIds || listaIds.length === 0) {
-        // Si está vacío, mostramos los primeros 8 productos como respaldo
-        listaIds = productos.slice(0, 8).map(function (p) { return p.id; });
-      }
+    } catch (e) {
+      cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--alerta); font-size:13px; padding:20px;">Error de conexión</div>';
+      return;
     }
-  } catch (e) {
-    console.error('Error en pintarRapidos:', e);
-    cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--alerta); font-size:13px; padding:20px;">Error: ' + e.message + '</div>';
-    return;
+  } else if (categoriaFiltro) {
+    const prodsCat = productos.filter(p => norm_(p.categoria) === norm_(categoriaFiltro));
+    const favoritos = getRapidosDeCategoria(categoriaFiltro);
+    prodsCat.sort((a, b) => {
+      const idxA = favoritos.indexOf(a.id);
+      const idxB = favoritos.indexOf(b.id);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.nombre.localeCompare(b.nombre);
+    });
+    listaIds = prodsCat.map(p => p.id);
+    } else {
+    listaIds = getRapidosDeCategoria('');
+    // PLAN B: Si no has configurado nada en "Todas", mostramos los primeros 8 productos del catálogo
+    if (!listaIds || listaIds.length === 0) {
+      listaIds = productos.slice(0, 8).map(function (p) { return p.id; });
+    }
   }
 
   cont.innerHTML = '';
@@ -1931,67 +1923,7 @@ function crearBotonRapido(p, esGrupo, itemsGrupo) {
   return btn;
 }
 
-async function pintarRapidos() {
-  const cont = $('botonesRapidos');
-  cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--texto-suave); font-size:13px; padding:20px;">Cargando...</div>';
 
-  let listaIds = [];
-
-  if (modoMasVendidos) {
-    try {
-      const r = await jsonp({ accion: 'productos_mas_vendidos', dias: 30, limite: 20 });
-      if (r && r.ok && r.items) {
-        listaIds = r.items.map(item => item.id);
-      } else {
-        cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--alerta); font-size:13px; padding:20px;">Error al cargar</div>';
-        return;
-      }
-    } catch (e) {
-      cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--alerta); font-size:13px; padding:20px;">Error de conexión</div>';
-      return;
-    }
-  } else if (categoriaFiltro) {
-    const prodsCat = productos.filter(p => norm_(p.categoria) === norm_(categoriaFiltro));
-    const favoritos = getRapidosDeCategoria(categoriaFiltro);
-    prodsCat.sort((a, b) => {
-      const idxA = favoritos.indexOf(a.id);
-      const idxB = favoritos.indexOf(b.id);
-      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-      if (idxA !== -1) return -1;
-      if (idxB !== -1) return 1;
-      return a.nombre.localeCompare(b.nombre);
-    });
-    listaIds = prodsCat.map(p => p.id);
-  } else {
-    listaIds = getRapidosDeCategoria('');
-  }
-
-  cont.innerHTML = '';
-
-  if (listaIds.length === 0) {
-    cont.innerHTML =
-      '<div style="grid-column: span 2; text-align:center; color:var(--texto-suave); font-size:13px; padding:20px;">' +
-      (modoMasVendidos ? 'Aún no hay ventas registradas.' : 'Sin botones rápidos. Toca ⚙️ Configurar.') +
-      '</div>';
-    return;
-  }
-
-  listaIds.forEach(function (rid) {
-    const p = productos.find(function (x) { return x.id === rid; });
-    if (!p) return;
-    
-    const btn = crearBotonRapido(p, false, null);
-    
-    if (modoMasVendidos) {
-      const badge = document.createElement('span');
-      badge.className = 'badge-vendidos';
-      badge.textContent = '🔥 Top';
-      btn.appendChild(badge);
-    }
-    
-    cont.appendChild(btn);
-  });
-}
 
 function mostrarVariantes(nombre, items) {
   $('tituloVariantes').textContent = nombre;

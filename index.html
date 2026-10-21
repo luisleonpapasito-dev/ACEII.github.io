@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <style>
 html {
-    background: linear-gradient(135deg, F1B4DB1 0%, #2563EB 100%);
+    background: #1B4DB1;
 }
 
 body {
@@ -410,38 +410,16 @@ a, button, .card, .card-ventas-ancha {
 }
 
 
-/* ===== PANTALLA DE CARGA ANIMADA ===== */
-/* ===== PANTALLA DE CARGA ANIMADA ===== */
-/* ===== PANTALLA DE CARGA ANIMADA ===== */
-
+/* ===== PANTALLA DE CARGA ===== */
 #splashScreen {
   position: fixed;
   inset: 0;
-  background: linear-gradient(135deg, #1B4DB1 0%, #2563EB 100%);
-  z-index: 99999;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  /* El splash existe desde el primer render */
-  opacity: 1;
-  visibility: visible;
-
-  transition:
-    opacity 0.25s ease-out,
-    visibility 0.25s ease-out;
-}
-
-#splashScreen {
-  position: fixed;
-  inset: 0;
-  background-color: #1B4DB1; /* Azul sólido (igual al manifest) */
+  background-color: #1B4DB1;
   z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.3s ease-out;
+  transition: opacity 0.25s ease-out;
 }
 
 #splashScreen.oculto {
@@ -450,23 +428,15 @@ a, button, .card, .card-ventas-ancha {
 }
 
 #splashLogo {
-  width: 200px; /* Ajusta este tamaño hasta que sea igual al de la foto 1 */
-  height: auto;
-  border-radius: 22%; /* Simula el cuadrado redondeado de Android */
-  animation: animacionLogo 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); /* La sombrita que se ve en la foto 2 */
+  width: 128px;
+  height: 128px;
+  margin-top: -12px;
+  animation: respirar 1.8s ease-in-out infinite;
 }
 
-@keyframes animacionLogo {
-  0%   { transform: scale(1); opacity: 1; } 
-  40%  { transform: scale(1.05); opacity: 1; } /* Crece un poquito */
-  100% { transform: scale(1); opacity: 1; }
-}
-
-@keyframes animacionLogo {
-  0%   { transform: scale(0.9); opacity: 0.8; }
-  50%  { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
+@keyframes respirar {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.05); }
 }
 
 </style>

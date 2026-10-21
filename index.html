@@ -433,9 +433,19 @@ a, button, .card, .card-ventas-ancha {
     visibility 0.25s ease-out;
 }
 
+#splashScreen {
+  position: fixed;
+  inset: 0;
+  background-color: #1B4DB1; /* Azul sólido (igual al manifest) */
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease-out;
+}
+
 #splashScreen.oculto {
   opacity: 0;
-  visibility: hidden;
   pointer-events: none;
 }
 
@@ -443,30 +453,15 @@ a, button, .card, .card-ventas-ancha {
   width: 160px;
   height: auto;
   border-radius: 20px;
-
-  /* Empezamos la animación un poco avanzada para que no se vea el "salto" inicial */
-  opacity: 1; 
-  transform: scale(1);
-
-  /* El -0.4s hace que la animación ya lleve 0.4 segundos de recorrido al cargar */
-  animation: animacionLogo 0.8s cubic-bezier(0.16, 1, 0.3, 1) -0.4s forwards;
-
+  /* Animación de zoom suave: empieza en 1 y sube un poquito */
+  animation: animacionLogo 0.6s ease-out forwards; 
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
 @keyframes animacionLogo {
-  0% {
-    opacity: 0;
-    transform: scale(0.75) translateY(12px);
-  }
-  70% {
-    opacity: 1;
-    transform: scale(1.04) translateY(-2px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+  0%   { transform: scale(0.9); opacity: 0.8; }
+  50%  { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 </style>

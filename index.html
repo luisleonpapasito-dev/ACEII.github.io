@@ -450,17 +450,17 @@ a, button, .card, .card-ventas-ancha {
 }
 
 #splashLogo {
-  width: 140px; /* Un poco más grande para igualar al logo nativo de Android */
+  width: 260px; /* ¡Aumentamos el tamaño para que iguale al nativo de Android! */
   height: auto;
-  border-radius: 28px; /* Android usa bordes más redondeados en el ícono */
-  /* La animación hace un zoom sutil desde el mismo tamaño, así el ojo no nota el salto */
+  border-radius: 50px; /* Un poco más redondeado para que se parezca al ícono */
+  /* La animación hace un zoom suave desde el mismo tamaño */
   animation: animacionLogo 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
 @keyframes animacionLogo {
-  0%   { transform: scale(1); opacity: 1; } /* Empieza exactamente igual al nativo */
-  40%  { transform: scale(1.05); opacity: 1; }
+  0%   { transform: scale(1); opacity: 1; } 
+  40%  { transform: scale(1.05); opacity: 1; } /* Crece un poquito */
   100% { transform: scale(1); opacity: 1; }
 }
 

@@ -1119,7 +1119,7 @@ window.addEventListener('unhandledrejection', function (e) {
     stroke-linejoin: round;
     opacity: 0.95;
   }
-  
+
 .pill-cat.pill-masvendidos { background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); color: #fff; }
 .pill-cat.pill-masvendidos.activa { box-shadow: 0 4px 10px rgba(234, 88, 12, 0.4); }
 .btn-rapido .badge-vendidos {
@@ -1129,9 +1129,6 @@ window.addEventListener('unhandledrejection', function (e) {
   padding: 2px 7px; border-radius: 8px;
   box-shadow: 0 2px 5px rgba(234, 88, 12, 0.35);
 }
-
-
-
 
 </style>
 </head>
@@ -1556,6 +1553,51 @@ async function cargarProductos() {
   } catch (err) {
     mostrar('No se pudieron cargar los productos: ' + err.message, 'error');
   }
+}
+
+function pintarPillsCategorias() {
+  const cont = $('pillsCategorias');
+  cont.innerHTML = '';
+
+  const cats = {};
+  productos.forEach(function (p) {
+    if (p.categoria) cats[p.categoria] = true;
+  });
+
+  const todas = document.createElement('div');
+  todas.className = 'pill-cat' + (!categoriaFiltro && !modoMasVendidos ? ' activa' : '');
+  todas.innerHTML = '<span class="pill-icon">📦</span> Todas';
+  todas.addEventListener('click', function () {
+    categoriaFiltro = '';
+    modoMasVendidos = false;
+    pintarPillsCategorias();
+    pintarRapidos();
+  });
+  cont.appendChild(todas);
+
+  const masV = document.createElement('div');
+  masV.className = 'pill-cat pill-masvendidos' + (modoMasVendidos ? ' activa' : '');
+  masV.innerHTML = '<span class="pill-icon">🔥</span> Más vendidos';
+  masV.addEventListener('click', function () {
+    categoriaFiltro = '';
+    modoMasVendidos = true;
+    pintarPillsCategorias();
+    pintarRapidos();
+  });
+  cont.appendChild(masV);
+
+  Object.keys(cats).sort().forEach(function (cat) {
+    const d = document.createElement('div');
+    d.className = 'pill-cat' + (categoriaFiltro === cat && !modoMasVendidos ? ' activa' : '');
+    d.innerHTML = '<span class="pill-icon">' + iconoPill(cat) + '</span> ' + cat;
+    d.addEventListener('click', function () {
+      categoriaFiltro = (categoriaFiltro === cat) ? '' : cat;
+      modoMasVendidos = false;
+      pintarPillsCategorias();
+      pintarRapidos();
+    });
+    cont.appendChild(d);
+  });
 }
 
 // ===== Pills de categorías =====

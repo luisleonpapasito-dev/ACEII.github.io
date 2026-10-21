@@ -1119,6 +1119,20 @@ window.addEventListener('unhandledrejection', function (e) {
     stroke-linejoin: round;
     opacity: 0.95;
   }
+  
+.pill-cat.pill-masvendidos { background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); color: #fff; }
+.pill-cat.pill-masvendidos.activa { box-shadow: 0 4px 10px rgba(234, 88, 12, 0.4); }
+.btn-rapido .badge-vendidos {
+  position: absolute; top: 8px; right: 8px;
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+  color: #fff; font-size: 10px; font-weight: 800;
+  padding: 2px 7px; border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(234, 88, 12, 0.35);
+}
+
+
+
+
 </style>
 </head>
 <body>
@@ -1320,6 +1334,7 @@ let productos = [];
 let carrito = [];
 let rapidos = {};
 let categoriaFiltro = '';
+let modoMasVendidos = false;
 let seleccionConfig = [];
 let categoriaConfigFiltro = '';
 let categoriaConfigEditando = '';
@@ -1449,7 +1464,7 @@ function iconoPill(cat) {
 // ===== Detector tap / scroll =====
 // ===== Detector tap / scroll =====
 const TAP_THRESHOLD = 10;
-let bloqueoGlobalTap = false; // NUEVO: Evita clics fantasma
+let bloqueoGlobalTap = false;
 
 function crearDetectorTap(elemento, onTap, onLongPress) {
   let startX = 0, startY = 0;
@@ -1459,7 +1474,7 @@ function crearDetectorTap(elemento, onTap, onLongPress) {
   let clickReciente = false;
 
   elemento.addEventListener('touchstart', function (e) {
-    if (bloqueoGlobalTap) return; // NUEVO
+    if (bloqueoGlobalTap) return;
     const touch = e.touches[0];
     startX = touch.clientX;
     startY = touch.clientY;
@@ -1511,10 +1526,11 @@ function crearDetectorTap(elemento, onTap, onLongPress) {
   });
 
   elemento.addEventListener('click', function (e) {
-    if (clickReciente || bloqueoGlobalTap) return; // NUEVO
+    if (clickReciente || bloqueoGlobalTap) return;
     onTap();
   });
 }
+
 
 
 // ===== Arranque =====
@@ -1543,38 +1559,103 @@ async function cargarProductos() {
 }
 
 // ===== Pills de categorías =====
-function pintarPillsCategorias() {
-  const cont = $('pillsCategorias');
+async function pintarRapidos() {
+  const cont = $('botonesRapidos');
+  cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--texto-suave); font-size:13px; padding:20px;">Cargando...</div>';
+
+  let listaIds = [];
+
+  if (modoMasVendidos) {
+    try {
+      const r = await jsonp({ accion: 'productos_mas_vendidos', dias: 30, limite: 20 });
+      if (r && r.ok && r.items) {
+        listaIds = r.items.map(item => item.id);
+      } else {
+        cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--alerta); font-size:13px; padding:20px;">Error al cargar</div>';
+        return;
+      }
+    } catch (e) {
+      cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--alerta); font-size:13px; padding:20px;">Error de conexión</div>';
+      return;
+    }
+  } else if (categoriaFiltro) {
+    const prodsCat = productos.filter(p => norm_(p.categoria) === norm_(categoriaFiltro));
+    const favoritos = getRapidosDeCategoria(categoriaFiltro);
+    prodsCat.sort((a, b) => {
+      const idxA = favoritos.indexOf(a.id);
+      const idxB = favoritos.indexOf(b.id);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.nombre.localeCompare(b.nombre);
+    });
+    listaIds = prodsCat.map(p => p.id);
+  } else {
+    listaIds = getRapidosDeCategoria('');
+  }
+
   cont.innerHTML = '';
 
-  const cats = {};
-  productos.forEach(function (p) {
-    if (p.categoria) cats[p.categoria] = true;
-  });
+  if (listaIds.length === 0) {
+    cont.innerHTML =
+      '<div style="grid-column: span 2; text-align:center; color:var(--texto-suave); font-size:13px; padding:20px;">' +
+      (modoMasVendidos ? 'Aún no hay ventas registradas.' : 'Sin botones rápidos. Toca ⚙️ Configurar.') +
+      '</div>';
+    return;
+  }
 
-  const todas = document.createElement('div');
-  todas.className = 'pill-cat' + (categoriaFiltro === '' ? ' activa' : '');
-  todas.innerHTML = '<span class="pill-icon">📦</span> Todas';
-  todas.addEventListener('click', function () {
-    categoriaFiltro = '';
-    pintarPillsCategorias();
-    pintarRapidos();
-  });
-  cont.appendChild(todas);
-
-  Object.keys(cats).sort().forEach(function (cat) {
-    const d = document.createElement('div');
-    d.className = 'pill-cat' + (categoriaFiltro === cat ? ' activa' : '');
-    d.innerHTML = '<span class="pill-icon">' + iconoPill(cat) + '</span> ' + cat;
-    d.addEventListener('click', function () {
-      categoriaFiltro = (categoriaFiltro === cat) ? '' : cat;
-      pintarPillsCategorias();
-      pintarRapidos();
-    });
-    cont.appendChild(d);
+  listaIds.forEach(function (rid) {
+    const p = productos.find(function (x) { return x.id === rid; });
+    if (!p) return;
+    
+    const btn = crearBotonRapido(p, false, null);
+    
+    if (modoMasVendidos) {
+      const badge = document.createElement('span');
+      badge.className = 'badge-vendidos';
+      badge.textContent = '🔥 Top';
+      btn.appendChild(badge);
+    }
+    
+    cont.appendChild(btn);
   });
 }
 
+function mostrarVariantes(nombre, items) {
+  $('tituloVariantes').textContent = nombre;
+  const cont = $('listaVariantes');
+  cont.innerHTML = '';
+
+  items.forEach(function (p) {
+    const btn = document.createElement('button');
+    btn.className = 'btn-variante';
+    btn.innerHTML =
+      '<span class="icono-v">' + iconoParaProducto(p) + '</span>' +
+      '<span class="texto-v">' +
+        '<span class="nom-v">' + p.nombre + '</span>' +
+        '<span class="pre-v">' + fmt(p.precio) + '</span>' +
+      '</span>';
+
+    const onTap = function () {
+      bloqueoGlobalTap = true;
+      agregarProductoAlCarrito(p, 1);
+      setTimeout(function () { bloqueoGlobalTap = false; }, 300);
+    };
+
+    const onLongPress = function () {
+      bloqueoGlobalTap = true;
+      if (navigator.vibrate) navigator.vibrate(80);
+      abrirCobroRapido(p, 1);
+      setTimeout(function () { bloqueoGlobalTap = false; }, 300);
+    };
+
+    crearDetectorTap(btn, onTap, onLongPress);
+    cont.appendChild(btn);
+  });
+
+  $('panelVariantes').classList.add('abierto');
+  $('panelVariantes').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
 // ===== Buscador =====
 function pintarResultados() {
   const q = norm_($('buscar').value);
@@ -1843,17 +1924,25 @@ function mostrarVariantes(nombre, items) {
         '<span class="pre-v">' + fmt(p.precio) + '</span>' +
       '</span>';
 
-    const onTap = function () {
-      bloqueoGlobalTap = true; // NUEVO: Bloquea toques
-      agregarProductoAlCarrito(p, 1);
+   const onTap = function () {
+  if (esGrupo) {
+    // Si ya está abierto este mismo grupo, lo cerramos (toggle)
+    if ($('panelVariantes').classList.contains('abierto') &&
+        $('tituloVariantes').textContent === p) {
       $('panelVariantes').classList.remove('abierto');
-      setTimeout(function () { bloqueoGlobalTap = false; }, 300); // NUEVO: Libera el toque
-    };
-
+    } else {
+      mostrarVariantes(p, itemsGrupo);
+    }
+  } else {
+    agregarProductoAlCarrito(p, 1);
+    btn.classList.add('agregado');
+    setTimeout(function () { btn.classList.remove('agregado'); }, 400);
+  }
+};
     const onLongPress = function () {
       bloqueoGlobalTap = true; // NUEVO
       if (navigator.vibrate) navigator.vibrate(80);
-      $('panelVariantes').classList.remove('abierto');
+      
       abrirCobroRapido(p, 1);
       setTimeout(function () { bloqueoGlobalTap = false; }, 300); // NUEVO
     };
@@ -1914,7 +2003,6 @@ function pintarBarraFlotante() {
     const row = document.createElement('div');
     row.className = 'bf-item';
     
-    // Agregamos botones de - y + junto a la cantidad
     row.innerHTML =
       '<span class="bf-nom">' + it.nombre + '</span>' +
       '<div style="display:flex; align-items:center; gap:6px;">' +
@@ -1924,7 +2012,6 @@ function pintarBarraFlotante() {
       '</div>' +
       '<span class="bf-precio">' + fmt(it.precio * it.cantidad) + '</span>';
 
-    // Botón de restar
     row.querySelectorAll('.bf-quitar')[0].addEventListener('click', function (e) {
       e.stopPropagation();
       if (it.cantidad > 1) {
@@ -1936,10 +2023,8 @@ function pintarBarraFlotante() {
       guardarCarrito();
     });
 
-    // Botón de sumar
     row.querySelectorAll('.bf-quitar')[1].addEventListener('click', function (e) {
       e.stopPropagation();
-      // Validar stock antes de sumar
       const prodOriginal = productos.find(p => p.id === it.id);
       if (prodOriginal && it.cantidad < prodOriginal.stock) {
         it.cantidad += 1;

@@ -20,8 +20,8 @@ body {
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563EB" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#1B4DB1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1B4DB1" media="(prefers-color-scheme: dark)">
 <script src="comun.js"></script>
 <link rel="preload" as="image" href="logo_ACEII.png">
 <script>
@@ -450,12 +450,18 @@ a, button, .card, .card-ventas-ancha {
 }
 
 #splashLogo {
-  width: 160px;
+  width: 140px; /* Un poco más grande para igualar al logo nativo de Android */
   height: auto;
-  border-radius: 20px;
-  /* Animación de zoom suave: empieza en 1 y sube un poquito */
-  animation: animacionLogo 0.6s ease-out forwards; 
+  border-radius: 28px; /* Android usa bordes más redondeados en el ícono */
+  /* La animación hace un zoom sutil desde el mismo tamaño, así el ojo no nota el salto */
+  animation: animacionLogo 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes animacionLogo {
+  0%   { transform: scale(1); opacity: 1; } /* Empieza exactamente igual al nativo */
+  40%  { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 @keyframes animacionLogo {

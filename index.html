@@ -381,72 +381,51 @@ a, button, .card, .card-ventas-ancha {
   font-variant-numeric: tabular-nums;
 }
 
-/* ===== FASE 4: VENTAS ===== */
-.link-volver {
-  display: inline-flex;
+
+/* ===== PANTALLA DE CARGA ANIMADA ===== */
+#splashScreen {
+  position: fixed;
+  inset: 0;
+  background-color: #1B4DB1; /* Azul de ACEII */
+  z-index: 99999;
+  display: flex;
   align-items: center;
-  gap: 4px;
-  margin-top: 2px;
-  padding: 4px 12px 4px 8px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: transform 0.15s ease, background 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
+  justify-content: center;
+  transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
 }
-.link-volver:active {
-  transform: scale(0.95);
-  background: rgba(255, 255, 255, 0.26);
+#splashScreen.oculto {
+  opacity: 0;
+  visibility: hidden;
 }
-.link-volver svg {
-  width: 16px;
-  height: 16px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+#splashLogo {
+  width: 180px;
+  height: auto;
+  border-radius: 20px;
+  animation: animacionLogo 2s ease-in-out forwards;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+@keyframes animacionLogo {
+  0%   { opacity: 0; transform: scale(0.5) translateY(20px); }
+  50%  { opacity: 1; transform: scale(1.1) translateY(0); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
-/* Botones de cobro: icono + texto en una sola línea */
-.bf-cobro button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 6px;
-  font-size: 13px;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-  -webkit-tap-highlight-color: transparent;
-}
-.bf-cobro button svg,
-#btnCam svg {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-#btnCam {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-.bf-total {
-  font-variant-numeric: tabular-nums;
-}
 </style>
 </head>
 <body>
+
+<body>
+
+<!-- ===== PANTALLA DE CARGA (SPLASH) ===== -->
+<div id="splashScreen">
+  <img src="logo_ACEII.png" alt="ACEII Cargando..." id="splashLogo">
+</div>
+<!-- ======================================= -->
+
+<header class="app-header">
+
+
+
 
 <header class="app-header">
   <button class="btn-tema" id="btnTema" title="Cambiar tema">☀️</button>
@@ -1138,5 +1117,20 @@ if ('serviceWorker' in navigator) {
     }
   });
 </script>
+<script>
+  // Quitar la pantalla de carga a los 2 segundos
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      var splash = document.getElementById('splashScreen');
+      if (splash) {
+        splash.classList.add('oculto');
+        setTimeout(function() {
+          splash.remove();
+        }, 600); // Se elimina del HTML después de desvanecerse
+      }
+    }, 2000); // 2000 ms = 2 segundos
+  });
+</script>
 </body>
 </html>
+

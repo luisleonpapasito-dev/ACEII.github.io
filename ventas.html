@@ -1610,37 +1610,39 @@ async function pintarRapidos() {
 
   let listaIds = [];
 
-  if (modoMasVendidos) {
-    try {
+  try {
+    if (modoMasVendidos) {
       const r = await jsonp({ accion: 'productos_mas_vendidos', dias: 30, limite: 20 });
       if (r && r.ok && r.items) {
         listaIds = r.items.map(item => item.id);
       } else {
-        cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--alerta); font-size:13px; padding:20px;">Error al cargar</div>';
+        cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--alerta); font-size:13px; padding:20px;">Error al cargar más vendidos</div>';
         return;
       }
-    } catch (e) {
-      cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--alerta); font-size:13px; padding:20px;">Error de conexión</div>';
-      return;
-    }
-  } else if (categoriaFiltro) {
-    const prodsCat = productos.filter(p => norm_(p.categoria) === norm_(categoriaFiltro));
-    const favoritos = getRapidosDeCategoria(categoriaFiltro);
-    prodsCat.sort((a, b) => {
-      const idxA = favoritos.indexOf(a.id);
-      const idxB = favoritos.indexOf(b.id);
-      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-      if (idxA !== -1) return -1;
-      if (idxB !== -1) return 1;
-      return a.nombre.localeCompare(b.nombre);
-    });
-    listaIds = prodsCat.map(p => p.id);
+    } else if (categoriaFiltro) {
+      const prodsCat = productos.filter(p => norm_(p.categoria) === norm_(categoriaFiltro));
+      const favoritos = getRapidosDeCategoria(categoriaFiltro);
+      prodsCat.sort((a, b) => {
+        const idxA = favoritos.indexOf(a.id);
+        const idxB = favoritos.indexOf(b.id);
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return a.nombre.localeCompare(b.nombre);
+      });
+      listaIds = prodsCat.map(p => p.id);
     } else {
-    listaIds = getRapidosDeCategoria('');
-    // PLAN B: Si no has configurado nada en "Todas", mostramos los primeros 8 productos del catálogo
-    if (!listaIds || listaIds.length === 0) {
-      listaIds = productos.slice(0, 8).map(function (p) { return p.id; });
+      // "Todas"
+      listaIds = getRapidosDeCategoria('');
+      if (!listaIds || listaIds.length === 0) {
+        // Respaldo: si está vacío, muestra los primeros 8 productos
+        listaIds = productos.slice(0, 8).map(function (p) { return p.id; });
+      }
     }
+  } catch (e) {
+    console.error('Error en pintarRapidos:', e);
+    cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--alerta); font-size:13px; padding:20px;">Error: ' + e.message + '</div>';
+    return;
   }
 
   cont.innerHTML = '';
@@ -1922,7 +1924,6 @@ function crearBotonRapido(p, esGrupo, itemsGrupo) {
   crearDetectorTap(btn, onTap, onLongPress);
   return btn;
 }
-
 
 
 function mostrarVariantes(nombre, items) {

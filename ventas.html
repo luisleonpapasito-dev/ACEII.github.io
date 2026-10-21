@@ -1824,24 +1824,17 @@ function cargarRapidosGuardados() {
     Object.keys(rapidos).forEach(function (cat) {
       rapidos[cat] = (rapidos[cat] || []).filter(function (rid) {
         return idRapidoEsValido(rid);
-      }).slice(0, 8);
+      });
+      // Solo limitamos la categoría global a 8
+      if (cat === 'GLOBAL') {
+        rapidos[cat] = rapidos[cat].slice(0, 8);
+      }
     });
     return;
   }
 
   rapidos = { 'GLOBAL': [] };
   const defaults = [];
-  const conteoCategorias = {};
-  productos.forEach(function (p) {
-    const cat = p.categoria || '';
-    if (!cat) return;
-    conteoCategorias[cat] = (conteoCategorias[cat] || 0) + 1;
-  });
-
-  ['Empanadas', 'Preparados', 'Combos'].forEach(function (cat) {
-    if (conteoCategorias[cat] >= 2) defaults.push('GRUPO_' + cat);
-  });
-
   ['chocoramo', 'gansito', 'jugo hit', 'agua pequeña'].forEach(function (nombre) {
     if (defaults.length >= 8) return;
     const p = productos.find(function (x) {
@@ -1874,7 +1867,12 @@ function getRapidosDeCategoria(cat) {
 
 function setRapidosDeCategoria(cat, arr) {
   const key = cat || 'GLOBAL';
-  rapidos[key] = arr.slice(0, 8);
+  // Si es la global, cortamos en 8. Si es otra categoría, guardamos todo.
+  if (key === 'GLOBAL') {
+    rapidos[key] = arr.slice(0, 8);
+  } else {
+    rapidos[key] = arr;
+  }
 }
 
 function crearBotonRapido(p, esGrupo, itemsGrupo) {
@@ -1918,36 +1916,65 @@ function crearBotonRapido(p, esGrupo, itemsGrupo) {
   return btn;
 }
 
-function pintarRapidos() {
+async function pintarRapidos() {
   const cont = $('botonesRapidos');
+  cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--texto-suave); font-size:13px; padding:20px;">Cargando...</div>';
+
+  let listaIds = [];
+
+  if (modoMasVendidos) {
+    try {
+      const r = await jsonp({ accion: 'productos_mas_vendidos', dias: 30, limite: 20 });
+      if (r && r.ok && r.items) {
+        listaIds = r.items.map(item => item.id);
+      } else {
+        cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--alerta); font-size:13px; padding:20px;">Error al cargar</div>';
+        return;
+      }
+    } catch (e) {
+      cont.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--alerta); font-size:13px; padding:20px;">Error de conexión</div>';
+      return;
+    }
+  } else if (categoriaFiltro) {
+    const prodsCat = productos.filter(p => norm_(p.categoria) === norm_(categoriaFiltro));
+    const favoritos = getRapidosDeCategoria(categoriaFiltro);
+    prodsCat.sort((a, b) => {
+      const idxA = favoritos.indexOf(a.id);
+      const idxB = favoritos.indexOf(b.id);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.nombre.localeCompare(b.nombre);
+    });
+    listaIds = prodsCat.map(p => p.id);
+  } else {
+    listaIds = getRapidosDeCategoria('');
+  }
+
   cont.innerHTML = '';
 
-  const lista = getRapidosDeCategoria(categoriaFiltro);
-
-  if (lista.length === 0) {
+  if (listaIds.length === 0) {
     cont.innerHTML =
       '<div style="grid-column: span 2; text-align:center; color:var(--texto-suave); font-size:13px; padding:20px;">' +
-      (categoriaFiltro
-        ? 'No hay rápidos en <b>' + categoriaFiltro + '</b>. Toca ⚙️ Configurar.'
-        : 'Sin botones rápidos. Toca ⚙️ Configurar.') +
+      (modoMasVendidos ? 'Aún no hay ventas registradas.' : 'Sin botones rápidos. Toca ⚙️ Configurar.') +
       '</div>';
     return;
   }
 
-  lista.forEach(function (rid) {
-    if (rid.startsWith('GRUPO_')) {
-      const nombreGrupo = rid.replace('GRUPO_', '');
-      const itemsGrupo = productos.filter(function (p) {
-        return norm_(p.categoria) === norm_(nombreGrupo);
-      });
-      if (itemsGrupo.length === 0) return;
-      cont.appendChild(crearBotonRapido(nombreGrupo, true, itemsGrupo));
-      return;
-    }
-
+  listaIds.forEach(function (rid) {
     const p = productos.find(function (x) { return x.id === rid; });
     if (!p) return;
-    cont.appendChild(crearBotonRapido(p, false, null));
+    
+    const btn = crearBotonRapido(p, false, null);
+    
+    if (modoMasVendidos) {
+      const badge = document.createElement('span');
+      badge.className = 'badge-vendidos';
+      badge.textContent = '🔥 Top';
+      btn.appendChild(badge);
+    }
+    
+    cont.appendChild(btn);
   });
 }
 
@@ -1966,27 +1993,17 @@ function mostrarVariantes(nombre, items) {
         '<span class="pre-v">' + fmt(p.precio) + '</span>' +
       '</span>';
 
-   const onTap = function () {
-  if (esGrupo) {
-    // Si ya está abierto este mismo grupo, lo cerramos (toggle)
-    if ($('panelVariantes').classList.contains('abierto') &&
-        $('tituloVariantes').textContent === p) {
-      $('panelVariantes').classList.remove('abierto');
-    } else {
-      mostrarVariantes(p, itemsGrupo);
-    }
-  } else {
-    agregarProductoAlCarrito(p, 1);
-    btn.classList.add('agregado');
-    setTimeout(function () { btn.classList.remove('agregado'); }, 400);
-  }
-};
+    const onTap = function () {
+      bloqueoGlobalTap = true;
+      agregarProductoAlCarrito(p, 1);
+      setTimeout(function () { bloqueoGlobalTap = false; }, 300);
+    };
+
     const onLongPress = function () {
-      bloqueoGlobalTap = true; // NUEVO
+      bloqueoGlobalTap = true;
       if (navigator.vibrate) navigator.vibrate(80);
-      
       abrirCobroRapido(p, 1);
-      setTimeout(function () { bloqueoGlobalTap = false; }, 300); // NUEVO
+      setTimeout(function () { bloqueoGlobalTap = false; }, 300);
     };
 
     crearDetectorTap(btn, onTap, onLongPress);
@@ -1996,6 +2013,7 @@ function mostrarVariantes(nombre, items) {
   $('panelVariantes').classList.add('abierto');
   $('panelVariantes').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
+
 $('btnCerrarVariantes').addEventListener('click', function () {
   $('panelVariantes').classList.remove('abierto');
 });
@@ -2327,9 +2345,15 @@ function pintarListaConfig() {
 
     d.addEventListener('click', function () {
       const idx = seleccionConfig.indexOf(grupoId);
-      if (idx >= 0) seleccionConfig.splice(idx, 1);
-      else if (seleccionConfig.length < 8) seleccionConfig.push(grupoId);
-      else alert('Máximo 8 botones');
+      if (idx >= 0) {
+        seleccionConfig.splice(idx, 1);
+      } else {
+        if (categoriaConfigEditando === '' && seleccionConfig.length >= 8) {
+          alert('Máximo 8 botones para "Todas"');
+        } else {
+          seleccionConfig.push(grupoId);
+        }
+      }
       pintarListaConfig();
     });
     cont.appendChild(d);
@@ -2355,9 +2379,15 @@ function pintarListaConfig() {
 
     d.addEventListener('click', function () {
       const idx = seleccionConfig.indexOf(p.id);
-      if (idx >= 0) seleccionConfig.splice(idx, 1);
-      else if (seleccionConfig.length < 8) seleccionConfig.push(p.id);
-      else alert('Máximo 8 botones');
+      if (idx >= 0) {
+        seleccionConfig.splice(idx, 1);
+      } else {
+        if (categoriaConfigEditando === '' && seleccionConfig.length >= 8) {
+          alert('Máximo 8 botones para "Todas"');
+        } else {
+          seleccionConfig.push(p.id);
+        }
+      }
       pintarListaConfig();
     });
     cont.appendChild(d);

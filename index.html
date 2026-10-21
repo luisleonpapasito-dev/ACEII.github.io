@@ -428,22 +428,28 @@ a, button, .card, .card-ventas-ancha {
 }
 
 #splashLogo {
-  width: 170px; /* Tamaño ideal para que respire en la pantalla */
+  width: 160px; 
   height: auto;
-  /* Quitamos el border-radius porque ya no será un cuadro */
+  
+  /* Aquí está la magia del redondeo: 22% es la medida estándar de los íconos de Android e iOS */
+  border-radius: 22%; 
+  
+  /* Una sombra suave que sigue la forma redondeada del logo */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 
+              inset 0 2px 4px rgba(255, 255, 255, 0.2); /* Un brillo sutil arriba */
+
+  /* Animación suave */
   animation: animacionLogo 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  /* Efecto de luz/brillo azul alrededor del logo */
-  filter: drop-shadow(0px 10px 25px rgba(0, 0, 0, 0.4));
 }
 
 @keyframes animacionLogo {
   0% {
     opacity: 0;
-    transform: scale(0.6) translateY(30px);
+    transform: scale(0.6) translateY(20px);
   }
   60% {
     opacity: 1;
-    transform: scale(1.05) translateY(-5px);
+    transform: scale(1.05) translateY(-4px); /* Rebote sutil */
   }
   100% {
     opacity: 1;

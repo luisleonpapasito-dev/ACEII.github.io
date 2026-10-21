@@ -1564,6 +1564,7 @@ function pintarPillsCategorias() {
     if (p.categoria) cats[p.categoria] = true;
   });
 
+  // Botón "Todas"
   const todas = document.createElement('div');
   todas.className = 'pill-cat' + (!categoriaFiltro && !modoMasVendidos ? ' activa' : '');
   todas.innerHTML = '<span class="pill-icon">📦</span> Todas';
@@ -1575,6 +1576,7 @@ function pintarPillsCategorias() {
   });
   cont.appendChild(todas);
 
+  // Botón "Más vendidos"
   const masV = document.createElement('div');
   masV.className = 'pill-cat pill-masvendidos' + (modoMasVendidos ? ' activa' : '');
   masV.innerHTML = '<span class="pill-icon">🔥</span> Más vendidos';
@@ -1586,6 +1588,7 @@ function pintarPillsCategorias() {
   });
   cont.appendChild(masV);
 
+  // Botones de categorías
   Object.keys(cats).sort().forEach(function (cat) {
     const d = document.createElement('div');
     d.className = 'pill-cat' + (categoriaFiltro === cat && !modoMasVendidos ? ' activa' : '');
@@ -1632,8 +1635,12 @@ async function pintarRapidos() {
       return a.nombre.localeCompare(b.nombre);
     });
     listaIds = prodsCat.map(p => p.id);
-  } else {
+    } else {
     listaIds = getRapidosDeCategoria('');
+    // PLAN B: Si no has configurado nada en "Todas", mostramos los primeros 8 productos del catálogo
+    if (!listaIds || listaIds.length === 0) {
+      listaIds = productos.slice(0, 8).map(function (p) { return p.id; });
+    }
   }
 
   cont.innerHTML = '';

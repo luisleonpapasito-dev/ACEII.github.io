@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <style>
 html {
-    background: linear-gradient(135deg, #1B4DB1 0%, #2563EB 100%);
+    background: linear-gradient(135deg, F1B4DB1 0%, #2563EB 100%);
 }
 
 body {
@@ -444,11 +444,12 @@ a, button, .card, .card-ventas-ancha {
   height: auto;
   border-radius: 20px;
 
-  /* La animación empieza inmediatamente */
-  opacity: 0;
-  transform: scale(0.75) translateY(12px);
+  /* Empezamos la animación un poco avanzada para que no se vea el "salto" inicial */
+  opacity: 1; 
+  transform: scale(1);
 
-  animation: animacionLogo 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  /* El -0.4s hace que la animación ya lleve 0.4 segundos de recorrido al cargar */
+  animation: animacionLogo 0.8s cubic-bezier(0.16, 1, 0.3, 1) -0.4s forwards;
 
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
@@ -458,12 +459,10 @@ a, button, .card, .card-ventas-ancha {
     opacity: 0;
     transform: scale(0.75) translateY(12px);
   }
-
   70% {
     opacity: 1;
     transform: scale(1.04) translateY(-2px);
   }
-
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);

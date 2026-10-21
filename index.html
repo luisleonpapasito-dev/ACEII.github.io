@@ -14,6 +14,25 @@
 <meta name="theme-color" content="#2563EB" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
 <script src="comun.js"></script>
+<link rel="preload" as="image" href="logo_ACEII.png">
+<script>
+(function () {
+  var omitir = false;
+  try {
+    var nav = performance.getEntriesByType('navigation')[0];
+    var tipo = nav ? nav.type : 'navigate';
+    var mismoOrigen = false;
+    try {
+      mismoOrigen = !!document.referrer && new URL(document.referrer).origin === location.origin;
+    } catch (e) {}
+    // Atrás/Adelante, o llegar desde otra página del mismo sistema: sin splash.
+    // F5, Ctrl+R, URL escrita o enlace externo: con splash.
+    omitir = (tipo === 'back_forward') || (tipo === 'navigate' && mismoOrigen);
+  } catch (e) {}
+  if (omitir) document.documentElement.classList.add('sin-splash');
+})();
+</script>
+
 
 <style>
   /* =====================================================
@@ -384,32 +403,57 @@ a, button, .card, .card-ventas-ancha {
 
 /* ===== PANTALLA DE CARGA ANIMADA ===== */
 /* ===== PANTALLA DE CARGA ANIMADA ===== */
-/* ===== PANTALLA DE CARGA ANIMADA ===== */
 #splashScreen {
   position: fixed;
   inset: 0;
   background: linear-gradient(135deg, #1B4DB1 0%, #2563EB 100%);
-  z-index: 99999; /* Por encima de todo */
+  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.3s ease-out; /* Desvanecimiento rápido */
+  overflow: hidden;
+  transition: opacity 0.25s ease-out;
 }
-#splashScreen.oculto {
+#splashScreen.oculto { opacity: 0; pointer-events: none; }
+html.sin-splash #splashScreen { display: none; }
+
+/* Glow suave detrás del logo */
+#splashScreen::before {
+  content: '';
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(147, 197, 253, 0.55) 0%, rgba(147, 197, 253, 0) 70%);
   opacity: 0;
-  pointer-events: none;
+  animation: splashGlow 0.9s ease-out 0.05s forwards;
+  will-change: opacity, transform;
 }
+
 #splashLogo {
+  position: relative;
   width: 160px;
   height: auto;
   border-radius: 20px;
-  /* Animación de solo 0.8 segundos */
-  animation: animacionLogo 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  animation: animacionLogo 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
 }
+
 @keyframes animacionLogo {
-  0%   { opacity: 0; transform: scale(0.7) translateY(15px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
+  0%   { opacity: 0; transform: translateY(14px) scale(0.82); }
+  60%  { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes splashGlow {
+  0%   { opacity: 0; transform: scale(0.6); }
+  50%  { opacity: 1; }
+  100% { opacity: 0.7; transform: scale(1.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #splashLogo, #splashScreen::before { animation-duration: 0.01s; }
 }
 
 </style>
@@ -419,8 +463,19 @@ a, button, .card, .card-ventas-ancha {
 
 <!-- ===== PANTALLA DE CARGA (SPLASH) ===== -->
 <div id="splashScreen">
-  <img src="logo_ACEII.png" alt="ACEII" id="splashLogo">
+  <img src="logo_ACEII.png" alt="ACEII" id="splashLogo" decoding="sync" fetchpriority="high">
 </div>
+<script>
+(function () {
+  var splash = document.getElementById('splashScreen');
+  if (!splash) return;
+  if (document.documentElement.classList.contains('sin-splash')) { splash.remove(); return; }
+  setTimeout(function () {
+    splash.classList.add('oculto');
+    setTimeout(function () { splash.remove(); }, 250);
+  }, 850);
+})();
+</script>
 <!-- ======================================= -->
 
 <header class="app-header">
@@ -1113,21 +1168,7 @@ if ('serviceWorker' in navigator) {
     }
   });
 </script>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var splash = document.getElementById('splashScreen');
-    if (splash) {
-      // Esperamos solo 900 milisegundos (0.9s) para que termine la animación de 0.8s
-      setTimeout(function() {
-        splash.classList.add('oculto');
-        // Eliminamos el elemento del HTML justo después
-        setTimeout(function() {
-          splash.remove();
-        }, 300);
-      }, 900);
-    }
-  });
-</script>
+
 </body>
 </html>
 

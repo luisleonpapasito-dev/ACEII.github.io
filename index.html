@@ -383,31 +383,30 @@ a, button, .card, .card-ventas-ancha {
 
 
 /* ===== PANTALLA DE CARGA ANIMADA ===== */
+/* ===== PANTALLA DE CARGA ANIMADA ===== */
 #splashScreen {
   position: fixed;
   inset: 0;
-  background-color: #1B4DB1; /* Azul de ACEII */
+  background: linear-gradient(135deg, #1B4DB1 0%, #2563EB 100%); /* Fondo degradado hermoso */
   z-index: 99999;
-  display: flex;
+  display: flex; /* Esto se controlará desde JS */
   align-items: center;
   justify-content: center;
-  transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+  transition: opacity 0.4s ease-out; /* Se desvanece más rápido */
 }
 #splashScreen.oculto {
   opacity: 0;
-  visibility: hidden;
 }
 #splashLogo {
-  width: 180px;
+  width: 160px; /* Un poquito más pequeño */
   height: auto;
   border-radius: 20px;
-  animation: animacionLogo 2s ease-in-out forwards;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: animacionLogo 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; /* Animación más rápida y fluida (1.2s) */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 @keyframes animacionLogo {
-  0%   { opacity: 0; transform: scale(0.5) translateY(20px); }
-  50%  { opacity: 1; transform: scale(1.1) translateY(0); }
-  100% { opacity: 1; transform: scale(1); }
+  0%   { opacity: 0; transform: scale(0.7) translateY(15px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 </style>
@@ -415,8 +414,8 @@ a, button, .card, .card-ventas-ancha {
 <body>
 
 <!-- ===== PANTALLA DE CARGA (SPLASH) ===== -->
-<div id="splashScreen">
-  <img src="logo_ACEII.png" alt="ACEII Cargando..." id="splashLogo">
+<div id="splashScreen" style="display: none;">
+  <img src="logo_ACEII.png" alt="ACEII" id="splashLogo">
 </div>
 <!-- ======================================= -->
 
@@ -1111,19 +1110,30 @@ if ('serviceWorker' in navigator) {
   });
 </script>
 <script>
-  // Quitar la pantalla de carga a los 2 segundos
+  // Esperamos a que la app cargue por completo
   window.addEventListener('load', function() {
-    setTimeout(function() {
-      var splash = document.getElementById('splashScreen');
-      if (splash) {
+    var splash = document.getElementById('splashScreen');
+    var logo = document.getElementById('splashLogo');
+    
+    if (splash && logo) {
+      // 1. Lo mostramos justo cuando la app está lista (tapando el logo feo de Android)
+      splash.style.display = 'flex';
+      
+      // 2. La animación del logo dura 1.2 segundos
+      // 3. Apenas termina la animación, quitamos la pantalla de carga
+      setTimeout(function() {
         splash.classList.add('oculto');
+        
+        // Lo eliminamos del HTML después de que termine la transición (0.4s)
         setTimeout(function() {
           splash.remove();
-        }, 600); // Se elimina del HTML después de desvanecerse
-      }
-    }, 2000); // 2000 ms = 2 segundos
+        }, 400); 
+        
+      }, 1300); // 1300 ms (1.3 segundos) para darle un micro-respiro
+    }
   });
 </script>
 </body>
 </html>
+
 

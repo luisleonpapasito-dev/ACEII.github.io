@@ -193,7 +193,14 @@ html.tema-oscuro #bannerOtroTurno .aviso-titulo { color: #FCD34D; }
     box-shadow: 0 4px 10px color-mix(in srgb, var(--g2) 25%, transparent);
     flex-shrink: 0; margin-bottom: 4px;
   }
-  .panel-menu .card .card-icono svg { width: 24px; height: 24px; fill: #fff; display: block; }
+  .panel-menu .card .card-icono {
+  background: color-mix(in srgb, var(--g1) 14%, #fff) !important;
+  box-shadow: none !important;
+}
+html.tema-oscuro .panel-menu .card .card-icono {
+  background: color-mix(in srgb, var(--g1) 22%, #1b2336) !important;
+}
+.panel-menu .card .card-icono svg { width: 34px; height: 34px; display: block; }
 
   .panel-menu .card .card-titulo { font-size: 14px; font-weight: 800; line-height: 1.2; color: var(--ac-texto); margin: 0; }
   .panel-menu .card .card-desc { font-size: 11.5px; font-weight: 500; line-height: 1.35; color: var(--ac-texto-suave); margin: 0; }
@@ -266,7 +273,7 @@ html.tema-oscuro #bannerOtroTurno .aviso-titulo { color: #FCD34D; }
   .grid-operacion-resto { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
   .grid-operacion-resto .card { padding: 14px 12px; min-height: 132px; border-radius: 18px; }
   .grid-operacion-resto .card .card-icono { width: 40px; height: 40px; border-radius: 10px; }
-  .grid-operacion-resto .card .card-icono svg { width: 20px; height: 20px; }
+  .grid-operacion-resto .card .card-icono svg { width: 24px; height: 24px; }
   .grid-operacion-resto .card .card-titulo { font-size: 13px; margin-top: 4px; }
   .grid-operacion-resto .card .card-desc { font-size: 10.5px; }
   .grid-operacion-resto .card .chev { width: 20px; height: 20px; top: 12px; right: 12px; padding: 4px; }

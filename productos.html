@@ -963,26 +963,49 @@ if ('serviceWorker' in navigator) {
 }
 
 // ===== AUTOCOMPLETAR IMÁGENES CON IA =====
-$('btnAutoImagenes').addEventListener('click', async function () {
+ // ===== AUTOCOMPLETAR IMÁGENES CON IA (CON MEMORIA RESISTENTE) =====
+const COLA_IA_KEY = 'caf_ia_cola_imagenes';
+let procesoIAActivo = false; // Variable global para controlar el ciclo
+
+// Esta función se encarga de pintar el botón según el estado actual
+function actualizarBotonIA() {
   const btn = $('btnAutoImagenes');
+  if (!btn) return;
   
-  let sinImagen = productos.filter(p => !p.imagen_url && p.activo !== 'No');
-  sinImagen = sinImagen.slice(0, 10); 
+  let cola = [];
+  try { cola = JSON.parse(localStorage.getItem(COLA_IA_KEY) || '[]'); } catch(e) {}
   
-  if (sinImagen.length === 0) {
-    mostrar('Todos los productos activos ya tienen imagen ✨', 'aviso');
-    return;
+  if (procesoIAActivo) {
+    btn.disabled = true;
+    const faltan = cola.length;
+    btn.textContent = `🪄 Buscando imágenes... (Quedan ${faltan})`;
+    btn.style.background = 'linear-gradient(135deg, #6B7280 0%, #4B5563 100%)'; // Gris
+  } else if (cola.length > 0) {
+    btn.disabled = false;
+    btn.textContent = `⏯️ Continuar búsqueda (Quedan ${cola.length})`;
+    btn.style.background = 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)'; // Naranja
+  } else {
+    btn.disabled = false;
+    btn.textContent = '🪄 Autocompletar imágenes con IA';
+    btn.style.background = 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)'; // Naranja
   }
+}
 
-  if (!confirm(`Se buscarán imágenes para ${sinImagen.length} productos sin foto.\n\nEsto puede tardar unos minutos y consumirá tus créditos de SerpApi. ¿Continuar?`)) return;
+// Función que procesa la cola (la hacemos async para poder pausarla)
+async function procesarColaIA() {
+  if (procesoIAActivo) return;
+  procesoIAActivo = true;
+  actualizarBotonIA();
 
-  btn.disabled = true;
+  let cola = [];
+  try { cola = JSON.parse(localStorage.getItem(COLA_IA_KEY) || '[]'); } catch(e) {}
+  
   let exitos = 0;
   let errores = 0;
 
-  for (let i = 0; i < sinImagen.length; i++) {
-    const p = sinImagen[i];
-    btn.textContent = `Buscando ${i + 1}/${sinImagen.length}...`;
+  // Mientras haya productos en la cola
+  while (cola.length > 0) {
+    const p = cola[0]; // Tomamos el primero de la fila
     
     try {
       const r = await post({ accion: 'autocompletar_imagenes', id: p.id, nombre: p.nombre });
@@ -990,23 +1013,85 @@ $('btnAutoImagenes').addEventListener('click', async function () {
       if (r.ok) {
         exitos++;
         mostrar(`✅ Imagen añadida: ${p.nombre}`, 'ok');
+      } else if (r.cuota || r.fatal) {
+        // Si se acaba la cuota o falla la API, detenemos todo
+        procesoIAActivo = false;
+        actualizarBotonIA();
+        mostrar('⚠️ Se detuvo por cuota o error fatal: ' + r.error, 'error');
+        return;
       } else {
         errores++;
-        mostrar(`⚠️ ${p.nombre}: ${r.error}`, 'error');
       }
     } catch (e) {
       errores++;
     }
+
+    // Quitamos el producto de la cola y lo guardamos en el navegador
+    cola.shift();
+    localStorage.setItem(COLA_IA_KEY, JSON.stringify(cola));
     
+    // Actualizamos el botón para que el usuario vea el progreso
+    actualizarBotonIA();
+
+    // Pausa obligatoria de 1.5s para no saturar la API
     await new Promise(r => setTimeout(r, 1500));
   }
 
-  btn.disabled = false;
-  btn.textContent = '🪄 Autocompletar imágenes con IA';
-  mostrar(`Proceso terminado. Éxitos: ${exitos}, Errores: ${errores}`, 'ok');
+  // Cuando la cola queda vacía
+  procesoIAActivo = false;
+  localStorage.removeItem(COLA_IA_KEY); // Limpiamos la memoria
+  actualizarBotonIA();
+  mostrar(`✨ Proceso terminado. Éxitos: ${exitos}, Errores: ${errores}`, 'ok');
   
+  // Recargamos la lista para ver todas las fotos nuevas
   await cargarTodo();
+}
+
+$('btnAutoImagenes').addEventListener('click', async function () {
+  let cola = [];
+  try { cola = JSON.parse(localStorage.getItem(COLA_IA_KEY) || '[]'); } catch(e) {}
+  
+  // Si no hay cola guardada, creamos una nueva
+  if (cola.length === 0) {
+    let sinImagen = productos.filter(p => !p.imagen_url && p.activo !== 'No');
+    sinImagen = sinImagen.slice(0, 20); // Pon el límite que quieras aquí
+    
+    if (sinImagen.length === 0) {
+      mostrar('Todos los productos activos ya tienen imagen ✨', 'aviso');
+      return;
+    }
+
+    if (!confirm(`Se buscarán imágenes para ${sinImagen.length} productos sin foto.\n\nEsto puede tardar unos minutos y consumirá tus créditos de SerpApi. ¿Continuar?`)) return;
+    
+    // Llenamos la cola con los productos
+    cola = sinImagen.map(p => ({ id: p.id, nombre: p.nombre }));
+    localStorage.setItem(COLA_IA_KEY, JSON.stringify(cola));
+  } else {
+    // Si ya había una cola guardada, preguntamos si desea continuar
+    if (!confirm(`Hay una búsqueda en pausa con ${cola.length} productos pendientes.\n\n¿Deseas continuar desde donde se quedó?`)) return;
+  }
+
+  // Arrancamos el proceso (o continuamos)
+  procesarColaIA();
 });
+
+// Al cargar la página, si hay una cola pendiente, mostramos el botón para continuar
+document.addEventListener('DOMContentLoaded', function() {
+  actualizarBotonIA();
+  
+  // Si había una cola pendiente y la app se cerró de golpe, preguntamos si quiere reanudar
+  let cola = [];
+  try { cola = JSON.parse(localStorage.getItem(COLA_IA_KEY) || '[]'); } catch(e) {}
+  if (cola.length > 0 && !procesoIAActivo) {
+    // Pequeño retraso para que carguen los productos primero
+    setTimeout(() => {
+      if (confirm(`Se encontró una búsqueda de imágenes inconclusa (${cola.length} pendientes).\n\n¿Deseas reanudarla ahora?`)) {
+        procesarColaIA();
+      }
+    }, 1500);
+  }
+}); 
+  
 </script>
 </body>
 </html>

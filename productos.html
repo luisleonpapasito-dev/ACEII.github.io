@@ -278,28 +278,47 @@
   
   <!-- Botón Autocompletar IA (cuadrito compacto al lado del reload) -->
   <button id="btnAutoImagenes" style="flex:0 0 auto; display:flex; align-items:center; justify-content:center; padding: 0 16px; background: var(--azul-suave); border: none; border-radius: 8px;" title="Autocompletar imágenes con IA">
+    <!-- Botón Autocompletar IA -->
+  <button id="btnAutoImagenes" style="flex:0 0 auto; display:flex; align-items:center; justify-content:center; padding: 0 16px; background: var(--azul-suave); border: none; border-radius: 8px;" title="Autocompletar imágenes con IA">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24">
-      <g transform="translate(110, 400) rotate(-45)">
-        <path d="M 0,-14 A 14 14 0 0 0 -14,0 L 250,0 L 250,-14 Z" fill="#5D6D7E" />
-        <path d="M -14,0 A 14 14 0 0 0 0,14 L 250,14 L 250,0 Z" fill="#34495E" />
-        <rect x="250" y="-14" width="25" height="14" fill="#ffce33" />
-        <rect x="250" y="0" width="25" height="14" fill="#f09d00" />
+      <rect width="512" height="512" fill="none" />
+      <defs>
+        <clipPath id="imageBounds">
+          <rect x="100" y="50" width="280" height="280" rx="35" />
+        </clipPath>
+      </defs>
+      <rect x="115" y="50" width="280" height="280" rx="35" fill="#32ade8" />
+      <rect x="100" y="50" width="280" height="280" rx="35" fill="#3ebaf6" />
+      <g clip-path="url(#imageBounds)">
+        <circle cx="190" cy="130" r="35" fill="#fbe161" />
+        <polygon points="260,170 450,330 110,330" fill="#22c875" />
+        <polygon points="170,225 320,350 20,350" fill="#33e689" />
       </g>
-      <g transform="translate(296, 214) rotate(18)">
-        <use href="#starShape" fill="#ffda29" stroke="#ffda29" stroke-width="8" stroke-linejoin="round" />
-        <use href="#starShape" fill="#f09d00" stroke="#f09d00" stroke-width="8" stroke-linejoin="round" clip-path="url(#rightHalf)" />
+      <circle cx="370" cy="350" r="105" fill="#f4f5f6" />
+      <g fill="none" stroke="#777986" stroke-width="16" stroke-linecap="round">
+        <path d="M 305 305 A 75 75 0 0 1 435 315" />
+        <path d="M 435 395 A 75 75 0 0 1 305 385" />
       </g>
-      <g transform="translate(240, 110)">
-        <line x1="0" y1="-12" x2="0" y2="12" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
-        <line x1="-12" y1="0" x2="12" y2="0" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
+      <g fill="#777986">
+        <polygon points="415,285 455,305 425,340" />
+        <polygon points="325,415 285,395 315,360" />
       </g>
-      <g transform="translate(295, 305) scale(0.7)">
-        <line x1="0" y1="-12" x2="0" y2="12" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
-        <line x1="-12" y1="0" x2="12" y2="0" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
-      </g>
-      <g transform="translate(390, 230) rotate(45) scale(0.8)">
-        <line x1="0" y1="-12" x2="0" y2="12" stroke="#f2a30f" stroke-width="7" stroke-linecap="round" />
-        <line x1="-12" y1="0" x2="12" y2="0" stroke="#f2a30f" stroke-width="7" stroke-linecap="round" />
+      <g>
+        <rect x="334" y="295" width="12" height="20" rx="5" fill="#789be8" />
+        <rect x="364" y="295" width="12" height="20" rx="5" fill="#789be8" />
+        <rect x="394" y="295" width="12" height="20" rx="5" fill="#789be8" />
+        <rect x="334" y="385" width="12" height="20" rx="5" fill="#789be8" />
+        <rect x="364" y="385" width="12" height="20" rx="5" fill="#789be8" />
+        <rect x="394" y="385" width="12" height="20" rx="5" fill="#789be8" />
+        <rect x="315" y="314" width="20" height="12" rx="5" fill="#789be8" />
+        <rect x="315" y="344" width="20" height="12" rx="5" fill="#789be8" />
+        <rect x="315" y="374" width="20" height="12" rx="5" fill="#789be8" />
+        <rect x="405" y="314" width="20" height="12" rx="5" fill="#789be8" />
+        <rect x="405" y="344" width="20" height="12" rx="5" fill="#789be8" />
+        <rect x="405" y="374" width="20" height="12" rx="5" fill="#789be8" />
+        <rect x="330" y="315" width="80" height="80" rx="8" fill="#1ebd6a" />
+        <rect x="325" y="310" width="80" height="80" rx="8" fill="#2ee486" />
+        <rect x="343" y="328" width="44" height="44" rx="6" fill="#9df0c8" />
       </g>
     </svg>
   </button>
@@ -1024,29 +1043,46 @@ function actualizarBotonIA() {
   let cola = [];
   try { cola = JSON.parse(localStorage.getItem(COLA_IA_KEY) || '[]'); } catch(e) {}
   
-  const svgVarita = `
+    const svgVarita = `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24">
-      <g transform="translate(110, 400) rotate(-45)">
-        <path d="M 0,-14 A 14 14 0 0 0 -14,0 L 250,0 L 250,-14 Z" fill="#5D6D7E" />
-        <path d="M -14,0 A 14 14 0 0 0 0,14 L 250,14 L 250,0 Z" fill="#34495E" />
-        <rect x="250" y="-14" width="25" height="14" fill="#ffce33" />
-        <rect x="250" y="0" width="25" height="14" fill="#f09d00" />
+      <rect width="512" height="512" fill="none" />
+      <defs>
+        <clipPath id="imageBounds">
+          <rect x="100" y="50" width="280" height="280" rx="35" />
+        </clipPath>
+      </defs>
+      <rect x="115" y="50" width="280" height="280" rx="35" fill="#32ade8" />
+      <rect x="100" y="50" width="280" height="280" rx="35" fill="#3ebaf6" />
+      <g clip-path="url(#imageBounds)">
+        <circle cx="190" cy="130" r="35" fill="#fbe161" />
+        <polygon points="260,170 450,330 110,330" fill="#22c875" />
+        <polygon points="170,225 320,350 20,350" fill="#33e689" />
       </g>
-      <g transform="translate(296, 214) rotate(18)">
-        <use href="#starShape" fill="#ffda29" stroke="#ffda29" stroke-width="8" stroke-linejoin="round" />
-        <use href="#starShape" fill="#f09d00" stroke="#f09d00" stroke-width="8" stroke-linejoin="round" clip-path="url(#rightHalf)" />
+      <circle cx="370" cy="350" r="105" fill="#f4f5f6" />
+      <g fill="none" stroke="#777986" stroke-width="16" stroke-linecap="round">
+        <path d="M 305 305 A 75 75 0 0 1 435 315" />
+        <path d="M 435 395 A 75 75 0 0 1 305 385" />
       </g>
-      <g transform="translate(240, 110)">
-        <line x1="0" y1="-12" x2="0" y2="12" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
-        <line x1="-12" y1="0" x2="12" y2="0" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
+      <g fill="#777986">
+        <polygon points="415,285 455,305 425,340" />
+        <polygon points="325,415 285,395 315,360" />
       </g>
-      <g transform="translate(295, 305) scale(0.7)">
-        <line x1="0" y1="-12" x2="0" y2="12" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
-        <line x1="-12" y1="0" x2="12" y2="0" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
-      </g>
-      <g transform="translate(390, 230) rotate(45) scale(0.8)">
-        <line x1="0" y1="-12" x2="0" y2="12" stroke="#f2a30f" stroke-width="7" stroke-linecap="round" />
-        <line x1="-12" y1="0" x2="12" y2="0" stroke="#f2a30f" stroke-width="7" stroke-linecap="round" />
+      <g>
+        <rect x="334" y="295" width="12" height="20" rx="5" fill="#789be8" />
+        <rect x="364" y="295" width="12" height="20" rx="5" fill="#789be8" />
+        <rect x="394" y="295" width="12" height="20" rx="5" fill="#789be8" />
+        <rect x="334" y="385" width="12" height="20" rx="5" fill="#789be8" />
+        <rect x="364" y="385" width="12" height="20" rx="5" fill="#789be8" />
+        <rect x="394" y="385" width="12" height="20" rx="5" fill="#789be8" />
+        <rect x="315" y="314" width="20" height="12" rx="5" fill="#789be8" />
+        <rect x="315" y="344" width="20" height="12" rx="5" fill="#789be8" />
+        <rect x="315" y="374" width="20" height="12" rx="5" fill="#789be8" />
+        <rect x="405" y="314" width="20" height="12" rx="5" fill="#789be8" />
+        <rect x="405" y="344" width="20" height="12" rx="5" fill="#789be8" />
+        <rect x="405" y="374" width="20" height="12" rx="5" fill="#789be8" />
+        <rect x="330" y="315" width="80" height="80" rx="8" fill="#1ebd6a" />
+        <rect x="325" y="310" width="80" height="80" rx="8" fill="#2ee486" />
+        <rect x="343" y="328" width="44" height="44" rx="6" fill="#9df0c8" />
       </g>
     </svg>
   `;

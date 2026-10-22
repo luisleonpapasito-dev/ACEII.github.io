@@ -278,8 +278,9 @@
   
   <!-- Botón Autocompletar IA (cuadrito compacto al lado del reload) -->
   <!-- Botón Autocompletar IA -->
+    <!-- Botón Autocompletar IA -->
   <button id="btnAutoImagenes" style="flex:0 0 auto; display:flex; align-items:center; justify-content:center; padding: 0 14px; background: var(--azul-suave); border: none; border-radius: 8px;" title="Autocompletar imágenes con IA">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="60 70 370 370" width="32" height="32">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="30 50 360 360" width="32" height="32">
       <rect width="512" height="512" fill="none" />
       <rect x="250" y="200" width="95" height="240" fill="#ebe8f2" />
       <path d="M 345 200 L 395 200 Q 440 200 440 245 L 440 440 L 345 440 Z" fill="#dbd9e7" />
@@ -1028,8 +1029,8 @@ function actualizarBotonIA() {
   let cola = [];
   try { cola = JSON.parse(localStorage.getItem(COLA_IA_KEY) || '[]'); } catch(e) {}
   
-  const svgVarita = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="60 70 370 370" width="32" height="32"><rect width="512" height="512" fill="none" /><rect x="250" y="200" width="95" height="240" fill="#ebe8f2" /><path d="M 345 200 L 395 200 Q 440 200 440 245 L 440 440 L 345 440 Z" fill="#dbd9e7" /><rect x="280" y="240" width="65" height="160" fill="#363c61" /><rect x="345" y="240" width="65" height="160" fill="#2b2f4c" /><rect x="375" y="275" width="15" height="15" fill="#ffdf37" /><polygon points="280,400 280,345 315,310 380,400" fill="#3ce2cc" /><polygon points="315,400 365,335 410,380 410,400" fill="#00bbd5" /><g transform="translate(150, 280) rotate(-45)"><rect x="0" y="0" width="15" height="17.5" fill="#2e3559" /><rect x="0" y="17.5" width="15" height="17.5" fill="#222642" /><rect x="15" y="0" width="110" height="17.5" fill="#363d60" /><rect x="15" y="17.5" width="110" height="17.5" fill="#292e4a" /><rect x="125" y="0" width="40" height="17.5" fill="#ffffff" /><rect x="125" y="17.5" width="40" height="17.5" fill="#eceaf4" /></g><g><rect x="365" y="105" width="12" height="12" fill="#ffffff" /><rect x="365" y="93" width="12" height="12" fill="#ffdf37" /><rect x="365" y="117" width="12" height="12" fill="#ffdf37" /><rect x="353" y="105" width="12" height="12" fill="#ffdf37" /><rect x="377" y="105" width="12" height="12" fill="#ffdf37" /></g><rect x="330" y="155" width="12" height="12" fill="#ffdf37" /></svg>
+    const svgVarita = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="30 50 360 360" width="32" height="32"><rect width="512" height="512" fill="none" /><rect x="250" y="200" width="95" height="240" fill="#ebe8f2" /><path d="M 345 200 L 395 200 Q 440 200 440 245 L 440 440 L 345 440 Z" fill="#dbd9e7" /><rect x="280" y="240" width="65" height="160" fill="#363c61" /><rect x="345" y="240" width="65" height="160" fill="#2b2f4c" /><rect x="375" y="275" width="15" height="15" fill="#ffdf37" /><polygon points="280,400 280,345 315,310 380,400" fill="#3ce2cc" /><polygon points="315,400 365,335 410,380 410,400" fill="#00bbd5" /><g transform="translate(150, 280) rotate(-45)"><rect x="0" y="0" width="15" height="17.5" fill="#2e3559" /><rect x="0" y="17.5" width="15" height="17.5" fill="#222642" /><rect x="15" y="0" width="110" height="17.5" fill="#363d60" /><rect x="15" y="17.5" width="110" height="17.5" fill="#292e4a" /><rect x="125" y="0" width="40" height="17.5" fill="#ffffff" /><rect x="125" y="17.5" width="40" height="17.5" fill="#eceaf4" /></g><g><rect x="365" y="105" width="12" height="12" fill="#ffffff" /><rect x="365" y="93" width="12" height="12" fill="#ffdf37" /><rect x="365" y="117" width="12" height="12" fill="#ffdf37" /><rect x="353" y="105" width="12" height="12" fill="#ffdf37" /><rect x="377" y="105" width="12" height="12" fill="#ffdf37" /></g><rect x="330" y="155" width="12" height="12" fill="#ffdf37" /></svg>
   `;
 
   if (procesoIAActivo) {

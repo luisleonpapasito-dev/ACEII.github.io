@@ -390,7 +390,6 @@ async function cargarTodo() {
     mostrar('Error al cargar: ' + err.message, 'error');
   }
 }
-
 function llenarSelectsForm() {
   const selCat = $('fCategoria');
   selCat.innerHTML = '<option value="">Elige la categoría...</option>';
@@ -700,6 +699,7 @@ $('btnGuardar').addEventListener('click', async function () {
   if (!nombre) { mostrar('Escribe el nombre del producto', 'error'); return; }
   if (!modoReg) { mostrar('Elige el modo de registro', 'error'); return; }
   if (isNaN(precio) || precio < 0) { mostrar('Precio inválido', 'error'); return; }
+  if (costo > precio) { mostrar('⚠️ El costo no puede ser mayor al precio de venta', 'error'); return; }
 
   const u = getUsuarioTurno();
   if (!u) { mostrar('No hay turno de usuario', 'error'); return; }
@@ -709,47 +709,55 @@ $('btnGuardar').addEventListener('click', async function () {
 
   try {
     let r;
+    let nuevoId = '';
     if (modoForm === 'crear') {
       const rid = await jsonp({ accion: 'proximo_id', categoria: cat }, 15000);
       if (!rid || !rid.ok) throw new Error('No se pudo generar el ID');
+      nuevoId = rid.id;
       r = await post({
         accion: 'crear_producto',
         id_usuario: u.id,
-        id_producto: rid.id,
-        nombre: nombre,
-        categoria: cat,
-        modo: modoReg,
-        proveedor: proveedor,
-        precio: precio,
-        costo: costo,
-        upp: upp,
-        codigo: codigo,
-        nota: nota,
-        imagen_url: imagenUrlActual
+        id_producto: nuevoId,
+        nombre: nombre, categoria: cat, modo: modoReg, proveedor: proveedor,
+        precio: precio, costo: costo, upp: upp, codigo: codigo, nota: nota, imagen_url: imagenUrlActual
       });
     } else {
+      nuevoId = productoEditando.id;
       r = await post({
         accion: 'editar_producto',
         id_usuario: u.id,
-        id_producto: productoEditando.id,
-        nombre: nombre,
-        categoria: cat,
-        modo: modoReg,
-        proveedor: proveedor,
-        precio: precio,
-        costo: costo,
-        upp: upp,
-        codigo: codigo,
-        nota: nota,
-        imagen_url: imagenUrlActual
+        id_producto: nuevoId,
+        nombre: nombre, categoria: cat, modo: modoReg, proveedor: proveedor,
+        precio: precio, costo: costo, upp: upp, codigo: codigo, nota: nota, imagen_url: imagenUrlActual
       });
     }
 
     if (r.ok) {
-      mostrar(modoForm === 'crear' ? 'Producto creado ✓ ' + r.id_producto : 'Producto actualizado ✓', 'ok');
-      if (navigator.vibrate) navigator.vibrate(200);
+      // === ACTUALIZACIÓN OPTIMISTA EN EL FRONTEND ===
+      const productoActualizado = {
+        id: nuevoId, nombre, categoria: cat, modo: modoReg,
+        codigo, proveedor, precio, costo, upp, nota,
+        imagen_url: imagenUrlActual,
+        activo: modoForm === 'crear' ? 'Sí' : productoEditando.activo,
+        stock: modoForm === 'crear' ? 0 : productoEditando.stock
+      };
+
+      if (modoForm === 'crear') {
+        productos.push(productoActualizado);
+      } else {
+        const idx = productos.findIndex(x => x.id === nuevoId);
+        if (idx >= 0) productos[idx] = productoActualizado;
+      }
+
+      pintarLista();
+      mostrar(modoForm === 'crear' ? 'Producto creado ✓ ' + nuevoId : 'Producto actualizado ✓', 'ok');
       $('formPanel').style.display = 'none';
-      await cargarTodo();
+      
+      if (navigator.vibrate) navigator.vibrate(200);
+      
+      // En segundo plano actualizamos desde el servidor para asegurar consistencia
+      setTimeout(cargarTodo, 500);
+      
     } else if (r.error === 'Token inválido') {
       borrarToken(); location.href = 'index.html';
     } else {
@@ -762,40 +770,7 @@ $('btnGuardar').addEventListener('click', async function () {
   }
 });
 
-$('btnCancelarForm').addEventListener('click', function () {
-  $('formPanel').style.display = 'none';
-  productoEditando = null;
-  imagenUrlActual = '';
-  mostrar('Cancelado', 'aviso');
-});
 
-$('btnEliminar').addEventListener('click', async function () {
-  if (!productoEditando) return;
-  if (!confirm('¿Eliminar el producto "' + productoEditando.nombre + '"?\n\nSolo se puede eliminar si nunca ha tenido movimientos. Si ya tiene ventas, recepciones o ajustes, mejor desactívalo.')) return;
-
-  const u = getUsuarioTurno();
-  $('btnEliminar').disabled = true;
-  mostrar('Eliminando...', 'aviso');
-  try {
-    const r = await post({
-      accion: 'eliminar_producto',
-      id_usuario: u.id,
-      id_producto: productoEditando.id
-    });
-    if (r.ok) {
-      mostrar('Producto eliminado ✓', 'ok');
-      $('formPanel').style.display = 'none';
-      productoEditando = null;
-      await cargarTodo();
-    } else {
-      mostrar(r.error || 'Error desconocido', 'error');
-    }
-  } catch (err) {
-    mostrar('Error: ' + err.message, 'error');
-  } finally {
-    $('btnEliminar').disabled = false;
-  }
-});
 
 $('btnToggleActivo').addEventListener('click', async function () {
   if (!productoEditando) return;
@@ -803,6 +778,15 @@ $('btnToggleActivo').addEventListener('click', async function () {
   if (!confirm('¿' + (nuevoEstado === 'No' ? 'Desactivar' : 'Reactivar') + ' "' + productoEditando.nombre + '"?')) return;
   
   const u = getUsuarioTurno();
+  const estadoAnterior = productoEditando.activo;
+  
+  // Actualización visual inmediata
+  productoEditando.activo = nuevoEstado;
+  const idx = productos.findIndex(x => x.id === productoEditando.id);
+  if (idx >= 0) productos[idx].activo = nuevoEstado;
+  pintarLista();
+  abrirEditar(productoEditando);
+  
   try {
     const r = await post({
       accion: 'activar_producto',
@@ -812,15 +796,22 @@ $('btnToggleActivo').addEventListener('click', async function () {
     });
     if (r.ok) {
       mostrar('Producto ' + (nuevoEstado === 'No' ? 'desactivado' : 'reactivado') + ' ✓', 'ok');
-      await cargarTodo();
-      const actualizado = productos.find(x => x.id === productoEditando.id);
-      if (actualizado) abrirEditar(actualizado);
+    } else {
+      // Si el servidor falla, deshacemos el cambio
+      productoEditando.activo = estadoAnterior;
+      if (idx >= 0) productos[idx].activo = estadoAnterior;
+      pintarLista();
+      abrirEditar(productoEditando);
+      mostrar('Error al guardar: ' + r.error, 'error');
     }
   } catch (err) {
-    mostrar('Error: ' + err.message, 'error');
+    productoEditando.activo = estadoAnterior;
+    if (idx >= 0) productos[idx].activo = estadoAnterior;
+    pintarLista();
+    abrirEditar(productoEditando);
+    mostrar('Error de red: ' + err.message, 'error');
   }
 });
-
 // =====================================================================
 // ESCÁNER DE CÓDIGO DE BARRAS
 // =====================================================================

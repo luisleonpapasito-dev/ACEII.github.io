@@ -10,6 +10,23 @@ html {
 body {
     background: transparent;
 }
+
+/* Baldosas un poco más grandes + profundidad */
+.panel-menu .card .card-icono,
+.grid-operacion-resto .card .card-icono {
+  width: 52px !important; height: 52px !important; border-radius: 15px !important;
+}
+.panel-menu .card .card-icono svg {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.22));
+  overflow: visible;
+}
+
+/* Caja un poco más grande que el resto */
+.panel-menu .card .ico-caja svg { width: 48px !important; height: 48px !important; }
+
+/* Ventas (tarjeta azul ancha) */
+.panel-menu .card-ventas-ancha .card-icono { width: 60px !important; height: 60px !important; }
+.panel-menu .card-ventas-ancha .card-icono svg { width: 56px !important; height: 56px !important; }
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ACEII · Cafetería</title>

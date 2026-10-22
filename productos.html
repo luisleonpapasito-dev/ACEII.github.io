@@ -323,8 +323,12 @@
       <button class="main" id="btnGuardar" style="flex:1;">Guardar</button>
       <button id="btnCancelarForm" style="flex:0 0 auto;">Cancelar</button>
     </div>
-    <div id="btnEliminarBox" style="display:none; margin-top:8px;">
-      <button id="btnEliminar" style="width:100%; background:#FFE5E5; color:var(--alerta); font-weight:700;">🗑️ Eliminar producto</button>
+    
+    <div id="btnAccionesBox" style="display:none; margin-top:12px; gap:8px; flex-direction:column;">
+      <button id="btnToggleActivo" style="width:100%; font-weight:700;"></button>
+      <div id="btnEliminarBox" style="display:none;">
+        <button id="btnEliminar" style="width:100%; background:#FFE5E5; color:var(--alerta); font-weight:700;">🗑️ Eliminar producto</button>
+      </div>
     </div>
   </div>
 </div>
@@ -347,6 +351,17 @@ let modos = [];
 let modoForm = 'crear';
 let productoEditando = null;
 let imagenUrlActual = '';
+
+// Seguridad: evitar inyección de HTML en la lista
+function esc(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 (async function () {
   await cargarTodo();
@@ -399,7 +414,6 @@ function llenarSelectsForm() {
   });
 }
 
-// Placeholder con la inicial
 function colorPorCategoria(cat) {
   const colores = {
     'Bebidas': '#E3ECFF',
@@ -441,14 +455,13 @@ function pintarLista() {
     const d = document.createElement('div');
     d.className = 'prod-item' + (p.activo === 'No' ? ' inactivo' : '');
 
-    // Miniatura
     let thumbHTML = '';
     if (p.imagen_url) {
-      thumbHTML = '<img src="' + p.imagen_url + '" alt="" loading="lazy">';
+      thumbHTML = '<img src="' + esc(p.imagen_url) + '" alt="" loading="lazy">';
     } else {
       const inicial = p.nombre ? p.nombre.charAt(0).toUpperCase() : '?';
       const color = colorPorCategoria(p.categoria);
-      thumbHTML = '<span style="color:var(--azul);">' + inicial + '</span>';
+      thumbHTML = '<span style="color:var(--azul);">' + esc(inicial) + '</span>';
       d.style.setProperty('--thumb-bg', color);
     }
 
@@ -456,17 +469,17 @@ function pintarLista() {
       '<div class="prod-thumb" style="background:' + (p.imagen_url ? '#fff' : colorPorCategoria(p.categoria)) + ';">' + thumbHTML + '</div>' +
       '<div class="prod-info">' +
         '<div class="fila">' +
-          '<span class="nombre">' + p.nombre + '</span>' +
+          '<span class="nombre">' + esc(p.nombre) + '</span>' +
           '<span class="precio">$' + p.precio.toLocaleString('es-CO') + '</span>' +
         '</div>' +
         '<div class="meta">' +
-          p.id + ' · ' + p.categoria +
-          ' <span class="badge badge-modo">' + p.modo + '</span>' +
+          esc(p.id) + ' · ' + esc(p.categoria) +
+          ' <span class="badge badge-modo">' + esc(p.modo) + '</span>' +
           ' <span class="badge ' + (p.activo === 'No' ? 'badge-inactivo' : 'badge-activo') + '">' +
             (p.activo === 'No' ? 'INACTIVO' : 'Activo') +
           '</span>' +
         '</div>' +
-        '<div class="meta">' + (p.proveedor ? p.proveedor : '(sin proveedor)') + (p.codigo ? ' · ' + p.codigo : '') + '</div>' +
+        '<div class="meta">' + (p.proveedor ? esc(p.proveedor) : '(sin proveedor)') + (p.codigo ? ' · ' + esc(p.codigo) : '') + '</div>' +
       '</div>';
 
     d.addEventListener('click', function () { abrirEditar(p); });
@@ -478,13 +491,11 @@ $('buscar').addEventListener('input', pintarLista);
 $('soloActivos').addEventListener('change', pintarLista);
 $('btnRecargar').addEventListener('click', cargarTodo);
 
-// ---------- Formulario: Nuevo producto ----------
 $('btnNuevo').addEventListener('click', async function () {
   modoForm = 'crear';
   productoEditando = null;
   imagenUrlActual = '';
 
-  // Recargar categorías por si se crearon nuevas en otra pantalla
   try {
     const rCat = await jsonp({ accion: 'categorias' }, 15000);
     if (rCat && rCat.ok) {
@@ -504,14 +515,13 @@ $('btnNuevo').addEventListener('click', async function () {
   $('fCodigo').value = '';
   $('fNota').value = '';
   $('avisoId').style.display = 'none';
-  $('btnEliminarBox').style.display = 'none';
+  $('btnAccionesBox').style.display = 'none';
   pintarImagen('');
   $('formPanel').style.display = 'block';
   $('formPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
   mostrar('Completa los datos del nuevo producto');
 });
 
-// ---------- Formulario: Editar ----------
 function abrirEditar(p) {
   modoForm = 'editar';
   productoEditando = p;
@@ -528,14 +538,27 @@ function abrirEditar(p) {
   $('fUpp').value = p.upp > 0 ? p.upp : '';
   $('fCodigo').value = p.codigo || '';
   $('fNota').value = p.nota || '';
+  
+  $('btnAccionesBox').style.display = 'flex';
   $('btnEliminarBox').style.display = 'block';
+  
+  const btnToggle = $('btnToggleActivo');
+  if (p.activo === 'No') {
+    btnToggle.textContent = '✅ Reactivar producto';
+    btnToggle.style.background = '#E0F7EC';
+    btnToggle.style.color = 'var(--exito)';
+  } else {
+    btnToggle.textContent = '🚫 Desactivar producto';
+    btnToggle.style.background = '#FFE5E5';
+    btnToggle.style.color = 'var(--alerta)';
+  }
+
   pintarImagen(imagenUrlActual);
   $('formPanel').style.display = 'block';
   $('formPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
   mostrar('Edita los datos y guarda');
 }
 
-// ---------- Pintar la imagen del formulario ----------
 function pintarImagen(url) {
   imagenUrlActual = url || '';
   $('fImagenUrl').value = imagenUrlActual;
@@ -556,7 +579,6 @@ function pintarImagen(url) {
   }
 }
 
-// ---------- Subir foto ----------
 $('btnSubirFoto').addEventListener('click', function () {
   $('inputFoto').click();
 });
@@ -589,7 +611,6 @@ $('inputFoto').addEventListener('change', function (e) {
   });
 });
 
-// ---------- Pegar URL ----------
 $('btnPegarUrl').addEventListener('click', function () {
   const urlOriginal = prompt('Pega la URL DIRECTA de la imagen (debe terminar en .jpg, .png, .webp o ser un link de Drive):');
   if (!urlOriginal || !urlOriginal.trim()) return;
@@ -599,44 +620,33 @@ $('btnPegarUrl').addEventListener('click', function () {
   verificarUrlImagen(urlLimpia);
 });
 
-// Convierte links de Drive al formato directo para <img>
 function convertirUrlImagen_(url) {
-  // Link tipo: https://drive.google.com/file/d/XXXXX/view?...
   let m = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
   if (m) return 'https://lh3.googleusercontent.com/d/' + m[1];
-
-  // Link tipo: https://drive.google.com/open?id=XXXXX
   m = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
   if (m) return 'https://lh3.googleusercontent.com/d/' + m[1];
-
-  // Link tipo: https://drive.google.com/uc?id=XXXXX
   m = url.match(/drive\.google\.com\/uc\?.*id=([a-zA-Z0-9_-]+)/);
   if (m) return 'https://lh3.googleusercontent.com/d/' + m[1];
-
-  // Cualquier otro link: se deja igual
   return url;
 }
 
-// Verifica que la imagen cargue de verdad
 function verificarUrlImagen(url) {
   const img = new Image();
   img.onload = function () {
     mostrar('URL cargada ✓', 'ok');
   };
   img.onerror = function () {
-    mostrar('⚠️ La imagen no cargó. Verifica que sea un link directo (termina en .jpg/.png) o sube la foto.', 'error');
+    mostrar('⚠️ La imagen no cargó. Verifica que sea un link directo o sube la foto.', 'error');
   };
   img.src = url;
 }
 
-// ---------- Quitar imagen ----------
 $('btnQuitarFoto').addEventListener('click', function () {
   if (!confirm('¿Quitar la imagen del producto?')) return;
   pintarImagen('');
   mostrar('Imagen quitada', 'aviso');
 });
 
-// ---------- Comprimir imagen ----------
 function comprimirImagen(archivo, maxAncho, calidad, callback) {
   const reader = new FileReader();
   reader.onload = function (ev) {
@@ -662,7 +672,6 @@ function comprimirImagen(archivo, maxAncho, calidad, callback) {
   reader.readAsDataURL(archivo);
 }
 
-// ---------- Auto-generar ID al elegir categoría ----------
 $('fCategoria').addEventListener('change', async function () {
   if (modoForm !== 'crear') return;
   const cat = $('fCategoria').value;
@@ -676,7 +685,6 @@ $('fCategoria').addEventListener('change', async function () {
   } catch (e) {}
 });
 
-// ---------- Guardar ----------
 $('btnGuardar').addEventListener('click', async function () {
   const cat = $('fCategoria').value;
   const nombre = $('fNombre').value.trim();
@@ -761,7 +769,6 @@ $('btnCancelarForm').addEventListener('click', function () {
   mostrar('Cancelado', 'aviso');
 });
 
-// ---------- Eliminar ----------
 $('btnEliminar').addEventListener('click', async function () {
   if (!productoEditando) return;
   if (!confirm('¿Eliminar el producto "' + productoEditando.nombre + '"?\n\nSolo se puede eliminar si nunca ha tenido movimientos. Si ya tiene ventas, recepciones o ajustes, mejor desactívalo.')) return;
@@ -790,27 +797,24 @@ $('btnEliminar').addEventListener('click', async function () {
   }
 });
 
-// ---------- Desactivar / Reactivar ----------
-document.addEventListener('dblclick', async function (e) {
-  if (!e.target.classList.contains('badge-activo') && !e.target.classList.contains('badge-inactivo')) return;
-  const itemPadre = e.target.closest('.prod-item');
-  if (!itemPadre) return;
-  const nombre = itemPadre.querySelector('.nombre').textContent;
-  const p = productos.find(function (x) { return x.nombre === nombre; });
-  if (!p) return;
-  const nuevoEstado = (p.activo === 'No') ? 'Sí' : 'No';
-  if (!confirm('¿' + (nuevoEstado === 'No' ? 'Desactivar' : 'Reactivar') + ' "' + p.nombre + '"?')) return;
+$('btnToggleActivo').addEventListener('click', async function () {
+  if (!productoEditando) return;
+  const nuevoEstado = (productoEditando.activo === 'No') ? 'Sí' : 'No';
+  if (!confirm('¿' + (nuevoEstado === 'No' ? 'Desactivar' : 'Reactivar') + ' "' + productoEditando.nombre + '"?')) return;
+  
   const u = getUsuarioTurno();
   try {
     const r = await post({
       accion: 'activar_producto',
       id_usuario: u.id,
-      id_producto: p.id,
+      id_producto: productoEditando.id,
       activo: nuevoEstado
     });
     if (r.ok) {
       mostrar('Producto ' + (nuevoEstado === 'No' ? 'desactivado' : 'reactivado') + ' ✓', 'ok');
       await cargarTodo();
+      const actualizado = productos.find(x => x.id === productoEditando.id);
+      if (actualizado) abrirEditar(actualizado);
     }
   } catch (err) {
     mostrar('Error: ' + err.message, 'error');
@@ -971,9 +975,8 @@ if ('serviceWorker' in navigator) {
 $('btnAutoImagenes').addEventListener('click', async function () {
   const btn = $('btnAutoImagenes');
   
-  // Filtramos los productos que NO tienen imagen y están activos
-    let sinImagen = productos.filter(p => !p.imagen_url && p.activo !== 'No');
-  sinImagen = sinImagen.slice(0, 10); // <--- Pon el número que quieras (o bórralo si no quieres límite)
+  let sinImagen = productos.filter(p => !p.imagen_url && p.activo !== 'No');
+  sinImagen = sinImagen.slice(0, 10); 
   
   if (sinImagen.length === 0) {
     mostrar('Todos los productos activos ya tienen imagen ✨', 'aviso');
@@ -986,7 +989,6 @@ $('btnAutoImagenes').addEventListener('click', async function () {
   let exitos = 0;
   let errores = 0;
 
-  // Procesamos uno por uno para no saturar la API
   for (let i = 0; i < sinImagen.length; i++) {
     const p = sinImagen[i];
     btn.textContent = `Buscando ${i + 1}/${sinImagen.length}...`;
@@ -1005,7 +1007,6 @@ $('btnAutoImagenes').addEventListener('click', async function () {
       errores++;
     }
     
-    // Pausa de 1.5 segundos entre peticiones para no ser bloqueados por SerpApi
     await new Promise(r => setTimeout(r, 1500));
   }
 
@@ -1013,7 +1014,6 @@ $('btnAutoImagenes').addEventListener('click', async function () {
   btn.textContent = '🪄 Autocompletar imágenes con IA';
   mostrar(`Proceso terminado. Éxitos: ${exitos}, Errores: ${errores}`, 'ok');
   
-  // Recargamos la lista para ver las nuevas fotos
   await cargarTodo();
 });
 </script>

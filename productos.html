@@ -258,18 +258,27 @@
 
 <div class="caja">
   <div style="display:flex; gap:8px; margin-bottom:8px;">
-    <!-- Botón Nuevo con ícono SVG -->
+    <!-- Botón Nuevo con el nuevo SVG azul -->
     <button class="main" id="btnNuevo" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px;">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="22" height="22">
-        <rect x="32" y="32" width="448" height="448" rx="110" ry="110" fill="#23D873" />
-        <path d="M 256 160 C 269.255 160 280 170.745 280 184 L 280 232 L 328 232 C 341.255 232 352 242.745 352 256 C 352 269.255 341.255 280 328 280 L 280 280 L 280 328 C 280 341.255 269.255 352 256 352 C 242.745 352 232 341.255 232 328 L 232 280 L 184 280 C 170.745 280 160 269.255 160 256 C 160 242.745 170.745 232 184 232 L 232 232 L 232 184 C 232 170.745 242.745 160 256 160 Z" fill="#FFFFFF" />
+        <rect width="512" height="512" fill="#f4f5f6" rx="110" />
+        <circle cx="256" cy="256" r="140" fill="#ffffff" />
+        <defs>
+          <clipPath id="blueCircle">
+            <circle cx="256" cy="256" r="118" />
+          </clipPath>
+        </defs>
+        <circle cx="256" cy="256" r="118" fill="#69c3f7" />
+        <circle cx="248" cy="248" r="118" fill="#7dd0fa" clip-path="url(#blueCircle)" />
+        <path d="M 228 192 Q 228 186 234 186 L 278 186 Q 284 186 284 192 L 284 228 L 320 228 Q 326 228 326 234 L 326 278 Q 326 284 320 284 L 284 284 L 284 320 Q 284 326 278 326 L 234 326 Q 228 326 228 320 L 228 284 L 192 284 Q 186 284 186 278 L 186 234 Q 186 228 192 228 L 228 228 Z" fill="#ffffff" />
+        <path d="M 256 326 L 278 326 Q 284 326 284 320 L 284 284 L 320 284 Q 326 284 326 278 L 326 256 L 272 256 Q 256 256 256 272 Z" fill="#eaf5fe" />
       </svg>
       Nuevo producto
     </button>
     
-    <!-- Botón Recargar con ícono SVG (solo el ícono) -->
+    <!-- Botón Recargar (se mantiene el que te gustó) -->
     <button id="btnRecargar" style="flex:0 0 auto; display:flex; align-items:center; justify-content:center; padding: 0 16px;">
-      <svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496.156 496.156" width="24" height="24">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496.156 496.156" width="24" height="24">
         <path style="fill:#168ae6;" d="M0,248.08C0,111.06,111.069,0.002,248.074,0.002c137.013,0,248.082,111.059,248.082,248.078 c0,137.005-111.069,248.074-248.082,248.074C111.069,496.154,0,385.085,0,248.08z" />
         <g>
           <path style="fill:#FFFFFF;" d="M428.243,172.149c-10.348,0.023-20.694,0.054-31.042,0.077 c-23.272-52.177-68.95-89.871-126.649-98.91c-64.287-10.071-125.816,19.788-162.504,72.312 c-16.296,23.326,22.003,45.165,38.16,22.034c50.317-72.037,157.757-65.527,201.907,4.686c-9.559,0.022-19.118,0.046-28.678,0.068 c-2.674,0.008-4.574,1.197-5.749,2.877c-1.92,2.058-2.65,5.072-0.639,8.186c18.204,28.25,36.408,56.499,54.616,84.745 c3.061,4.747,9.663,4.708,12.696-0.046c18.062-28.338,36.126-56.675,54.188-85.013C437.538,178.48,433.602,172.135,428.243,172.149 z" />
@@ -279,8 +288,32 @@
     </button>
   </div>
   <div style="margin-bottom:8px;">
-    <button id="btnAutoImagenes" style="width:100%; background:linear-gradient(135deg, #F97316 0%, #EA580C 100%); color:#fff; border:none; padding:12px; font-weight:700; border-radius:10px; font-size:14px;">
-    🪄 Autocompletar imágenes con IA
+    <button id="btnAutoImagenes" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; background:var(--azul); color:#fff; border:none; padding:10px; font-weight:700; border-radius:10px; font-size:14px;">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24">
+        <g transform="translate(110, 400) rotate(-45)">
+          <path d="M 0,-14 A 14 14 0 0 0 -14,0 L 250,0 L 250,-14 Z" fill="#FFFFFF" />
+          <path d="M -14,0 A 14 14 0 0 0 0,14 L 250,14 L 250,0 Z" fill="#D1D5DB" />
+          <rect x="250" y="-14" width="25" height="14" fill="#ffce33" />
+          <rect x="250" y="0" width="25" height="14" fill="#f09d00" />
+        </g>
+        <g transform="translate(296, 214) rotate(18)">
+          <use href="#starShape" fill="#ffda29" stroke="#ffda29" stroke-width="8" stroke-linejoin="round" />
+          <use href="#starShape" fill="#f09d00" stroke="#f09d00" stroke-width="8" stroke-linejoin="round" clip-path="url(#rightHalf)" />
+        </g>
+        <g transform="translate(240, 110)">
+          <line x1="0" y1="-12" x2="0" y2="12" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
+        </g>
+        <g transform="translate(295, 305) scale(0.7)">
+          <line x1="0" y1="-12" x2="0" y2="12" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
+        </g>
+        <g transform="translate(390, 230) rotate(45) scale(0.8)">
+          <line x1="0" y1="-12" x2="0" y2="12" stroke="#f2a30f" stroke-width="7" stroke-linecap="round" />
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="#f2a30f" stroke-width="7" stroke-linecap="round" />
+        </g>
+      </svg>
+      Autocompletar con IA
     </button>
   </div>
   <input type="text" id="buscar" placeholder="Buscar por nombre, ID o código..." autocomplete="off">
@@ -992,19 +1025,50 @@ function actualizarBotonIA() {
   let cola = [];
   try { cola = JSON.parse(localStorage.getItem(COLA_IA_KEY) || '[]'); } catch(e) {}
   
+  // Función auxiliar para restaurar el contenido original (icono + texto)
+  const restaurarContenidoOriginal = () => {
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24">
+        <g transform="translate(110, 400) rotate(-45)">
+          <path d="M 0,-14 A 14 14 0 0 0 -14,0 L 250,0 L 250,-14 Z" fill="#FFFFFF" />
+          <path d="M -14,0 A 14 14 0 0 0 0,14 L 250,14 L 250,0 Z" fill="#D1D5DB" />
+          <rect x="250" y="-14" width="25" height="14" fill="#ffce33" />
+          <rect x="250" y="0" width="25" height="14" fill="#f09d00" />
+        </g>
+        <g transform="translate(296, 214) rotate(18)">
+          <use href="#starShape" fill="#ffda29" stroke="#ffda29" stroke-width="8" stroke-linejoin="round" />
+          <use href="#starShape" fill="#f09d00" stroke="#f09d00" stroke-width="8" stroke-linejoin="round" clip-path="url(#rightHalf)" />
+        </g>
+        <g transform="translate(240, 110)">
+          <line x1="0" y1="-12" x2="0" y2="12" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
+        </g>
+        <g transform="translate(295, 305) scale(0.7)">
+          <line x1="0" y1="-12" x2="0" y2="12" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="#ffec8b" stroke-width="7" stroke-linecap="round" />
+        </g>
+        <g transform="translate(390, 230) rotate(45) scale(0.8)">
+          <line x1="0" y1="-12" x2="0" y2="12" stroke="#f2a30f" stroke-width="7" stroke-linecap="round" />
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="#f2a30f" stroke-width="7" stroke-linecap="round" />
+        </g>
+      </svg>
+      Autocompletar con IA
+    `;
+    btn.style.background = 'var(--azul)';
+  };
+
   if (procesoIAActivo) {
     btn.disabled = true;
     const faltan = cola.length;
-    btn.textContent = `🪄 Buscando imágenes... (Quedan ${faltan})`;
-    btn.style.background = 'linear-gradient(135deg, #6B7280 0%, #4B5563 100%)'; // Gris
+    btn.textContent = `🪄 Buscando... (Quedan ${faltan})`;
+    btn.style.background = '#6B7280'; // Gris apagado
   } else if (cola.length > 0) {
     btn.disabled = false;
-    btn.textContent = `⏯️ Continuar búsqueda (Quedan ${cola.length})`;
-    btn.style.background = 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)'; // Naranja
+    btn.innerHTML = `⏯️ Continuar (Quedan ${cola.length})`; // Texto simple para ahorrar espacio
+    btn.style.background = 'var(--azul)';
   } else {
     btn.disabled = false;
-    btn.textContent = '🪄 Autocompletar imágenes con IA';
-    btn.style.background = 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)'; // Naranja
+    restaurarContenidoOriginal();
   }
 }
 

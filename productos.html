@@ -270,6 +270,8 @@
     border-color: var(--azul-claro);
     box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
   }
+
+    #panelFiltros .pills-fila { flex-wrap: wrap; overflow: visible; }
 </style>
 </head>
 <body>
@@ -361,22 +363,33 @@
   </div>
 
   <!-- Buscador -->
-  <input type="text" id="buscar" placeholder="Buscar por nombre, ID o código..." autocomplete="off" style="margin-bottom: 8px;">
-
-  <!-- Filtros (pills) -->
-  <div class="pills-fila" id="pillsCategorias"></div>
-  <div style="display:flex; gap:18px; flex-wrap:wrap; margin-bottom:8px;">
-    <label style="display:flex; align-items:center; gap:6px; margin:0;">
-      <input type="checkbox" id="soloActivos" checked> Solo activos
-    </label>
-    <label style="display:flex; align-items:center; gap:6px; margin:0;">
-      <input type="checkbox" id="soloSinImagen"> Sin imagen ⚠️
-    </label>
+  <!-- Buscador + botón de filtros -->
+  <div style="display:flex; gap:8px; margin-bottom:8px;">
+    <input type="text" id="buscar" placeholder="Buscar por nombre, ID o código..." autocomplete="off" style="flex:1; min-width:0; margin:0;">
+    <button id="btnFiltros" type="button" title="Filtros" style="position:relative; flex:0 0 52px; display:flex; align-items:center; justify-content:center; padding:0; margin:0;">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#168ae6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;">
+        <path d="M4 6h16M7 12h10M10 18h4"/>
+      </svg>
+      <span id="badgeFiltros" style="display:none; position:absolute; top:-4px; right:-4px; min-width:18px; height:18px; padding:0 4px; box-sizing:border-box; border-radius:9px; background:var(--azul); color:#fff; font-size:11px; font-weight:700; line-height:18px; text-align:center;">0</span>
+    </button>
   </div>
 
-  <label style="margin-bottom: 8px; display:block;">
-    <input type="checkbox" id="soloActivos" checked> Mostrar solo activos
-  </label>
+  <!-- Panel de filtros (oculto hasta tocar el botón) -->
+  <div id="panelFiltros" style="display:none; background:var(--superficie-2); border-radius:12px; padding:12px; margin-bottom:8px;">
+    <div style="font-size:12px; font-weight:700; color:var(--texto-suave); margin-bottom:6px;">CATEGORÍA</div>
+    <div class="pills-fila" id="pillsCategorias"></div>
+
+    <div style="display:flex; gap:18px; flex-wrap:wrap; margin-top:6px;">
+      <label style="display:flex; align-items:center; gap:6px; margin:0;">
+        <input type="checkbox" id="soloActivos" checked> Solo activos
+      </label>
+      <label style="display:flex; align-items:center; gap:6px; margin:0;">
+        <input type="checkbox" id="soloSinImagen"> Sin imagen ⚠️
+      </label>
+    </div>
+
+    <button id="btnLimpiarFiltros" type="button" style="width:100%; margin-top:12px;">Limpiar filtros</button>
+  </div>
 
   <div id="listaProductos"></div>
 </div>
@@ -573,6 +586,7 @@ function pintarPills() {
 }
 
 function pintarLista() {
+  actualizarBadgeFiltros();
   const q = norm($('buscar').value);
   const soloActivos = $('soloActivos').checked;
   const cont = $('listaProductos');
@@ -641,6 +655,28 @@ function pintarLista() {
 $('buscar').addEventListener('input', pintarLista);
 $('soloActivos').addEventListener('change', pintarLista);
 $('soloSinImagen').addEventListener('change', pintarLista);
+$('btnFiltros').addEventListener('click', function () {
+  const p = $('panelFiltros');
+  p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+});
+
+$('btnLimpiarFiltros').addEventListener('click', function () {
+  filtroCat = '';
+  $('soloSinImagen').checked = false;
+  $('soloActivos').checked = true;
+  pintarPills();
+  pintarLista();
+});
+
+function actualizarBadgeFiltros() {
+  let n = 0;
+  if (filtroCat) n++;
+  if ($('soloSinImagen').checked) n++;
+  if (!$('soloActivos').checked) n++;
+  const b = $('badgeFiltros');
+  b.textContent = n;
+  b.style.display = n > 0 ? 'block' : 'none';
+}
 $('btnRecargar').addEventListener('click', cargarTodo);
 
 $('btnNuevo').addEventListener('click', async function () {

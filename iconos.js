@@ -161,8 +161,8 @@ function pintarIconosBotones() {
   // Buscar el botón de cámara por sus distintos IDs posibles
   const btnCam = document.querySelector('#btnCam, #btnEscanearCodigo');
   if (btnCam) {
-    // Si el botón tiene texto (como "Escanear con cámara"), le inyectamos el SVG al principio
-    btnCam.innerHTML = '<span style="width:22px; height:22px; display:inline-block; vertical-align:middle; margin-right:6px;">' + SVG_PACK.camara + '</span>' + btnCam.innerHTML;
+    // Inyectamos el SVG con un 20% más de tamaño (26px en vez de 22px) y alineado
+    btnCam.innerHTML = '<span style="width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-right:8px;">' + SVG_PACK.camara + '</span>' + btnCam.innerHTML;
   }
 
   // Buscar el botón de Nuevo Producto
@@ -171,10 +171,4 @@ function pintarIconosBotones() {
     btnNuevo.innerHTML = '<span style="width:22px; height:22px; display:inline-block;">' + SVG_PACK.nuevo + '</span> Nuevo producto';
   }
 }
-
-// Ejecutar ambas funciones al cargar el documento
-document.addEventListener('DOMContentLoaded', function() {
-  pintarIconosMenu();
-  pintarIconosBotones();
-});
 document.addEventListener('DOMContentLoaded', pintarIconosMenu);

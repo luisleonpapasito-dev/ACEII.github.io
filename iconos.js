@@ -3,6 +3,10 @@ const SVG_PACK = {
   // ===== ICONOS PARA BOTONES DE ACCIÓN =====
   camara: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 250"><path d="M 40 100 L 40 200 Q 40 210 50 210 L 260 210 Q 270 210 270 200 L 270 100 Z" fill="#d0d6de"/><path d="M 30 60 L 270 60 Q 280 60 280 70 L 280 100 L 30 100 Z" fill="#e2e8f0"/><rect x="30" y="100" width="250" height="100" fill="#465a6e"/><path d="M 120 30 L 180 30 Q 190 30 190 40 L 200 60 L 110 60 L 120 40 Q 120 30 130 30 Z" fill="#e2e8f0"/><rect x="140" y="40" width="30" height="10" fill="#465a6e"/><circle cx="150" cy="140" r="50" fill="#2c3e50"/><circle cx="150" cy="140" r="35" fill="#e2e8f0"/><circle cx="150" cy="140" r="20" fill="#5bc0eb"/><rect x="40" y="80" width="40" height="15" rx="5" fill="#2c3e50"/><rect x="230" y="110" width="20" height="10" rx="5" fill="#e2e8f0"/></svg>`,
 
+  efectivo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 250"><g transform="translate(10, 130)"><path d="M 10 0 L 260 0 L 280 20 L 280 80 L 30 80 L 10 60 Z" fill="#8bc34a"/><path d="M 10 0 L 30 20 L 30 80 L 10 60 Z" fill="#689f38"/><path d="M 30 20 L 280 20 L 280 80 L 30 80 Z" fill="#9ccc65"/></g><g transform="translate(15, 95)"><path d="M 10 0 L 260 0 L 280 20 L 280 80 L 30 80 L 10 60 Z" fill="#7cb342"/><path d="M 10 0 L 30 20 L 30 80 L 10 60 Z" fill="#558b2f"/><path d="M 30 20 L 280 20 L 280 80 L 30 80 Z" fill="#8bc34a"/></g><g transform="translate(20, 40)"><path d="M 10 0 L 240 0 L 260 20 L 260 70 L 30 70 L 10 50 Z" fill="#9ccc65"/><path d="M 10 0 L 30 20 L 30 70 L 10 50 Z" fill="#689f38"/><path d="M 30 20 L 260 20 L 260 70 L 30 70 Z" fill="#aed581"/><rect x="100" y="0" width="60" height="70" fill="#ffcc80"/><rect x="100" y="20" width="60" height="50" fill="#ffb74d"/><path d="M 30 35 A 15 15 0 0 0 60 35 A 15 15 0 0 0 30 35" fill="#7cb342" opacity="0.4"/><path d="M 230 35 A 15 15 0 0 0 260 35 A 15 15 0 0 0 230 35" fill="#7cb342" opacity="0.4"/><path d="M 130 45 L 100 45 L 100 35 L 130 35 Z" fill="#7cb342" opacity="0.6"/><path d="M 160 45 L 190 45 L 190 35 L 160 35 Z" fill="#7cb342" opacity="0.6"/><path d="M 130 60 L 100 60 L 100 50 L 130 50 Z" fill="#7cb342" opacity="0.6"/><path d="M 160 60 L 190 60 L 190 50 L 160 50 Z" fill="#7cb342" opacity="0.6"/></g></svg>`,
+
+  transferencia: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 250"><rect x="30" y="30" width="140" height="200" rx="15" fill="#a0c4ff"/><rect x="25" y="20" width="150" height="220" rx="20" fill="#4ea8de"/><rect x="35" y="40" width="130" height="180" rx="10" fill="#f0f4f8"/><rect x="50" y="120" width="150" height="70" rx="8" fill="#5cb85c" stroke="#388e3c" stroke-width="3"/><path d="M 70 135 Q 90 125 110 135 Q 130 145 150 135 Q 170 125 190 135" fill="none" stroke="#4caf50" stroke-width="3" opacity="0.6"/><path d="M 70 175 Q 90 185 110 175 Q 130 165 150 175 Q 170 185 190 175" fill="none" stroke="#4caf50" stroke-width="3" opacity="0.6"/><circle cx="125" cy="155" r="22" fill="#43a047"/><text x="125" y="165" font-family="Arial" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">$</text><rect x="140" y="50" width="100" height="50" rx="10" fill="#f4a261"/><path d="M 160 70 L 210 70 L 210 80 L 160 80 Z" fill="#e76f51"/><path d="M 150 100 L 170 110 L 150 120 Z" fill="#457b9d"/><path d="M 260 150 L 240 160 L 260 170 Z" fill="#457b9d"/><path d="M 240 160 L 200 160 L 200 150 L 240 150 Z" fill="#457b9d"/><path d="M 180 90 L 220 90 L 220 100 L 180 100 Z" fill="#457b9d"/></svg>`,
+
   nuevo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#f4f5f6" rx="110" /><circle cx="256" cy="256" r="140" fill="#ffffff" /><defs><clipPath id="blueCircle"><circle cx="256" cy="256" r="118" /></clipPath></defs><circle cx="256" cy="256" r="118" fill="#69c3f7" /><circle cx="248" cy="248" r="118" fill="#7dd0fa" clip-path="url(#blueCircle)" /><path d="M 228 192 Q 228 186 234 186 L 278 186 Q 284 186 284 192 L 284 228 L 320 228 Q 326 228 326 234 L 326 278 Q 326 284 320 284 L 284 284 L 284 320 Q 284 326 278 326 L 234 326 Q 228 326 228 320 L 228 284 L 192 284 Q 186 284 186 278 L 186 234 Q 186 228 192 228 L 228 228 Z" fill="#ffffff" /><path d="M 256 326 L 278 326 Q 284 326 284 320 L 284 284 L 320 284 Q 326 284 326 278 L 326 256 L 272 256 Q 256 256 256 272 Z" fill="#eaf5fe" /></svg>`,
 
   fuego: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#FF5A1F" d="M304.7,21.8c-1.6-9.1-13.8-11.8-19.3-3.8C252.7,65.3,215,108.8,185.3,161.5C148.6,226.7,143,267,143,267c-1.3,9.5-14.1,12.2-19.6,3.8c-12.8-19.4-20.9-46.6-18.7-77c0.4-5.3-5.8-8.5-9.8-5.2C62.5,215.4,42.5,263,42.5,316.3C42.5,424.2,129.8,512,238.1,512c108.3,0,195.6-87.8,195.6-195.7c0-42.9-13.3-82.6-35.8-115.1c-3.1-4.4-10.2-2.8-11.1,2.6c-1.7,10-6.1,23.3-12.8,36.9c-2.4,4.9-9.5,4.9-11.9,0C338.4,192.4,316.5,88.4,304.7,21.8z"/><path fill="#E54500" d="M238.1,512c108.3,0,195.6-87.8,195.6-195.7c0-42.9-13.3-82.6-35.8-115.1c-3.1-4.4-10.2-2.8-11.1,2.6c-1.7,10-6.1,23.3-12.8,36.9c-2.4,4.9-9.5,4.9-11.9,0c-23.7-48.4-45.6-152.4-57.4-218.9c-0.6-3.4-3.6-1.6-2.7-1v497.3C211.7,512,224.8,512,238.1,512z"/><path fill="#FFAC1C" d="M259.9,202.9c-1.6-9.1-13.8-11.8-19.3-3.8c-32.7,47.3-70.5,90.8-100.2,143.5c-21.7,38.5-22.3,71.2-19.6,92.5c1.3,9.7,14,12.7,19.8,4.2c16-23.4,36.7-46.3,58.8-66c4.1-3.6,10.6-1.5,11.5,4c2.2,14,8.3,32.7,17.4,51.8c2.4,4.9,9.5,4.9,11.9,0C263.9,380.7,271.7,269.5,259.9,202.9z"/></svg>`,
@@ -33,12 +37,6 @@ const SVG_PACK = {
   
   carpeta: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><rect width="800" height="800" fill="none" /><defs><path id="q-mark" d="M 365,520 L 435,520 A 5,5 0 0,0 440,515 C 440,420 540,370 540,260 A 140,140 0 0,0 260,260 A 45,45 0 0,0 350,260 A 50,50 0 0,1 450,260 C 450,370 360,420 360,515 A 5,5 0 0,0 365,520 Z" /><circle id="q-dot" cx="400" cy="640" r="45" /><g id="q-shape"><use href="#q-mark" /><use href="#q-dot" /></g></defs><g transform="translate(18, -10)"><g fill="#F98825"><use href="#q-shape" transform="translate(-36, 36)" /><use href="#q-shape" transform="translate(-34, 34)" /><use href="#q-shape" transform="translate(-32, 32)" /><use href="#q-shape" transform="translate(-30, 30)" /><use href="#q-shape" transform="translate(-28, 28)" /><use href="#q-shape" transform="translate(-26, 26)" /><use href="#q-shape" transform="translate(-24, 24)" /><use href="#q-shape" transform="translate(-22, 22)" /><use href="#q-shape" transform="translate(-20, 20)" /><use href="#q-shape" transform="translate(-18, 18)" /></g><g fill="#FFB13B"><use href="#q-shape" transform="translate(-16, 16)" /><use href="#q-shape" transform="translate(-14, 14)" /><use href="#q-shape" transform="translate(-12, 12)" /><use href="#q-shape" transform="translate(-10, 10)" /><use href="#q-shape" transform="translate(-8, 8)" /><use href="#q-shape" transform="translate(-6, 6)" /><use href="#q-shape" transform="translate(-4, 4)" /><use href="#q-shape" transform="translate(-2, 2)" /></g><use href="#q-shape" transform="translate(0, 0)" fill="#FFD15C" /></g></svg>`,
 
-    // ===== ICONOS DE PAGO =====
-  efectivo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 250"><g transform="translate(10, 130)"><path d="M 10 0 L 260 0 L 280 20 L 280 80 L 30 80 L 10 60 Z" fill="#8bc34a"/><path d="M 10 0 L 30 20 L 30 80 L 10 60 Z" fill="#689f38"/><path d="M 30 20 L 280 20 L 280 80 L 30 80 Z" fill="#9ccc65"/></g><g transform="translate(15, 95)"><path d="M 10 0 L 260 0 L 280 20 L 280 80 L 30 80 L 10 60 Z" fill="#7cb342"/><path d="M 10 0 L 30 20 L 30 80 L 10 60 Z" fill="#558b2f"/><path d="M 30 20 L 280 20 L 280 80 L 30 80 Z" fill="#8bc34a"/></g><g transform="translate(20, 40)"><path d="M 10 0 L 240 0 L 260 20 L 260 70 L 30 70 L 10 50 Z" fill="#9ccc65"/><path d="M 10 0 L 30 20 L 30 70 L 10 50 Z" fill="#689f38"/><path d="M 30 20 L 260 20 L 260 70 L 30 70 Z" fill="#aed581"/><rect x="100" y="0" width="60" height="70" fill="#ffcc80"/><rect x="100" y="20" width="60" height="50" fill="#ffb74d"/><path d="M 30 35 A 15 15 0 0 0 60 35 A 15 15 0 0 0 30 35" fill="#7cb342" opacity="0.4"/><path d="M 230 35 A 15 15 0 0 0 260 35 A 15 15 0 0 0 230 35" fill="#7cb342" opacity="0.4"/><path d="M 130 45 L 100 45 L 100 35 L 130 35 Z" fill="#7cb342" opacity="0.6"/><path d="M 160 45 L 190 45 L 190 35 L 160 35 Z" fill="#7cb342" opacity="0.6"/><path d="M 130 60 L 100 60 L 100 50 L 130 50 Z" fill="#7cb342" opacity="0.6"/><path d="M 160 60 L 190 60 L 190 50 L 160 50 Z" fill="#7cb342" opacity="0.6"/></g></svg>`,
-
-  transferencia: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 250"><rect x="30" y="30" width="140" height="200" rx="15" fill="#a0c4ff"/><rect x="25" y="20" width="150" height="220" rx="20" fill="#4ea8de"/><rect x="35" y="40" width="130" height="180" rx="10" fill="#f0f4f8"/><rect x="50" y="120" width="150" height="70" rx="8" fill="#5cb85c" stroke="#388e3c" stroke-width="3"/><path d="M 70 135 Q 90 125 110 135 Q 130 145 150 135 Q 170 125 190 135" fill="none" stroke="#4caf50" stroke-width="3" opacity="0.6"/><path d="M 70 175 Q 90 185 110 175 Q 130 165 150 175 Q 170 185 190 175" fill="none" stroke="#4caf50" stroke-width="3" opacity="0.6"/><circle cx="125" cy="155" r="22" fill="#43a047"/><text x="125" y="165" font-family="Arial" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">$</text><rect x="140" y="50" width="100" height="50" rx="10" fill="#f4a261"/><path d="M 160 70 L 210 70 L 210 80 L 160 80 Z" fill="#e76f51"/><path d="M 150 100 L 170 110 L 150 120 Z" fill="#457b9d"/><path d="M 260 150 L 240 160 L 260 170 Z" fill="#457b9d"/><path d="M 240 160 L 200 160 L 200 150 L 240 150 Z" fill="#457b9d"/><path d="M 180 90 L 220 90 L 220 100 L 180 100 Z" fill="#457b9d"/></svg>`,
-
-
   // ===== ICONOS PARA EL MENÚ (INDEX) =====
   ventas: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="98 88 345 345"><path d="M176 176 H421 L395 285 Q390 298 375 298 H202 Z" fill="#ffffff" opacity="0.35"/><g fill="none" stroke="#ffffff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"><path d="M130 125 H158 L176 176"/><path d="M118 176 H421 L402 280 Q398 298 378 298 H200 Q176 298 176 320 Q176 342 200 342 H402"/><line x1="166" y1="216" x2="252" y2="216"/><line x1="126" y1="257" x2="210" y2="257"/></g><circle cx="211" cy="380" r="24" fill="#ffffff" fill-opacity="0.35" stroke="#ffffff" stroke-width="20"/><circle cx="380" cy="380" r="24" fill="#ffffff" fill-opacity="0.35" stroke="#ffffff" stroke-width="20"/></svg>`,
     
@@ -62,18 +60,7 @@ const SVG_PACK = {
   
   usuarios: `<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><rect x="50" y="50" width="412" height="412" rx="112" fill="var(--g1)" opacity="0.22"/><circle cx="256" cy="256" r="150" fill="none" stroke="var(--g2)" stroke-width="26"/><path d="M141 352 Q256 240 371 352 A150 150 0 0 1 141 352 Z" fill="var(--g1)" stroke="var(--g2)" stroke-width="24" stroke-linejoin="round"/><circle cx="256" cy="212" r="56" fill="var(--g1)" stroke="var(--g2)" stroke-width="24"/></svg>`,
   
-  horarios: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="95 45 250 250">
-  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M220 276 L125 276 Q115 276 115 266 L115 100 Q115 78 137 78 L305 78 Q325 78 325 100 L325 160" stroke="var(--g1)" stroke-width="20"/>
-    <path d="M152 58 V90 M285 58 V90" stroke="var(--g2)" stroke-width="18"/>
-  </g>
-  <rect x="122" y="107" width="196" height="14" fill="var(--g1)" opacity="0.25"/>
-  <rect x="131" y="133" width="130" height="122" rx="18" fill="var(--g1)" opacity="0.25"/>
-  <rect x="147" y="150" width="40" height="8" fill="#fff" opacity="0.8"/>
-  <rect x="201" y="150" width="40" height="8" fill="#fff" opacity="0.8"/>
-  <circle cx="272" cy="222" r="52" fill="#fff" stroke="var(--g2)" stroke-width="16"/>
-  <path d="M272 192 V222 L292 240" fill="none" stroke="var(--g2)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`
+  horarios: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="95 45 250 250"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M220 276 L125 276 Q115 276 115 266 L115 100 Q115 78 137 78 L305 78 Q325 78 325 100 L325 160" stroke="var(--g1)" stroke-width="20"/><path d="M152 58 V90 M285 58 V90" stroke="var(--g2)" stroke-width="18"/></g><rect x="122" y="107" width="196" height="14" fill="var(--g1)" opacity="0.25"/><rect x="131" y="133" width="130" height="122" rx="18" fill="var(--g1)" opacity="0.25"/><rect x="147" y="150" width="40" height="8" fill="#fff" opacity="0.8"/><rect x="201" y="150" width="40" height="8" fill="#fff" opacity="0.8"/><circle cx="272" cy="222" r="52" fill="#fff" stroke="var(--g2)" stroke-width="16"/><path d="M272 192 V222 L292 240" fill="none" stroke="var(--g2)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/></svg>`
 };
 
 // ===== Función para armar las pills =====
@@ -117,6 +104,31 @@ function iconoPillAnimado(cat) {
 }
 
 // ===== FUNCIÓN PARA PINTAR LOS ICONOS DEL MENÚ =====
+function pintarIconosMenu() {
+  const mapa = {
+    'ico-ventas': 'ventas',
+    'ico-caja': 'caja',
+    'ico-recepcion': 'recepcion',
+    'ico-devol': 'devoluciones',
+    'ico-inventario': 'inventario',
+    'ico-productos': 'productos',
+    'ico-categorias': 'categorias',
+    'ico-codigos': 'codigos',
+    'ico-historial': 'historial',
+    'ico-dashboard': 'dashboard',
+    'ico-admin-usuarios': 'usuarios',
+    'ico-admin-horarios': 'horarios'
+  };
+
+  for (const [clase, clave] of Object.entries(mapa)) {
+    const el = document.querySelector('.' + clase);
+    if (el) {
+      el.innerHTML = SVG_PACK[clave];
+    }
+  }
+}
+
+// ===== FUNCIÓN PARA PINTAR ICONOS DE BOTONES DE ACCIÓN =====
 function pintarIconosBotones() {
   // 1. CÁMARA
   const btnCam = document.querySelector('#btnCam, #btnEscanearCodigo');
@@ -152,5 +164,6 @@ function pintarIconosBotones() {
     mcTransferencia.innerHTML = '<span class="ico-pago" style="width:24px; height:24px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:4px;">' + SVG_PACK.transferencia + '</span> TRANSFERENCIA';
   }
 }
+
 document.addEventListener('DOMContentLoaded', pintarIconosBotones);
 document.addEventListener('DOMContentLoaded', pintarIconosMenu);

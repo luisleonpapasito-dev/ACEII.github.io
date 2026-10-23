@@ -1049,25 +1049,26 @@ window.addEventListener('unhandledrejection', function (e) {
     white-space: nowrap;
     -webkit-tap-highlight-color: transparent;
   }
-   .bf-cobro button svg {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2.2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  #btnCam {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-  .bf-total {
-    font-variant-numeric: tabular-nums;
-  }
+.bf-cobro button svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  /* Quitamos fill: none; y stroke: currentColor; */
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#btnCam {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.bf-total {
+  font-variant-numeric: tabular-nums;
+}
 
   /* ===== AVISO DE SALIDA ===== */
   #modalSalir {

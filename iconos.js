@@ -34,13 +34,10 @@ const SVG_PACK = {
   carpeta: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><rect width="800" height="800" fill="none" /><defs><path id="q-mark" d="M 365,520 L 435,520 A 5,5 0 0,0 440,515 C 440,420 540,370 540,260 A 140,140 0 0,0 260,260 A 45,45 0 0,0 350,260 A 50,50 0 0,1 450,260 C 450,370 360,420 360,515 A 5,5 0 0,0 365,520 Z" /><circle id="q-dot" cx="400" cy="640" r="45" /><g id="q-shape"><use href="#q-mark" /><use href="#q-dot" /></g></defs><g transform="translate(18, -10)"><g fill="#F98825"><use href="#q-shape" transform="translate(-36, 36)" /><use href="#q-shape" transform="translate(-34, 34)" /><use href="#q-shape" transform="translate(-32, 32)" /><use href="#q-shape" transform="translate(-30, 30)" /><use href="#q-shape" transform="translate(-28, 28)" /><use href="#q-shape" transform="translate(-26, 26)" /><use href="#q-shape" transform="translate(-24, 24)" /><use href="#q-shape" transform="translate(-22, 22)" /><use href="#q-shape" transform="translate(-20, 20)" /><use href="#q-shape" transform="translate(-18, 18)" /></g><g fill="#FFB13B"><use href="#q-shape" transform="translate(-16, 16)" /><use href="#q-shape" transform="translate(-14, 14)" /><use href="#q-shape" transform="translate(-12, 12)" /><use href="#q-shape" transform="translate(-10, 10)" /><use href="#q-shape" transform="translate(-8, 8)" /><use href="#q-shape" transform="translate(-6, 6)" /><use href="#q-shape" transform="translate(-4, 4)" /><use href="#q-shape" transform="translate(-2, 2)" /></g><use href="#q-shape" transform="translate(0, 0)" fill="#FFD15C" /></g></svg>`,
 
     // ===== ICONOS DE PAGO =====
+    // ===== ICONOS DE PAGO =====
   efectivo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 250"><rect width="300" height="250" fill="none" /><g transform="translate(22, 115) rotate(-1)"><rect width="250" height="115" rx="8" fill="#5db981" /><rect x="12" y="12" width="226" height="91" fill="#329665" /><circle cx="12" cy="12" r="15" fill="#5db981" /><circle cx="238" cy="12" r="15" fill="#5db981" /><circle cx="12" cy="103" r="15" fill="#5db981" /><circle cx="238" cy="103" r="15" fill="#5db981" /></g><g transform="translate(12, 110) rotate(-7)"><rect width="250" height="115" rx="8" fill="#62c48a" /><rect x="12" y="12" width="226" height="91" fill="#3ba571" /><circle cx="12" cy="12" r="15" fill="#62c48a" /><circle cx="238" cy="12" r="15" fill="#62c48a" /><circle cx="12" cy="103" r="15" fill="#62c48a" /><circle cx="238" cy="103" r="15" fill="#62c48a" /><circle cx="50" cy="57" r="12" fill="#62c48a" /><circle cx="200" cy="57" r="12" fill="#62c48a" /><circle cx="125" cy="57" r="35" fill="#62c48a" /><text x="125" y="78" font-family="Arial, Helvetica, sans-serif" font-size="60" font-weight="bold" fill="#ffffff" text-anchor="middle">$</text></g><g transform="translate(50, 50) rotate(-10)"><circle cx="2" cy="3" r="22" fill="#f8a731" /><circle cx="0" cy="0" r="22" fill="#ffd15c" /><circle cx="0" cy="0" r="17" fill="none" stroke="#f8a731" stroke-width="2" stroke-dasharray="2,3" /><text x="0" y="8" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="bold" fill="#f8a731" text-anchor="middle">$</text></g><g transform="translate(160, 75) rotate(5)"><circle cx="2" cy="3" r="25" fill="#f8a731" /><circle cx="0" cy="0" r="25" fill="#ffd15c" /><circle cx="0" cy="0" r="20" fill="none" stroke="#f8a731" stroke-width="2" stroke-dasharray="3,3" /><text x="0" y="9" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="bold" fill="#f8a731" text-anchor="middle">$</text></g><g transform="translate(220, 35) rotate(15)"><circle cx="2" cy="3" r="23" fill="#f8a731" /><circle cx="0" cy="0" r="23" fill="#ffd15c" /><circle cx="0" cy="0" r="18" fill="none" stroke="#f8a731" stroke-width="2" stroke-dasharray="3,3" /><text x="0" y="9" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="bold" fill="#f8a731" text-anchor="middle">$</text></g></svg>`,
-
+  
   transferencia: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500"><rect width="100%" height="100%" fill="none"/><g transform="rotate(-35 210 250) translate(5, 10)"><rect x="60" y="70" width="280" height="360" rx="35" ry="35" fill="#3b3666" opacity="0.3"/></g><g transform="rotate(-35 210 250)"><rect x="60" y="70" width="280" height="360" rx="35" ry="35" fill="#4a437f"/><rect x="80" y="90" width="240" height="320" rx="20" ry="20" fill="#87d3fc"/><path d="M 130 90 L 270 90 A 5 5 0 0 1 275 95 L 275 105 L 125 105 L 125 95 A 5 5 0 0 1 130 90 Z" fill="#4a437f"/></g><g transform="rotate(-35 210 250)"><path d="M 190 100 Q 250 90 290 110 L 340 280 Q 310 330 240 310 L 170 150 Q 170 120 190 100 Z" fill="#91f5bd"/><path d="M 200 115 Q 240 110 270 120 L 310 260 Q 280 295 250 285 L 190 155 Q 190 130 200 115 Z" fill="#43e4a1"/><path d="M 290 110 L 340 280 Q 310 330 240 310 L 245 295 Q 300 310 325 270 L 275 120 Z" fill="#00c28b" opacity="0.7"/></g><g transform="translate(370, 105)"><circle cx="0" cy="5" r="55" fill="#e2b93a" opacity="0.4"/><circle cx="0" cy="0" r="52" fill="#fcd359"/></g><g transform="translate(115, 370)"><circle cx="0" cy="5" r="55" fill="#e2b93a" opacity="0.4"/><circle cx="0" cy="0" r="52" fill="#fcd359"/></g></svg>`,
-
-
-
-
 
 
 
@@ -149,10 +146,10 @@ function pintarIconosMenu() {
 
 // ===== FUNCIÓN PARA PINTAR ICONOS DE BOTONES DE ACCIÓN =====
 function pintarIconosBotones() {
-  // 1. CÁMARA
+  // 1. CÁMARA (Más grande: 32px)
   const btnCam = document.querySelector('#btnCam, #btnEscanearCodigo');
   if (btnCam && !btnCam.querySelector('.ico-cam')) {
-    btnCam.innerHTML = '<span class="ico-cam" style="width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-right:8px;">' + SVG_PACK.camara + '</span>' + btnCam.innerHTML;
+    btnCam.innerHTML = '<span class="ico-cam" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-right:8px;">' + SVG_PACK.camara + '</span>' + btnCam.innerHTML;
   }
 
   // 2. NUEVO PRODUCTO
@@ -161,29 +158,27 @@ function pintarIconosBotones() {
     btnNuevo.innerHTML = '<span class="ico-nuevo" style="width:22px; height:22px; display:inline-block; vertical-align:middle; margin-right:6px;">' + SVG_PACK.nuevo + '</span> Nuevo producto';
   }
 
-  // 3. EFECTIVO Y TRANSFERENCIA (Barra Flotante)
+  // 3. EFECTIVO Y TRANSFERENCIA (Barra Flotante) - Aumentados a 26px
   const bfEfectivo = document.getElementById('bfEfectivo');
   if (bfEfectivo && !bfEfectivo.querySelector('.ico-pago')) {
-    const txt = bfEfectivo.textContent.replace('💵', '').replace('EFECTIVO', '').trim();
-    bfEfectivo.innerHTML = '<span class="ico-pago" style="width:22px; height:22px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:6px;">' + SVG_PACK.efectivo + '</span> EFECTIVO';
+    bfEfectivo.innerHTML = '<span class="ico-pago" style="width:26px; height:26px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:6px;">' + SVG_PACK.efectivo + '</span> EFECTIVO';
   }
 
   const bfTransferencia = document.getElementById('bfTransferencia');
   if (bfTransferencia && !bfTransferencia.querySelector('.ico-pago')) {
-    bfTransferencia.innerHTML = '<span class="ico-pago" style="width:22px; height:22px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:6px;">' + SVG_PACK.transferencia + '</span> TRANSFERENCIA';
+    bfTransferencia.innerHTML = '<span class="ico-pago" style="width:26px; height:26px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:6px;">' + SVG_PACK.transferencia + '</span> TRANSFERENCIA';
   }
 
-  // 4. EFECTIVO Y TRANSFERENCIA (Modal Cobro Rápido)
+  // 4. EFECTIVO Y TRANSFERENCIA (Modal Cobro Rápido) - Aumentados a 24px
   const mcEfectivo = document.getElementById('mcEfectivo');
   if (mcEfectivo && !mcEfectivo.querySelector('.ico-pago')) {
-    mcEfectivo.innerHTML = '<span class="ico-pago" style="width:20px; height:20px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:4px;">' + SVG_PACK.efectivo + '</span> EFECTIVO';
+    mcEfectivo.innerHTML = '<span class="ico-pago" style="width:24px; height:24px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:4px;">' + SVG_PACK.efectivo + '</span> EFECTIVO';
   }
 
   const mcTransferencia = document.getElementById('mcTransferencia');
   if (mcTransferencia && !mcTransferencia.querySelector('.ico-pago')) {
-    mcTransferencia.innerHTML = '<span class="ico-pago" style="width:20px; height:20px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:4px;">' + SVG_PACK.transferencia + '</span> TRANSFERENCIA';
+    mcTransferencia.innerHTML = '<span class="ico-pago" style="width:24px; height:24px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:4px;">' + SVG_PACK.transferencia + '</span> TRANSFERENCIA';
   }
 }
-
 document.addEventListener('DOMContentLoaded', pintarIconosBotones);
 document.addEventListener('DOMContentLoaded', pintarIconosMenu);

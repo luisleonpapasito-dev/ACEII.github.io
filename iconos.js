@@ -120,33 +120,8 @@ function iconoPillAnimado(cat) {
 }
 
 // ===== FUNCIÓN PARA PINTAR LOS ICONOS DEL MENÚ =====
-function pintarIconosMenu() {
-  const mapa = {
-    'ico-ventas': 'ventas',
-    'ico-caja': 'caja',
-    'ico-recepcion': 'recepcion',
-    'ico-devol': 'devoluciones',
-    'ico-inventario': 'inventario',
-    'ico-productos': 'productos',
-    'ico-categorias': 'categorias',
-    'ico-codigos': 'codigos',
-    'ico-historial': 'historial',
-    'ico-dashboard': 'dashboard',
-    'ico-admin-usuarios': 'usuarios',
-    'ico-admin-horarios': 'horarios'
-  };
-
-  for (const [clase, clave] of Object.entries(mapa)) {
-    const el = document.querySelector('.' + clase);
-    if (el) {
-      el.innerHTML = SVG_PACK[clave];
-    }
-  }
-}
-
-// ===== FUNCIÓN PARA PINTAR ICONOS DE BOTONES DE ACCIÓN =====
 function pintarIconosBotones() {
-  // 1. CÁMARA (Más grande: 32px)
+  // 1. CÁMARA
   const btnCam = document.querySelector('#btnCam, #btnEscanearCodigo');
   if (btnCam && !btnCam.querySelector('.ico-cam')) {
     btnCam.innerHTML = '<span class="ico-cam" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-right:8px;">' + SVG_PACK.camara + '</span>' + btnCam.innerHTML;
@@ -158,7 +133,7 @@ function pintarIconosBotones() {
     btnNuevo.innerHTML = '<span class="ico-nuevo" style="width:22px; height:22px; display:inline-block; vertical-align:middle; margin-right:6px;">' + SVG_PACK.nuevo + '</span> Nuevo producto';
   }
 
-  // 3. EFECTIVO Y TRANSFERENCIA (Barra Flotante) - Aumentados a 26px
+  // 3. EFECTIVO Y TRANSFERENCIA (Barra Flotante)
   const bfEfectivo = document.getElementById('bfEfectivo');
   if (bfEfectivo && !bfEfectivo.querySelector('.ico-pago')) {
     bfEfectivo.innerHTML = '<span class="ico-pago" style="width:26px; height:26px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:6px;">' + SVG_PACK.efectivo + '</span> EFECTIVO';
@@ -169,7 +144,7 @@ function pintarIconosBotones() {
     bfTransferencia.innerHTML = '<span class="ico-pago" style="width:26px; height:26px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:6px;">' + SVG_PACK.transferencia + '</span> TRANSFERENCIA';
   }
 
-  // 4. EFECTIVO Y TRANSFERENCIA (Modal Cobro Rápido) - Aumentados a 24px
+  // 4. EFECTIVO Y TRANSFERENCIA (Modal Cobro Rápido)
   const mcEfectivo = document.getElementById('mcEfectivo');
   if (mcEfectivo && !mcEfectivo.querySelector('.ico-pago')) {
     mcEfectivo.innerHTML = '<span class="ico-pago" style="width:24px; height:24px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:4px;">' + SVG_PACK.efectivo + '</span> EFECTIVO';

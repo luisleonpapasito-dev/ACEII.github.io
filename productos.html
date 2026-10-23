@@ -365,7 +365,14 @@
 
   <!-- Filtros (pills) -->
   <div class="pills-fila" id="pillsCategorias"></div>
-  <div class="pills-fila" id="pillsImagen"></div>
+  <div style="display:flex; gap:18px; flex-wrap:wrap; margin-bottom:8px;">
+    <label style="display:flex; align-items:center; gap:6px; margin:0;">
+      <input type="checkbox" id="soloActivos" checked> Solo activos
+    </label>
+    <label style="display:flex; align-items:center; gap:6px; margin:0;">
+      <input type="checkbox" id="soloSinImagen"> Sin imagen ⚠️
+    </label>
+  </div>
 
   <label style="margin-bottom: 8px; display:block;">
     <input type="checkbox" id="soloActivos" checked> Mostrar solo activos
@@ -562,11 +569,7 @@ function pintarPills() {
     });
   });
 
-  const contImg = $('pillsImagen');
-  contImg.innerHTML = '';
-  [['', 'Todas las fotos'], ['con', 'Con imagen'], ['sin', 'Sin imagen ⚠️']].forEach(function (o) {
-    crearPill(contImg, o[1], filtroImg === o[0], function () { filtroImg = o[0]; });
-  });
+
 }
 
 function pintarLista() {
@@ -589,9 +592,7 @@ function pintarLista() {
     items = items.filter(function (p) { return p.categoria === filtroCat; });
   }
 
-  if (filtroImg === 'con') {
-    items = items.filter(function (p) { return !!p.imagen_url; });
-  } else if (filtroImg === 'sin') {
+  if ($('soloSinImagen').checked) {
     items = items.filter(function (p) { return !p.imagen_url; });
   }
 
@@ -639,6 +640,7 @@ function pintarLista() {
 
 $('buscar').addEventListener('input', pintarLista);
 $('soloActivos').addEventListener('change', pintarLista);
+$('soloSinImagen').addEventListener('change', pintarLista);
 $('btnRecargar').addEventListener('click', cargarTodo);
 
 $('btnNuevo').addEventListener('click', async function () {

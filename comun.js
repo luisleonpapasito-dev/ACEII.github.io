@@ -115,21 +115,19 @@ function mostrarToast_(texto, clase) {
   toastNode_.appendChild(iconoToast_(clase, cargando));
   const t = document.createElement('span');
   t.textContent = texto;
-  
-  // Aplicamos los estilos para que el texto largo baje a la siguiente línea
-  t.style.whiteSpace = 'normal'; 
+  t.style.whiteSpace = 'normal';
   t.style.wordBreak = 'break-word';
   t.style.textAlign = 'left';
-  t.style.flex = '1';
-
   toastNode_.appendChild(t);
 
-  // Ajustamos el botón del Toast para que no sea una píldora infinita
+  // Se ajusta al texto; solo baja de línea si es muy largo
+  toastNode_.style.width = 'max-content';
+  toastNode_.style.maxWidth = 'calc(100vw - 32px)';
+  toastNode_.style.boxSizing = 'border-box';
   toastNode_.style.whiteSpace = 'normal';
   toastNode_.style.wordBreak = 'break-word';
-  toastNode_.style.maxWidth = '90%';
-  toastNode_.style.borderRadius = '16px'; // Cambiamos la píldora perfecta por bordes más suaves si baja de línea
-  toastNode_.style.alignItems = 'flex-start';
+  toastNode_.style.alignItems = 'center';
+  toastNode_.style.borderRadius = '22px';
   toastNode_.style.padding = '12px 18px';
 
   toastNode_.className = 'toast-global visible ' + (clase || '') + (cargando ? ' cargando' : '');

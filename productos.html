@@ -766,6 +766,15 @@ $('btnGuardar').addEventListener('click', async function () {
   if (isNaN(precio) || precio < 0) { mostrar('Precio inválido', 'error'); return; }
   if (costo > precio) { mostrar('⚠️ El costo no puede ser mayor al precio de venta', 'error'); return; }
 
+  // ⭐ VALIDACIÓN: Evitar códigos de barras duplicados
+  if (codigo) {
+    const duplicado = productos.find(p => p.codigo === codigo && (!productoEditando || p.id !== productoEditando.id));
+    if (duplicado) {
+      mostrar('⚠️ El código "' + codigo + '" ya está asignado al producto: ' + duplicado.nombre, 'error');
+      return;
+    }
+  }
+
   const u = getUsuarioTurno();
   if (!u) { mostrar('No hay turno de usuario', 'error'); return; }
 
@@ -834,7 +843,6 @@ $('btnGuardar').addEventListener('click', async function () {
     $('btnGuardar').disabled = false;
   }
 });
-
 
 
 $('btnToggleActivo').addEventListener('click', async function () {

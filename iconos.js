@@ -1,5 +1,11 @@
 // ===== Pack de iconos para las pills y el menú =====
 const SVG_PACK = {
+
+    // ===== ICONOS PARA BOTONES DE ACCIÓN =====
+  camara: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="100%" height="100%"><defs><clipPath id="camera-body"><rect x="40" y="100" width="220" height="150" rx="14" /></clipPath></defs><rect x="55" y="85" width="25" height="15" rx="1" fill="#60ebfc" /><polygon points="110,100 125,60 175,60 190,100" fill="#175a8f" /><rect x="130" y="75" width="40" height="13" fill="#e8f3fc" /><g clip-path="url(#camera-body)"><rect x="40" y="100" width="220" height="75" fill="#175a8f" /><rect x="40" y="175" width="220" height="75" fill="#10426b" /></g><circle cx="230" cy="130" r="9" fill="#ffd126" /><circle cx="150" cy="175" r="48" fill="#60ebfc" /><circle cx="150" cy="175" r="32" fill="#e8f3fc" /></svg>`,
+
+  nuevo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#f4f5f6" rx="110" /><circle cx="256" cy="256" r="140" fill="#ffffff" /><defs><clipPath id="blueCircle"><circle cx="256" cy="256" r="118" /></clipPath></defs><circle cx="256" cy="256" r="118" fill="#69c3f7" /><circle cx="248" cy="248" r="118" fill="#7dd0fa" clip-path="url(#blueCircle)" /><path d="M 228 192 Q 228 186 234 186 L 278 186 Q 284 186 284 192 L 284 228 L 320 228 Q 326 228 326 234 L 326 278 Q 326 284 320 284 L 284 284 L 284 320 Q 284 326 278 326 L 234 326 Q 228 326 228 320 L 228 284 L 192 284 Q 186 284 186 278 L 186 234 Q 186 228 192 228 L 228 228 Z" fill="#ffffff" /><path d="M 256 326 L 278 326 Q 284 326 284 320 L 284 284 L 320 284 Q 326 284 326 278 L 326 256 L 272 256 Q 256 256 256 272 Z" fill="#eaf5fe" /></svg>`,
+  
   fuego: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#FF5A1F" d="M304.7,21.8c-1.6-9.1-13.8-11.8-19.3-3.8C252.7,65.3,215,108.8,185.3,161.5C148.6,226.7,143,267,143,267c-1.3,9.5-14.1,12.2-19.6,3.8c-12.8-19.4-20.9-46.6-18.7-77c0.4-5.3-5.8-8.5-9.8-5.2C62.5,215.4,42.5,263,42.5,316.3C42.5,424.2,129.8,512,238.1,512c108.3,0,195.6-87.8,195.6-195.7c0-42.9-13.3-82.6-35.8-115.1c-3.1-4.4-10.2-2.8-11.1,2.6c-1.7,10-6.1,23.3-12.8,36.9c-2.4,4.9-9.5,4.9-11.9,0C338.4,192.4,316.5,88.4,304.7,21.8z"/><path fill="#E54500" d="M238.1,512c108.3,0,195.6-87.8,195.6-195.7c0-42.9-13.3-82.6-35.8-115.1c-3.1-4.4-10.2-2.8-11.1,2.6c-1.7,10-6.1,23.3-12.8,36.9c-2.4,4.9-9.5,4.9-11.9,0c-23.7-48.4-45.6-152.4-57.4-218.9c-0.6-3.4-3.6-1.6-2.7-1v497.3C211.7,512,224.8,512,238.1,512z"/><path fill="#FFAC1C" d="M259.9,202.9c-1.6-9.1-13.8-11.8-19.3-3.8c-32.7,47.3-70.5,90.8-100.2,143.5c-21.7,38.5-22.3,71.2-19.6,92.5c1.3,9.7,14,12.7,19.8,4.2c16-23.4,36.7-46.3,58.8-66c4.1-3.6,10.6-1.5,11.5,4c2.2,14,8.3,32.7,17.4,51.8c2.4,4.9,9.5,4.9,11.9,0C263.9,380.7,271.7,269.5,259.9,202.9z"/></svg>`,
   todas: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#E5791E" d="M 256,232 L 58,130.4 Q 36,120 36,142 L 36,370 Q 36,392 58,402.4 L 234,485.6 Q 248,492 256,494 L 256,232 Z"/><path fill="#FFAB38" d="M 256,232 L 256,494 Q 264,492 278,485.6 L 454,402.4 Q 476,392 476,370 L 476,142 Q 476,120 454,133.6 Z"/><path fill="#FFC57E" d="M 256,232 L 454,133.6 Q 476,120 454,109.6 L 278,26.4 Q 256,16 234,26.4 L 58,109.6 Q 36,120 58,130.4 Z"/><polygon fill="#E1F5FE" points="344,58 410,89 190,198 124,165"/><path fill="#B2D6E4" d="M 124,165 L 190,198 L 190,222 Q 190,228 182,228 L 132,203 Q 124,199 124,192 Z"/><line x1="288" y1="412" x2="356" y2="380" stroke="#3C3348" stroke-width="22" stroke-linecap="round"/><line x1="288" y1="452" x2="330" y2="432" stroke="#3C3348" stroke-width="22" stroke-linecap="round"/></svg>`,
   
@@ -74,6 +80,15 @@ const SVG_PACK = {
   <circle cx="272" cy="222" r="52" fill="#fff" stroke="var(--g2)" stroke-width="16"/>
   <path d="M272 192 V222 L292 240" fill="none" stroke="var(--g2)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`
+
+
+
+
+
+
+
+
+
 };
 
 // ===== Función para armar las pills (ya la tenías) =====
@@ -140,4 +155,26 @@ function pintarIconosMenu() {
     }
   }
 }
+
+// ===== FUNCIÓN PARA PINTAR ICONOS DE BOTONES DE ACCIÓN =====
+function pintarIconosBotones() {
+  // Buscar el botón de cámara por sus distintos IDs posibles
+  const btnCam = document.querySelector('#btnCam, #btnEscanearCodigo');
+  if (btnCam) {
+    // Si el botón tiene texto (como "Escanear con cámara"), le inyectamos el SVG al principio
+    btnCam.innerHTML = '<span style="width:22px; height:22px; display:inline-block; vertical-align:middle; margin-right:6px;">' + SVG_PACK.camara + '</span>' + btnCam.innerHTML;
+  }
+
+  // Buscar el botón de Nuevo Producto
+  const btnNuevo = document.getElementById('btnNuevo');
+  if (btnNuevo && btnNuevo.innerHTML.indexOf('Nuevo producto') >= 0) {
+    btnNuevo.innerHTML = '<span style="width:22px; height:22px; display:inline-block;">' + SVG_PACK.nuevo + '</span> Nuevo producto';
+  }
+}
+
+// Ejecutar ambas funciones al cargar el documento
+document.addEventListener('DOMContentLoaded', function() {
+  pintarIconosMenu();
+  pintarIconosBotones();
+});
 document.addEventListener('DOMContentLoaded', pintarIconosMenu);

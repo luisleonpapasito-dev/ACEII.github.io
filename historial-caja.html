@@ -151,7 +151,13 @@
     <button id="fMes">30 días</button>
     <button id="fTodo">Todo</button>
   </div>
-  <button class="main" id="btnActualizar" style="width:100%; border-radius:12px; height:48px;">Actualizar</button>
+  <button class="main" id="btnActualizar" style="width:100%; border-radius:12px; height:48px; margin-bottom: 8px;">Actualizar</button>
+  
+  <!-- NUEVO BOTÓN DE RESPALDO -->
+  <button id="btnRespaldo" style="width:100%; background:#10B981; color:#fff; border:none; padding:12px; font-weight:700; border-radius:12px; height:48px; display:flex; align-items:center; justify-content:center; gap:8px;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+    Crear copia de seguridad
+  </button>
 </div>
 
 <div id="listaTurnos"></div>
@@ -408,6 +414,38 @@ $('fSemana').addEventListener('click', function () { filtro = 'semana'; marcarAc
 $('fMes').addEventListener('click', function () { filtro = 'mes'; marcarActivo(this); cargar(); });
 $('fTodo').addEventListener('click', function () { filtro = 'todo'; marcarActivo(this); cargar(); });
 $('btnActualizar').addEventListener('click', cargar);
+
+// ===== RESPALDO DE DATOS =====
+$('btnRespaldo').addEventListener('click', async function () {
+  const btn = $('btnRespaldo');
+  const u = getUsuarioTurno();
+  if (!u) { alert('No hay usuario activo'); return; }
+  
+  if (!confirm('Se crearán archivos CSV con toda tu base de datos en tu Google Drive.\n\n¿Deseas continuar?')) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Creando respaldo...';
+  mostrar('Generando copias de seguridad...', 'aviso');
+
+  try {
+    const r = await post({ accion: 'crear_respaldo', id_usuario: u.id });
+    if (r.ok) {
+      mostrar(r.mensaje, 'ok');
+      alert('✅ ¡Éxito!\n\n' + r.mensaje + '\n\nLos puedes encontrar en tu Google Drive, en la carpeta "ACEII - Respaldos".');
+    } else {
+      mostrar(r.error || 'Error desconocido', 'error');
+      alert('❌ Error: ' + (r.error || 'Desconocido'));
+    }
+  } catch (err) {
+    mostrar('Error de conexión: ' + err.message, 'error');
+    alert('❌ Error de conexión. Revisa tu internet.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Crear copia de seguridad';
+  }
+});
+
+
 
 cargar();
 </script>

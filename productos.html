@@ -16,6 +16,7 @@
 <meta name="theme-color" content="#1B4DB1" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
 <script src="comun.js"></script>
+<script src="iconos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
 <style>
   #listaProductos {
@@ -278,18 +279,39 @@
     overflow: visible;
     padding: 0 0 4px;
   }
+  #panelFiltros .pills-fila {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    overflow: visible;
+    padding: 0 0 4px;
+  }
   #panelFiltros .pill-cat {
     background: var(--superficie);
     border: 2px solid var(--azul-borde);
-    padding: 10px 8px;
-    min-height: 44px;
+    padding: 8px 12px;
+    min-height: 48px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
-    justify-content: center;
-    text-align: center;
+    justify-content: flex-start;
+    gap: 10px;
+    text-align: left;
     white-space: normal;
     line-height: 1.2;
+  }
+  #panelFiltros .pill-cat .pill-icon {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #panelFiltros .pill-cat .pill-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
   }
   #panelFiltros .pill-cat.activa {
     background: var(--azul);
@@ -524,6 +546,10 @@ let productoEditando = null;
 let imagenUrlActual = '';
 let filtroCat = '';
 let filtroImg = '';
+function norm_(s) {
+  return String(s === null || s === undefined ? '' : s).trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
 
 // Seguridad: evitar inyección de HTML en la lista
 function esc(str) {
@@ -605,10 +631,12 @@ function colorPorCategoria(cat) {
   return colores[cat] || '#F0F4FF';
 }
 
-function crearPill(cont, texto, activa, alTocar) {
+function crearPill(cont, texto, activa, alTocar, iconoHtml) {
   const d = document.createElement('div');
   d.className = 'pill-cat' + (activa ? ' activa' : '');
-  d.textContent = texto;
+  d.innerHTML = (iconoHtml ? '<span class="pill-icon">' + iconoHtml + '</span>' : '') +
+                '<span class="pill-txt"></span>';
+  d.querySelector('.pill-txt').textContent = texto;
   d.addEventListener('click', function () {
     alTocar();
     pintarPills();
@@ -621,16 +649,14 @@ function pintarPills() {
   const contCat = $('pillsCategorias');
   if (!contCat) return;
   contCat.innerHTML = '';
-  crearPill(contCat, 'Todas', filtroCat === '', function () { filtroCat = ''; });
+  crearPill(contCat, 'Todas', filtroCat === '', function () { filtroCat = ''; }, ICONOS_PILL.todas);
   categorias.forEach(function (c) {
     const n = (typeof c === 'string') ? c : (c.nombre || '');
     if (!n) return;
     crearPill(contCat, n, filtroCat === n, function () {
       filtroCat = (filtroCat === n) ? '' : n;
-    });
+    }, iconoPillAnimado(n));
   });
-
-
 }
 
 function pintarLista() {

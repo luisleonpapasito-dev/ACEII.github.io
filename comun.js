@@ -110,11 +110,27 @@ function mostrarToast_(texto, clase) {
   toastEsCarga_ = cargando;
   toastLimite_ = Date.now() + 30000;
 
+  // === ESTA ES LA PARTE QUE CAMBIÓ ===
   toastNode_.textContent = '';
   toastNode_.appendChild(iconoToast_(clase, cargando));
   const t = document.createElement('span');
   t.textContent = texto;
+  
+  // Aplicamos los estilos para que el texto largo baje a la siguiente línea
+  t.style.whiteSpace = 'normal'; 
+  t.style.wordBreak = 'break-word';
+  t.style.textAlign = 'left';
+  t.style.flex = '1';
+
   toastNode_.appendChild(t);
+
+  // Ajustamos el botón del Toast para que no sea una píldora infinita
+  toastNode_.style.whiteSpace = 'normal';
+  toastNode_.style.wordBreak = 'break-word';
+  toastNode_.style.maxWidth = '90%';
+  toastNode_.style.borderRadius = '16px'; // Cambiamos la píldora perfecta por bordes más suaves si baja de línea
+  toastNode_.style.alignItems = 'flex-start';
+  toastNode_.style.padding = '12px 18px';
 
   toastNode_.className = 'toast-global visible ' + (clase || '') + (cargando ? ' cargando' : '');
   programarOcultarToast_(clase === 'error' ? 4000 : 2500);

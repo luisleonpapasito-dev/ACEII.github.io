@@ -134,23 +134,16 @@ function iconoPillAnimado(cat) {
 // ===== NUEVA FUNCIÓN para pintar los iconos del menú (index.html) =====
 // ===== FUNCIÓN PARA PINTAR ICONOS DE BOTONES DE ACCIÓN =====
 function pintarIconosBotones() {
-  // Buscar el botón de cámara por sus distintos IDs posibles
   const btnCam = document.querySelector('#btnCam, #btnEscanearCodigo');
-  if (btnCam) {
-    // Inyectamos el SVG con un 20% más de tamaño (26px en vez de 22px) y alineado
-    btnCam.innerHTML = '<span style="width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-right:8px;">' + SVG_PACK.camara + '</span>' + btnCam.innerHTML;
+  if (btnCam && !btnCam.querySelector('.ico-cam')) {
+    btnCam.innerHTML = '<span class="ico-cam" style="width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-right:8px;">' + SVG_PACK.camara + '</span>' + btnCam.innerHTML;
   }
 
-  // Buscar el botón de Nuevo Producto
   const btnNuevo = document.getElementById('btnNuevo');
-  if (btnNuevo && btnNuevo.innerHTML.indexOf('Nuevo producto') >= 0) {
-    btnNuevo.innerHTML = '<span style="width:22px; height:22px; display:inline-block;">' + SVG_PACK.nuevo + '</span> Nuevo producto';
+  if (btnNuevo && btnNuevo.innerHTML.indexOf('Nuevo producto') >= 0 && !btnNuevo.querySelector('.ico-nuevo')) {
+    btnNuevo.innerHTML = '<span class="ico-nuevo" style="width:22px; height:22px; display:inline-block;">' + SVG_PACK.nuevo + '</span> Nuevo producto';
   }
 }
 
-// Ejecutar ambas funciones al cargar el documento
-document.addEventListener('DOMContentLoaded', function() {
-  pintarIconosMenu();
-  pintarIconosBotones();
-});
+document.addEventListener('DOMContentLoaded', pintarIconosBotones);
 document.addEventListener('DOMContentLoaded', pintarIconosMenu);

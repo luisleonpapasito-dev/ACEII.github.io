@@ -271,7 +271,59 @@
     box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
   }
 
-    #panelFiltros .pills-fila { flex-wrap: wrap; overflow: visible; }
+      #panelFiltros .pills-fila {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    overflow: visible;
+    padding: 0 0 4px;
+  }
+  #panelFiltros .pill-cat {
+    background: var(--superficie);
+    border: 2px solid var(--azul-borde);
+    padding: 10px 8px;
+    min-height: 44px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: normal;
+    line-height: 1.2;
+  }
+  #panelFiltros .pill-cat.activa {
+    background: var(--azul);
+    color: #fff;
+    border-color: var(--azul-claro);
+  }
+  #panelFiltros .pill-cat:first-child { grid-column: 1 / -1; }
+
+  .filtros-opciones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--azul-borde);
+  }
+  .filtros-opciones label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 10px;
+    background: var(--superficie);
+    border-radius: 12px;
+    font-size: 14px;
+  }
+  #btnLimpiarFiltros {
+    width: 100%;
+    margin-top: 12px;
+    background: var(--superficie);
+    color: var(--azul);
+    border: 2px solid var(--azul-borde);
+    font-weight: 700;
+  }
 </style>
 </head>
 <body>
@@ -375,20 +427,16 @@
   </div>
 
   <!-- Panel de filtros (oculto hasta tocar el botón) -->
-  <div id="panelFiltros" style="display:none; background:var(--superficie-2); border-radius:12px; padding:12px; margin-bottom:8px;">
+   <div id="panelFiltros" style="display:none; background:var(--superficie-2); border-radius:12px; padding:12px; margin-bottom:8px;">
     <div style="font-size:12px; font-weight:700; color:var(--texto-suave); margin-bottom:6px;">CATEGORÍA</div>
     <div class="pills-fila" id="pillsCategorias"></div>
 
-    <div style="display:flex; gap:18px; flex-wrap:wrap; margin-top:6px;">
-      <label style="display:flex; align-items:center; gap:6px; margin:0;">
-        <input type="checkbox" id="soloActivos" checked> Solo activos
-      </label>
-      <label style="display:flex; align-items:center; gap:6px; margin:0;">
-        <input type="checkbox" id="soloSinImagen"> Sin imagen ⚠️
-      </label>
+    <div class="filtros-opciones">
+      <label><input type="checkbox" id="soloActivos" checked> Solo activos</label>
+      <label><input type="checkbox" id="soloSinImagen"> Sin imagen ⚠️</label>
     </div>
 
-    <button id="btnLimpiarFiltros" type="button" style="width:100%; margin-top:12px;">Limpiar filtros</button>
+    <button id="btnLimpiarFiltros" type="button">Limpiar filtros</button>
   </div>
 
   <div id="listaProductos"></div>

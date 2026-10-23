@@ -10,6 +10,7 @@
 <meta name="theme-color" content="#2563EB" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1A2540" media="(prefers-color-scheme: dark)">
 <script src="comun.js"></script>
+<script src="iconos.js"></script>
 <style>
   :root {
     --ac-texto: #0F1B3D;
@@ -57,6 +58,94 @@
   .fila-tog { display: flex; gap: 4px; padding: 4px; background: var(--ac-flecha-bg); border-radius: 14px; margin-bottom: 16px; }
   .fila-tog .tog { flex: 1; padding: 10px; border-radius: 10px; border: none; font-weight: 700; font-size: 13px; color: var(--ac-texto-suave); background: transparent; cursor: pointer; transition: all 0.2s; }
   .fila-tog .tog.on { background: var(--superficie); color: var(--ac-flecha); box-shadow: 0 2px 6px rgba(37,99,235,.15); }
+  .pills-fila {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 0 8px;
+    scrollbar-width: none;
+  }
+  .pills-fila::-webkit-scrollbar { display: none; }
+  .pill-cat {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: var(--superficie-2);
+    color: var(--texto-suave);
+    font-weight: 600;
+    font-size: 13px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .pill-cat:active { transform: scale(0.96); }
+
+  #panelFiltros .pills-fila {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    overflow: visible;
+    padding: 0 0 4px;
+  }
+  #panelFiltros .pill-cat {
+    background: var(--superficie);
+    border: 2px solid var(--azul-borde);
+    padding: 8px 12px;
+    min-height: 48px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    text-align: left;
+    white-space: normal;
+    line-height: 1.2;
+  }
+  #panelFiltros .pill-cat .pill-icon {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #panelFiltros .pill-cat .pill-icon svg { width: 100%; height: 100%; display: block; }
+  #panelFiltros .pill-cat.activa {
+    background: var(--azul);
+    color: #fff;
+    border-color: var(--azul-claro);
+  }
+  #panelFiltros .pill-cat:first-child { grid-column: 1 / -1; }
+
+  .filtros-opciones {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--azul-borde);
+  }
+  .filtros-opciones label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 10px;
+    background: var(--superficie);
+    border-radius: 12px;
+    font-size: 14px;
+  }
+  #btnLimpiarFiltros {
+    width: 100%;
+    margin-top: 12px;
+    background: var(--superficie);
+    color: var(--azul);
+    border: 2px solid var(--azul-borde);
+    font-weight: 700;
+  }
+
 </style>
 </head>
 <body>
@@ -84,10 +173,27 @@
   <label>Busca el producto</label>
   <input type="text" id="buscar" placeholder="Escribe 2 letras o más..." autocomplete="off" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--ac-borde); background:var(--superficie); font-size:14px;">
   
-  <label style="display:flex; align-items:center; gap:8px; margin-top:12px; font-size:13px; font-weight:600; color:var(--ac-texto);">
-    <input type="checkbox" id="soloPendientes" style="width:18px; height:18px; accent-color:var(--ac-flecha);"> 
-    Mostrar solo productos con stock 0
-  </label>
+  <label>Busca el producto</label>
+  <div style="display:flex; gap:8px; margin-bottom:8px;">
+    <input type="text" id="buscar" placeholder="Escribe 2 letras o más..." autocomplete="off" style="flex:1; min-width:0; margin:0; padding:14px; border-radius:12px; border:1px solid var(--ac-borde); background:var(--superficie); font-size:14px;">
+    <button id="btnFiltros" type="button" title="Filtros" style="position:relative; flex:0 0 52px; display:flex; align-items:center; justify-content:center; padding:0; margin:0;">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#168ae6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;">
+        <path d="M4 6h16M7 12h10M10 18h4"/>
+      </svg>
+      <span id="badgeFiltros" style="display:none; position:absolute; top:-4px; right:-4px; min-width:18px; height:18px; padding:0 4px; box-sizing:border-box; border-radius:9px; background:var(--azul); color:#fff; font-size:11px; font-weight:700; line-height:18px; text-align:center;">0</span>
+    </button>
+  </div>
+
+  <div id="panelFiltros" style="display:none; background:var(--superficie-2); border-radius:12px; padding:12px; margin-bottom:8px;">
+    <div style="font-size:12px; font-weight:700; color:var(--texto-suave); margin-bottom:6px;">CATEGORÍA</div>
+    <div class="pills-fila" id="pillsCategorias"></div>
+
+    <div class="filtros-opciones">
+      <label><input type="checkbox" id="soloPendientes" style="width:18px; height:18px; accent-color:var(--ac-flecha);"> Solo stock 0</label>
+    </div>
+
+    <button id="btnLimpiarFiltros" type="button">Limpiar filtros</button>
+  </div>
   
   <div id="resultados"></div>
 </div>
@@ -159,6 +265,11 @@ async function cargarDatos() {
     if (r && r.error === 'Token inválido') { borrarToken(); location.href = 'index.html'; return; }
     if (!r || !r.ok) throw new Error(r && r.error ? r.error : 'respuesta vacía');
     productos = r.items;
+        try {
+      const rCat = await jsonp({ accion: 'categorias' }, 15000);
+      categorias = (rCat && rCat.ok) ? rCat.items : [];
+    } catch (e) { categorias = []; }
+    pintarPills();
     pintarResultados();
     mostrar('Elige un producto');
   } catch (err) {
@@ -166,21 +277,87 @@ async function cargarDatos() {
   }
 }
 
-function norm(s) { return String(s || '').toLowerCase().trim(); }
+function norm(s) {
+  return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
+function norm_(s) { return norm(s); }
+
+let categorias = [];
+let filtroCat = '';
+
+function nombreCat(c) { return (typeof c === 'string') ? c : (c.nombre || ''); }
+
+function categoriaDe(p) {
+  if (p.categoria) return p.categoria;
+  const pref = String(p.id || '').split('-')[0].toUpperCase();
+  const c = categorias.find(function (x) {
+    return typeof x !== 'string' && x.prefijo && String(x.prefijo).toUpperCase() === pref;
+  });
+  return c ? c.nombre : '';
+}
+
+function crearPill(cont, texto, activa, alTocar, iconoHtml) {
+  const d = document.createElement('div');
+  d.className = 'pill-cat' + (activa ? ' activa' : '');
+  d.innerHTML = (iconoHtml ? '<span class="pill-icon">' + iconoHtml + '</span>' : '') + '<span class="pill-txt"></span>';
+  d.querySelector('.pill-txt').textContent = texto;
+  d.addEventListener('click', function () {
+    alTocar();
+    pintarPills();
+    pintarResultados();
+  });
+  cont.appendChild(d);
+}
+
+function pintarPills() {
+  const cont = $('pillsCategorias');
+  if (!cont) return;
+  cont.innerHTML = '';
+  crearPill(cont, 'Todas', filtroCat === '', function () { filtroCat = ''; }, ICONOS_PILL.todas);
+  categorias.forEach(function (c) {
+    const n = nombreCat(c);
+    if (!n) return;
+    crearPill(cont, n, filtroCat === n, function () {
+      filtroCat = (filtroCat === n) ? '' : n;
+    }, iconoPillAnimado(n));
+  });
+}
+
+function actualizarBadgeFiltros() {
+  let n = 0;
+  if (filtroCat) n++;
+  if ($('soloPendientes').checked) n++;
+  const b = $('badgeFiltros');
+  b.textContent = n;
+  b.style.display = n > 0 ? 'block' : 'none';
+}
+
+$('btnFiltros').addEventListener('click', function () {
+  const p = $('panelFiltros');
+  p.style.display = (p.style.display === 'none') ? 'block' : 'none';
+});
+$('btnLimpiarFiltros').addEventListener('click', function () {
+  filtroCat = '';
+  $('soloPendientes').checked = false;
+  pintarPills();
+  pintarResultados();
+});
 
 function pintarResultados() {
   const q = norm($('buscar').value);
   const soloPend = $('soloPendientes').checked;
   const cont = $('resultados');
   cont.innerHTML = '';
+  actualizarBadgeFiltros();
 
-  if (q.length < 2 && !soloPend) return;
+  if (q.length < 2 && !soloPend && !filtroCat) return;
 
   let items = productos.slice();
   if (soloPend) items = items.filter(function (p) { return p.stock_actual === 0; });
+  if (filtroCat) items = items.filter(function (p) { return categoriaDe(p) === filtroCat; });
   if (q) items = items.filter(function (p) { return norm(p.id + ' ' + p.nombre).indexOf(q) >= 0; });
 
-  items = items.slice(0, 15);
+  items = items.slice(0, 30);
 
   if (!items.length) {
     cont.innerHTML = '<div style="padding:14px; text-align:center; color:var(--ac-texto-suave); font-size:13px;">Sin resultados.</div>';

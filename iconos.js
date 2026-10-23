@@ -132,30 +132,6 @@ function iconoPillAnimado(cat) {
 }
 
 // ===== NUEVA FUNCIÓN para pintar los iconos del menú (index.html) =====
-function pintarIconosMenu() {
-  const mapa = {
-    'ico-ventas': 'ventas',
-    'ico-caja': 'caja',
-    'ico-recepcion': 'recepcion',
-    'ico-devol': 'devoluciones',
-    'ico-inventario': 'inventario',
-    'ico-productos': 'productos',
-    'ico-categorias': 'categorias',
-    'ico-codigos': 'codigos',
-    'ico-historial': 'historial',
-    'ico-dashboard': 'dashboard',
-    'ico-admin-usuarios': 'usuarios',
-    'ico-admin-horarios': 'horarios'
-  };
-
-  for (const [clase, clave] of Object.entries(mapa)) {
-    const el = document.querySelector('.' + clase);
-    if (el) {
-      el.innerHTML = SVG_PACK[clave];
-    }
-  }
-}
-
 // ===== FUNCIÓN PARA PINTAR ICONOS DE BOTONES DE ACCIÓN =====
 function pintarIconosBotones() {
   // Buscar el botón de cámara por sus distintos IDs posibles
@@ -171,4 +147,10 @@ function pintarIconosBotones() {
     btnNuevo.innerHTML = '<span style="width:22px; height:22px; display:inline-block;">' + SVG_PACK.nuevo + '</span> Nuevo producto';
   }
 }
+
+// Ejecutar ambas funciones al cargar el documento
+document.addEventListener('DOMContentLoaded', function() {
+  pintarIconosMenu();
+  pintarIconosBotones();
+});
 document.addEventListener('DOMContentLoaded', pintarIconosMenu);

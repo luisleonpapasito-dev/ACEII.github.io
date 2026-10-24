@@ -3196,6 +3196,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ===== LÓGICA PARA ARMAR COMBOS =====
+// ===== LÓGICA PARA ARMAR COMBOS =====
 let comboEmpanada = null;
 let comboBebida = null;
 
@@ -3205,7 +3206,7 @@ function abrirConstructorCombo() {
   $('totalCombo').textContent = '$0';
   $('btnAgregarCombo').disabled = true;
 
-  // Filtrar productos por categoría
+  // Filtrar productos por categoría (empanadas y bebidas con stock)
   const empanadas = productos.filter(p => norm_(p.categoria).indexOf('empanada') >= 0 && p.stock > 0);
   const bebidas = productos.filter(p => norm_(p.categoria).indexOf('bebida') >= 0 && p.stock > 0);
 
@@ -3226,10 +3227,11 @@ function abrirConstructorCombo() {
       <span class="pre-v" style="font-size:12px;">${fmt(p.precio)}</span>
     `;
     btn.addEventListener('click', () => {
-      // Desmarcar otros del mismo tipo
+      // Desmarcar otros botones del mismo tipo (empanadas o bebidas)
       const hermanos = (tipo === 'emp') ? contEmp.children : contBeb.children;
       for (let h of hermanos) h.style.borderColor = 'transparent';
       
+      // Marcar el botón seleccionado
       btn.style.borderColor = 'var(--azul)';
       if (tipo === 'emp') comboEmpanada = p;
       else comboBebida = p;
@@ -3248,15 +3250,21 @@ function abrirConstructorCombo() {
   $('modalCombo').style.display = 'block';
 }
 
+// Cerrar el modal de combos
 $('btnCerrarCombo').addEventListener('click', () => {
   $('modalCombo').style.display = 'none';
-  // Limpiamos las selecciones para que la próxima vez que se abra esté limpio
+  // Limpiamos todo para la próxima vez
   comboEmpanada = null;
   comboBebida = null;
   $('totalCombo').textContent = '$0';
   $('btnAgregarCombo').disabled = true;
+  // Limpiamos los bordes visuales de los botones
+  document.querySelectorAll('#listaEmpanadasCombo .btn-variante, #listaBebidasCombo .btn-variante').forEach(b => {
+    b.style.borderColor = 'transparent';
+  });
 });
 
+// Agregar el combo al carrito
 $('btnAgregarCombo').addEventListener('click', () => {
   if (!comboEmpanada || !comboBebida) return;
   
@@ -3267,23 +3275,14 @@ $('btnAgregarCombo').addEventListener('click', () => {
 
   $('modalCombo').style.display = 'none';
   mostrar('Combo agregado: ' + comboEmpanada.nombre + ' + ' + comboBebida.nombre, 'ok');
+  
+  // Limpiamos variables y bordes después de agregar
+  comboEmpanada = null;
+  comboBebida = null;
+  document.querySelectorAll('#listaEmpanadasCombo .btn-variante, #listaBebidasCombo .btn-variante').forEach(b => {
+    b.style.borderColor = 'transparent';
+  });
 });
-
-// Modificar la función crearBotonRapido para detectar si es un grupo de Combos
-// Busca la función crearBotonRapido en tu código y cambia el onTap:
-// ...
-// const onTap = function () {
-//   if (esGrupo) {
-//     if (norm_(p).indexOf('combo') >= 0) {
-//       abrirConstructorCombo(); // <--- NUEVA LÍNEA
-//     } else {
-//       mostrarVariantes(p, itemsGrupo);
-//     }
-//   } else {
-//     agregarProductoAlCarrito(p, 1);
-//     // ...
-//   }
-// };
 
 
 
@@ -3292,7 +3291,6 @@ $('btnAgregarCombo').addEventListener('click', () => {
 
 
 </script>
-<!-- Modal para armar Combos -->
 <!-- Barra flotante del carrito -->
 <div id="barraFlotante">
   <!-- ... contenido de la barra flotante ... -->
@@ -3324,7 +3322,6 @@ $('btnAgregarCombo').addEventListener('click', () => {
   </div>
 </div>
 <!-- 👆 HASTA AQUÍ 👆 -->
- tu código ...
 
 </body>
 </html>

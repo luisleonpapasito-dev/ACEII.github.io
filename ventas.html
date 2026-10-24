@@ -67,39 +67,44 @@ window.addEventListener('unhandledrejection', function (e) {
   .mc-seccion { margin-bottom: 12px; flex: 1; min-height: 0; display: flex; flex-direction: column; }
   .mc-seccion label { font-size: 12px; font-weight: 700; color: var(--texto-suave); margin-bottom: 6px; text-transform: uppercase; }
   
-  .mc-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px;
-    overflow-y: auto; padding-bottom: 4px;
+   .mc-grid {
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); 
+    gap: 10px;
+    overflow-y: auto; 
+    max-height: 28vh; /* Para que no ocupe toda la pantalla */
+    padding: 4px;
   }
 
   .mc-btn-combo {
-    background: var(--superficie-2); border: 2px solid transparent; border-radius: 10px;
-    padding: 8px; text-align: center; cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: var(--superficie-2); 
+    border: 2px solid transparent; 
+    border-radius: 12px;
+    padding: 10px 6px; 
+    text-align: center; 
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
     transition: all 0.15s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
   }
   .mc-btn-combo:active { transform: scale(0.95); }
-  .mc-btn-combo.seleccionado { border-color: var(--azul); background: rgba(37, 99, 235, 0.1); }
+  .mc-btn-combo.seleccionado { 
+    border-color: var(--azul); 
+    background: var(--azul-suave); 
+    box-shadow: 0 0 0 2px var(--azul);
+  }
   html.tema-oscuro .mc-btn-combo.seleccionado { background: rgba(96, 165, 250, 0.15); }
-    .mc-btn-combo .icono-mc { 
-    width: 40px; 
-    height: 40px; 
-    flex-shrink: 0;
-    border-radius: 8px;
+  
+  .mc-btn-combo .icono-mc { 
+    width: 48px; 
+    height: 48px; 
+    border-radius: 50%; /* Los hacemos redonditos */
     overflow: hidden; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     background: var(--superficie);
+    border: 1px solid var(--azul-borde);
   }
-  .mc-btn-combo .icono-mc img,
-  .mc-btn-combo .icono-mc svg { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
-  }
-  .mc-btn-combo .nom-mc { font-size: 11px; font-weight: 600; line-height: 1.2; color: var(--texto); }
-  .mc-btn-combo .recargo-mc { font-size: 10px; color: var(--alerta); font-weight: 700; }
+  .mc-btn-combo .icono-mc img, .mc-btn-combo .icono-mc svg { width: 100%; height: 100%; object-fit: cover; }
 
   .mc-total-box {
     background: var(--azul-suave); border-radius: 12px; padding: 12px; text-align: center;
@@ -2263,8 +2268,15 @@ function pintarPillsCategorias() {
   });
   cont.appendChild(masV);
 
-  // Botones de categorías
-  Object.keys(cats).sort().forEach(function (cat) {
+  // Botones de categorías (Ordenados: Combos y Bebidas primero)
+  const ordenCats = Object.keys(cats).sort(function (a, b) {
+    const prioridad = { 'combo': 1, 'bebida': 2 };
+    const pesoA = prioridad[norm_(a)] || 99;
+    const pesoB = prioridad[norm_(b)] || 99;
+    return pesoA - pesoB || a.localeCompare(b);
+  });
+
+  ordenCats.forEach(function (cat) {
     const d = document.createElement('div');
     d.className = 'pill-cat' + (categoriaFiltro === cat && !modoMasVendidos ? ' activa' : '');
     d.innerHTML = '<span class="pill-icon">' + iconoPillAnimado(cat) + '</span> ' + cat;

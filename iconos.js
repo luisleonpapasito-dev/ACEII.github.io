@@ -130,12 +130,13 @@ function pintarIconosMenu() {
   }
 }
 
-// ===== FUNCIÓN PARA PINTAR ICONOS DE BOTONES DE ACCIÓN =====
 // ===== Helper: SVG con clase y sin tamaño propio =====
 function icoSvg(clave) {
   return SVG_PACK[clave].trim().replace(/^<svg /, '<svg class="ico-svg" aria-hidden="true" focusable="false" ');
 }
 
+// ===== Helper: botón con chip + ícono + texto =====
+// solido = true -> círculo blanco sólido (para íconos de colores)
 function ponerBotonConIcono(el, clave, texto, solido) {
   if (!el) return;
   el.classList.add('btn-con-icono');
@@ -162,32 +163,17 @@ function pintarIconosBotones() {
   ponerBotonConIcono(document.getElementById('mcTransferencia'), 'transferencia', 'TRANSFERENCIA', true);
 }
 
-// ===== ICONO DEL TÍTULO "RÁPIDOS" =====
+// ===== ICONO DEL TÍTULO "RÁPIDOS" (nube con rayo, pequeño) =====
 function pintarIconoRapidos() {
   const h = document.querySelector('#zonaRapidos .titulo-fila h4');
   if (!h) return;
-  h.innerHTML = '<span class="ico-rapidos">' + icoSvg('rayos') + '</span>Rápidos';
+  h.style.display = 'flex';
+  h.style.alignItems = 'center';
+  h.style.gap = '6px';
+  h.innerHTML = '<span class="ico-rapidos" style="display:inline-flex; width:26px; height:26px; flex-shrink:0;">' + icoSvg('rayos').replace('<svg ', '<svg width="26" height="26" style="display:block;" ') + '</span>Rápidos';
 }
-
 // ===== FUNCIÓN PARA PINTAR ICONOS DE BOTONES DE ACCIÓN =====
-function pintarIconosBotones() {
-  // 1. CÁMARA
-  ponerBotonConIcono(document.querySelector('#btnCam, #btnEscanearCodigo'), 'camara', 'Escanear con cámara');
 
-  // 2. NUEVO PRODUCTO
-  const btnNuevo = document.getElementById('btnNuevo');
-  if (btnNuevo && btnNuevo.innerHTML.indexOf('Nuevo producto') >= 0 && !btnNuevo.querySelector('.ico-nuevo')) {
-    btnNuevo.innerHTML = '<span class="ico-nuevo" style="width:22px; height:22px; display:inline-block; vertical-align:middle; margin-right:6px;">' + SVG_PACK.nuevo + '</span> Nuevo producto';
-  }
-
-  // 3. EFECTIVO Y TRANSFERENCIA (Barra flotante)
-  ponerBotonConIcono(document.getElementById('bfEfectivo'), 'efectivo', 'EFECTIVO');
-  ponerBotonConIcono(document.getElementById('bfTransferencia'), 'transferencia', 'TRANSFERENCIA');
-
-  // 4. EFECTIVO Y TRANSFERENCIA (Modal cobro rápido)
-  ponerBotonConIcono(document.getElementById('mcEfectivo'), 'efectivo', 'EFECTIVO');
-  ponerBotonConIcono(document.getElementById('mcTransferencia'), 'transferencia', 'TRANSFERENCIA');
-}
 document.addEventListener('DOMContentLoaded', pintarIconosBotones);
 document.addEventListener('DOMContentLoaded', pintarIconosMenu);
 document.addEventListener('DOMContentLoaded', pintarIconoRapidos);

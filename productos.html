@@ -980,7 +980,7 @@ $('btnGuardar').addEventListener('click', async function () {
     let r;
     let nuevoId = '';
     if (modoForm === 'crear') {
-      const rid = await jsonp({ accion: 'proximo_id', categoria: cat }, 15000);
+       const rid = await jsonp({ accion: 'proximo_id', categoria: cat }, 15000);
       if (!rid || !rid.ok) throw new Error('No se pudo generar el ID');
       nuevoId = rid.id;
       r = await post({
@@ -988,7 +988,9 @@ $('btnGuardar').addEventListener('click', async function () {
         id_usuario: u.id,
         id_producto: nuevoId,
         nombre: nombre, categoria: cat, modo: modoReg, proveedor: proveedor,
-        codigo: codigo, nota: nota, imagen_url: imagenUrlActual, precio_combo: precioCombo      });
+        precio: precio, costo: costo, upp: upp,
+        codigo: codigo, nota: nota, imagen_url: imagenUrlActual, precio_combo: precioCombo
+      });
     } else {
       nuevoId = productoEditando.id;
       r = await post({
@@ -996,6 +998,7 @@ $('btnGuardar').addEventListener('click', async function () {
         id_usuario: u.id,
         id_producto: nuevoId,
         nombre: nombre, categoria: cat, modo: modoReg, proveedor: proveedor,
+        precio: precio, costo: costo, upp: upp,
         codigo: codigo, nota: nota, imagen_url: imagenUrlActual, precio_combo: precioCombo
       });
     }

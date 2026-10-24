@@ -101,6 +101,8 @@
       <button class="main" id="btnGuardar" style="flex:1;">Guardar</button>
       <button id="btnCancelar" style="flex:0 0 auto;">Cancelar</button>
     </div>
+    
+    <button id="btnEliminarCat" style="display:none; width:100%; margin-top:10px; background:#FFE5E5; color:var(--alerta); font-weight:700;">🗑️ Eliminar categoría</button>
   </div>
 </div>
 
@@ -166,6 +168,7 @@ $('btnNueva').addEventListener('click', () => {
   $('formTitulo').textContent = 'Nueva categoría';
   $('fNombre').value = ''; $('fPrefijo').value = ''; $('fPrefijo').disabled = false;
   $('avisoPrefijo').textContent = '';
+  $('btnEliminarCat').style.display = 'none';
   pintarImagen('');
   $('formPanel').style.display = 'block';
   $('formPanel').scrollIntoView({ behavior: 'smooth' });
@@ -177,6 +180,7 @@ function abrirEditar(c) {
   $('fNombre').value = c.nombre; $('fPrefijo').value = c.prefijo;
   $('fPrefijo').disabled = false;
   $('avisoPrefijo').textContent = '⚠️ Ojo: si cambias el prefijo, los IDs de los productos se actualizarán automáticamente.';
+  $('btnEliminarCat').style.display = 'block';
   pintarImagen(c.imagen_url);
   $('formPanel').style.display = 'block';
   $('formPanel').scrollIntoView({ behavior: 'smooth' });
@@ -203,9 +207,38 @@ $('btnPegarUrl').addEventListener('click', () => {
   if (url) pintarImagen(url.trim());
 });
 
-// (Aquí iría tu lógica de comprimir y subir a Drive igual que en productos.html, 
-// pero para no hacerlo tan largo, asumimos que usarás "Pegar URL" por ahora 
-// o puedes copiar la función comprimirImagen de productos.html)
+$('inputFoto').addEventListener('change', function(e) {
+  const archivo = e.target.files[0];
+  if (!archivo) return;
+  mostrar('Subiendo imagen...', 'aviso');
+  
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const img = new Image();
+    img.onload = async function() {
+      let w = img.width, h = img.height;
+      if (w > 800) { h = Math.round(h * 800 / w); w = 800; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const base64 = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+      
+      const u = getUsuarioTurno();
+      try {
+               const r = await post({
+          accion: 'subir_imagen_categoria',
+          id_usuario: u.id,
+          base64: base64,
+          tipoMime: 'image/jpeg'
+        });
+        if (r && r.ok) { pintarImagen(r.url); mostrar('Foto subida ✓', 'ok'); }
+        else { mostrar('Error al subir', 'error'); }
+      } catch(err) { mostrar('Error de red', 'error'); }
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(archivo);
+});
 
 $('btnGuardar').addEventListener('click', async () => {
   const nombre = $('fNombre').value.trim();
@@ -232,6 +265,32 @@ $('btnGuardar').addEventListener('click', async () => {
     } else { mostrar(r.error, 'error'); }
   } catch (err) { mostrar('Error de red', 'error'); }
   finally { $('btnGuardar').disabled = false; }
+});
+
+$('btnEliminarCat').addEventListener('click', async () => {
+  if (!categoriaEditando) return;
+  
+  const msj = `¿Estás seguro de eliminar la categoría "${categoriaEditando.nombre}"?\n\nSi hay productos usándola, se moverán automáticamente a "Sin categoría".`;
+  if (!confirm(msj)) return;
+
+  const u = getUsuarioTurno();
+  $('btnEliminarCat').disabled = true; mostrar('Eliminando...', 'aviso');
+
+  try {
+    const r = await post({ accion: 'eliminar_categoria', id_usuario: u.id, nombre: categoriaEditando.nombre });
+    if (r.ok) {
+      mostrar(r.mensaje, 'ok');
+      $('formPanel').style.display = 'none';
+      categoriaEditando = null;
+      await cargarCategorias();
+    } else {
+      mostrar(r.error, 'error');
+      $('btnEliminarCat').disabled = false;
+    }
+  } catch (e) {
+    mostrar('Error de red', 'error');
+    $('btnEliminarCat').disabled = false;
+  }
 });
 </script>
 <script>

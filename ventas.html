@@ -1648,6 +1648,13 @@ html.tema-oscuro .buscador-wrap #buscar:focus {
   }
 }
 
+.btn-rapido .icono svg { 
+  width: 100%; /* Para que ocupe todo el cuadro */
+  height: 100%; 
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.10)); 
+  padding: 10px; /* Un poco de margen para que no se pegue a los bordes */
+  box-sizing: border-box;
+}
 
 </style>
 </head>
@@ -1964,10 +1971,11 @@ function iconoParaProducto(p) {
   return svgPorCategoria(p || {});
 }
 
-function iconoParaGrupo(nombreCategoria) {
-  return svgPorCategoria({ nombre: '', categoria: nombreCategoria });
-}
 
+function iconoParaGrupo(nombreCategoria) {
+  // Usamos la misma función que usan las pills para que traiga los SVG grandes
+  return iconoPillAnimado(nombreCategoria);
+}
 // ===== Iconos animados para las pills =====
 
 
@@ -1997,18 +2005,19 @@ function iconoParaGrupo(nombreCategoria) {
 // Reemplaza la función actual en tu HTML por esta:
 function iconoPillAnimado(cat) {
   const c = norm_(cat);
-  // Usamos los SVGs que ya tienes definidos en iconos.js
+  // Mapeo directo y mejorado a los SVG de iconos.js
   if (c.indexOf('empanada') >= 0) return ICONOS_PILL.empanada;
-  if (c.indexOf('bebida') >= 0) return ICONOS_PILL.bebida;
-  if (c.indexOf('combo') >= 0) return ICONOS_PILL.combo; // Tu SVG de combo es perfecto
+  if (c.indexOf('bebida') >= 0 || c.indexOf('jugo') >= 0 || c.indexOf('gaseosa') >= 0) return ICONOS_PILL.bebida;
+  if (c.indexOf('combo') >= 0) return ICONOS_PILL.combo;
   if (c.indexOf('dulce') >= 0 || c.indexOf('confiteria') >= 0) return ICONOS_PILL.dulce;
   if (c.indexOf('galleta') >= 0 || c.indexOf('ponque') >= 0) return ICONOS_PILL.galleta;
-  if (c.indexOf('pasaboca') >= 0) return ICONOS_PILL.pasaboca;
-  if (c.indexOf('lacteo') >= 0 || c.indexOf('avena') >= 0) return ICONOS_PILL.lacteo;
-  if (c.indexOf('preparado') >= 0 || c.indexOf('instantanea') >= 0) return ICONOS_PILL.plato;
-  if (c.indexOf('papeleria') >= 0) return ICONOS_PILL.papeleria;
-  if (c.indexOf('higiene') >= 0) return ICONOS_PILL.higiene;
-  return ICONOS_PILL.carpeta;
+  if (c.indexOf('pasaboca') >= 0 || c.indexOf('mecato') >= 0) return ICONOS_PILL.pasaboca;
+  if (c.indexOf('lacteo') >= 0 || c.indexOf('avena') >= 0 || c.indexOf('leche') >= 0) return ICONOS_PILL.lacteo;
+  if (c.indexOf('preparado') >= 0 || c.indexOf('instantanea') >= 0 || c.indexOf('comida') >= 0) return ICONOS_PILL.plato;
+  if (c.indexOf('papeleria') >= 0 || c.indexOf('impresion') >= 0) return ICONOS_PILL.papeleria;
+  if (c.indexOf('higiene') >= 0 || c.indexOf('aseo') >= 0) return ICONOS_PILL.higiene;
+  if (c.indexOf('postre') >= 0) return ICONOS_PILL.postre;
+  return ICONOS_PILL.carpeta; // Por defecto
 }
 
 // ===== Detector tap / scroll =====
@@ -3241,6 +3250,11 @@ function abrirConstructorCombo() {
 
 $('btnCerrarCombo').addEventListener('click', () => {
   $('modalCombo').style.display = 'none';
+  // Limpiamos las selecciones para que la próxima vez que se abra esté limpio
+  comboEmpanada = null;
+  comboBebida = null;
+  $('totalCombo').textContent = '$0';
+  $('btnAgregarCombo').disabled = true;
 });
 
 $('btnAgregarCombo').addEventListener('click', () => {
@@ -3279,6 +3293,12 @@ $('btnAgregarCombo').addEventListener('click', () => {
 
 </script>
 <!-- Modal para armar Combos -->
+<!-- Barra flotante del carrito -->
+<div id="barraFlotante">
+  <!-- ... contenido de la barra flotante ... -->
+</div>
+
+<!-- 👇 PEGA EL MODAL AQUÍ 👇 -->
 <div id="modalCombo" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:300; padding:20px; box-sizing:border-box; overflow-y:auto;">
   <div style="max-width:480px; margin:40px auto; background:var(--superficie); color:var(--texto); border-radius:16px; padding:20px;">
     <h3 style="margin-top:0; text-align:center;">🍔 Armar Combo</h3>
@@ -3303,8 +3323,8 @@ $('btnAgregarCombo').addEventListener('click', () => {
     <button id="btnCerrarCombo" style="width:100%; padding:12px;">Cancelar</button>
   </div>
 </div>
-
-
+<!-- 👆 HASTA AQUÍ 👆 -->
+ tu código ...
 
 </body>
 </html>

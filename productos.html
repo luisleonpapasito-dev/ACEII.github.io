@@ -489,8 +489,22 @@
     <label>Precio de venta *</label>
     <input type="number" id="fPrecio" min="0" step="50" inputmode="numeric" placeholder="Ej: 4000">
 
-    <label>Precio combo (opcional, vacío = no entra en combo)</label>
-    <input type="number" id="fPrecioCombo" min="0" step="50" inputmode="numeric" placeholder="Ej: 3800">
+    <label>Papel en combos</label>
+    <select id="fRolCombo">
+      <option value="no">No entra en combos</option>
+      <option value="base">Producto base (empanada, pastel...)</option>
+      <option value="bebida">Bebida de combo</option>
+    </select>
+
+    <div id="boxPrecioCombo" style="display:none;">
+      <label>Precio del combo completo (base + bebida)</label>
+      <input type="number" id="fPrecioCombo" min="0" step="50" inputmode="numeric" placeholder="Ej: 6000">
+    </div>
+
+    <div id="boxRecargoCombo" style="display:none;">
+      <label>Recargo en combo (0 = gratis)</label>
+      <input type="number" id="fRecargoCombo" min="0" step="50" inputmode="numeric" placeholder="Ej: 0">
+    </div>
 
     <label>Costo unitario (opcional)</label>
     <input type="number" id="fCosto" min="0" step="50" inputmode="numeric" placeholder="Ej: 1850">
@@ -584,6 +598,14 @@ async function cargarTodo() {
   }
 }
 
+function actualizarCamposCombo() {
+  const rol = $('fRolCombo').value;
+  $('boxPrecioCombo').style.display = (rol === 'base') ? 'block' : 'none';
+  $('boxRecargoCombo').style.display = (rol === 'bebida') ? 'block' : 'none';
+}
+
+
+
 function llenarSelectsForm() {
   const selCat = $('fCategoria');
   selCat.innerHTML = '<option value="">Elige la categoría...</option>';
@@ -606,8 +628,14 @@ function llenarSelectsForm() {
     selProv.appendChild(new Option(p, p));
   });
 
-  pintarPills();
+    pintarPills();
+
+  if (!$('fRolCombo')._enganchado) {
+    $('fRolCombo').addEventListener('change', actualizarCamposCombo);
+    $('fRolCombo')._enganchado = true;
+  }
 }
+
 
 function colorPorCategoria(cat) {
   const colores = {

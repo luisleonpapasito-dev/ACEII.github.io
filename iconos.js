@@ -5,9 +5,9 @@ const SVG_PACK = {
 
   efectivo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><g transform="translate(0 -1)"><path d="M4 28L24 38V43L4 33Z" fill="#78AE3E"/><path d="M24 38L44 28V33L24 43Z" fill="#5C9231"/><path d="M4 23L24 33V38L4 28Z" fill="#78AE3E"/><path d="M24 33L44 23V28L24 38Z" fill="#5C9231"/><path d="M4 18L24 28V33L4 23Z" fill="#78AE3E"/><path d="M24 28L44 18V23L24 33Z" fill="#5C9231"/><path d="M4 23L24 33L44 23M4 28L24 38L44 28" fill="none" stroke="#3F6B1F" stroke-width=".8" opacity=".55"/><path d="M24 8L44 18L24 28L4 18Z" fill="#A9D272"/><path d="M24 11.5L39 19L24 26.5L9 19Z" fill="none" stroke="#8DBF55" stroke-width="1"/><ellipse cx="24" cy="18" rx="5.6" ry="2.8" fill="#8DBF55"/><path d="M11 21.5L17 24.5V39.5L11 36.5Z" fill="#C99A57"/><path d="M11 21.5L17 24.5L37 14.5L31 11.5Z" fill="#EBC184"/></g></svg>`,
 
-  transferencia: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect x="3" y="3" width="22" height="42" rx="4.5" fill="#E6E6FC" stroke="#4FA8FF" stroke-width="2.4"/><circle cx="14" cy="7.5" r="1.3" fill="#4FA8FF"/><rect x="9.5" y="40" width="9" height="1.8" rx=".9" fill="#4FA8FF"/><path d="M28 10H44M32 6L27.5 10L32 14" fill="none" stroke="#6F86D6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 42H41M37 38L41.5 42L37 46" fill="none" stroke="#6F86D6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" transform="translate(3 -1)"/><rect x="11" y="18" width="35" height="17" rx="2.5" fill="#39CC36"/><rect x="13.5" y="20.5" width="30" height="12" rx="1.5" fill="#8EFF7A"/><circle cx="28.5" cy="26.5" r="5" fill="#2EB82B"/><circle cx="28.5" cy="26.5" r="2.2" fill="#8EFF7A"/><rect x="15.5" y="25.7" width="3.5" height="1.6" rx=".8" fill="#2EB82B"/><rect x="38" y="25.7" width="3.5" height="1.6" rx=".8" fill="#2EB82B"/></svg>`,
+  transferencia: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect x="3" y="3" width="22" height="42" rx="4.5" fill="#E6E6FC" stroke="#4FA8FF" stroke-width="2.4"/><circle cx="14" cy="7.5" r="1.3" fill="#4FA8FF"/><rect x="9.5" y="40" width="9" height="1.8" rx=".9" fill="#4FA8FF"/><g class="fl-izq"><path d="M28 10H44M32 6L27.5 10L32 14" fill="none" stroke="#6F86D6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></g><g class="fl-der"><path d="M27 41H44M40 37L44.5 41L40 45" fill="none" stroke="#6F86D6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></g><rect x="11" y="18" width="35" height="17" rx="2.5" fill="#39CC36"/><rect x="13.5" y="20.5" width="30" height="12" rx="1.5" fill="#8EFF7A"/><circle cx="28.5" cy="26.5" r="5" fill="#2EB82B"/><circle cx="28.5" cy="26.5" r="2.2" fill="#8EFF7A"/><rect x="15.5" y="25.7" width="3.5" height="1.6" rx=".8" fill="#2EB82B"/><rect x="38" y="25.7" width="3.5" height="1.6" rx=".8" fill="#2EB82B"/></svg>`,
 
-  rayos: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M38 27L24 47H32L27 61L47 37H38L44 27Z" fill="#FFCB4D"/><path d="M38 27L44 27L38 37H47L27 61L30 49L36 41H31Z" fill="#FFAC3B"/><path d="M13 36A8 8 0 0 1 14 20A13 13 0 0 1 40 14A10 10 0 0 1 49 36Z" fill="#C7E0EB"/><path d="M13 36A8 8 0 0 1 14 20A11 11 0 0 1 24 18A9 9 0 0 0 19 36Z" fill="#DCE8F2"/><path d="M40 14A10 10 0 0 1 49 36H38A12 12 0 0 0 40 14Z" fill="#A6D8E2"/><path d="M34 14Q39 11 43 15" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.55"/></svg>`,
+  rayos: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><g class="rayo"><path d="M38 27L24 47H32L27 61L47 37H38L44 27Z" fill="#FFCB4D"/><path d="M38 27L44 27L38 37H47L27 61L30 49L36 41H31Z" fill="#FFAC3B"/></g><g class="nube"><path d="M13 36A8 8 0 0 1 14 20A13 13 0 0 1 40 14A10 10 0 0 1 49 36Z" fill="#C7E0EB"/><path d="M13 36A8 8 0 0 1 14 20A11 11 0 0 1 24 18A9 9 0 0 0 19 36Z" fill="#DCE8F2"/><path d="M40 14A10 10 0 0 1 49 36H38A12 12 0 0 0 40 14Z" fill="#A6D8E2"/><path d="M34 14Q39 11 43 15" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.55"/></g></svg>`,
 
   nuevo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#f4f5f6" rx="110" /><circle cx="256" cy="256" r="140" fill="#ffffff" /><defs><clipPath id="blueCircle"><circle cx="256" cy="256" r="118" /></clipPath></defs><circle cx="256" cy="256" r="118" fill="#69c3f7" /><circle cx="248" cy="248" r="118" fill="#7dd0fa" clip-path="url(#blueCircle)" /><path d="M 228 192 Q 228 186 234 186 L 278 186 Q 284 186 284 192 L 284 228 L 320 228 Q 326 228 326 234 L 326 278 Q 326 284 320 284 L 284 284 L 284 320 Q 284 326 278 326 L 234 326 Q 228 326 228 320 L 228 284 L 192 284 Q 186 284 186 278 L 186 234 Q 186 228 192 228 L 228 228 Z" fill="#ffffff" /><path d="M 256 326 L 278 326 Q 284 326 284 320 L 284 284 L 320 284 Q 326 284 326 278 L 326 256 L 272 256 Q 256 256 256 272 Z" fill="#eaf5fe" /></svg>`,
 
@@ -132,7 +132,31 @@ function pintarIconosMenu() {
 
 // ===== Helper: SVG con clase y sin tamaño propio =====
 function icoSvg(clave) {
-  return SVG_PACK[clave].trim().replace(/^<svg /, '<svg class="ico-svg" aria-hidden="true" focusable="false" ');
+  return SVG_PACK[clave].trim().replace(/^<svg /, '<svg class="ico-svg ico-' + clave + '" aria-hidden="true" focusable="false" ');
+}
+
+// ===== Rebote del círculo al tocar un botón con ícono =====
+function activarRebotes() {
+  document.addEventListener('pointerdown', function (e) {
+    const b = e.target.closest ? e.target.closest('.btn-con-icono') : null;
+    if (!b) return;
+    const chip = b.querySelector('.btn-ico');
+    if (!chip) return;
+    chip.classList.remove('rebota');
+    void chip.offsetWidth;
+    chip.classList.add('rebota');
+  }, true);
+}
+
+// ===== "Pop" del total de la barra flotante cuando cambia =====
+function animarTotalCarrito() {
+  const t = document.getElementById('bfTotal');
+  if (!t) return;
+  new MutationObserver(function () {
+    t.classList.remove('pop');
+    void t.offsetWidth;
+    t.classList.add('pop');
+  }).observe(t, { childList: true, characterData: true, subtree: true });
 }
 
 // ===== Helper: botón con chip + ícono + texto =====
@@ -177,3 +201,5 @@ function pintarIconoRapidos() {
 document.addEventListener('DOMContentLoaded', pintarIconosBotones);
 document.addEventListener('DOMContentLoaded', pintarIconosMenu);
 document.addEventListener('DOMContentLoaded', pintarIconoRapidos);
+document.addEventListener('DOMContentLoaded', activarRebotes);
+document.addEventListener('DOMContentLoaded', animarTotalCarrito);

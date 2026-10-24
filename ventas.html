@@ -1434,7 +1434,110 @@ window.addEventListener('unhandledrejection', function (e) {
   display: block;
 }
 
+/* ===== FASE 3a: ANIMACIONES ===== */
 
+/* Nube de Rápidos: flota y el rayo destella */
+.ico-rapidos .nube {
+  animation: nubeFlota 3.2s ease-in-out infinite;
+}
+.ico-rapidos .rayo {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: rayoDestello 3.2s ease-in-out infinite;
+}
+@keyframes nubeFlota {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-2.5px); }
+}
+@keyframes rayoDestello {
+  0%, 55%, 100% { opacity: 1; transform: scale(1); }
+  60%           { opacity: 0.2; }
+  65%           { opacity: 1; transform: scale(1.12); }
+  72%           { opacity: 0.3; }
+  78%           { opacity: 1; transform: scale(1); }
+}
+
+/* Rebote del círculo al tocar */
+.btn-ico.rebota {
+  animation: chipRebota 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes chipRebota {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.3) rotate(-8deg); }
+  70%  { transform: scale(0.92) rotate(4deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* Dinero salta */
+.btn-ico.rebota .ico-efectivo {
+  animation: dineroSalta 0.5s ease;
+}
+@keyframes dineroSalta {
+  0%, 100% { transform: translateY(0) scale(1); }
+  30%      { transform: translateY(-4px) scale(1.1); }
+  60%      { transform: translateY(1px) scale(0.97); }
+}
+
+/* Flechas de transferencia se cruzan */
+.btn-ico.rebota .fl-izq {
+  animation: flIzq 0.5s ease;
+}
+.btn-ico.rebota .fl-der {
+  animation: flDer 0.5s ease;
+}
+@keyframes flIzq {
+  0%   { transform: translateX(0); opacity: 1; }
+  40%  { transform: translateX(-10px); opacity: 0; }
+  41%  { transform: translateX(10px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes flDer {
+  0%   { transform: translateX(0); opacity: 1; }
+  40%  { transform: translateX(10px); opacity: 0; }
+  41%  { transform: translateX(-10px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+/* Cámara: zoom */
+.btn-ico.rebota .ico-camara {
+  animation: camaraZoom 0.45s ease;
+}
+@keyframes camaraZoom {
+  0%, 100% { transform: scale(1); }
+  35%      { transform: scale(0.82); }
+  70%      { transform: scale(1.14); }
+}
+
+/* Botón "+" de los productos rápidos */
+.btn-rapido.agregado .plus {
+  animation: plusOk 0.45s ease;
+}
+@keyframes plusOk {
+  0%   { transform: scale(1) rotate(0); }
+  40%  { transform: scale(1.4) rotate(90deg); background: var(--exito); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* Total de la barra flotante */
+.bf-total.pop {
+  transform-origin: left center;
+  animation: totalPop 0.35s ease;
+}
+@keyframes totalPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+
+/* Respetar a quien desactiva animaciones en su celular */
+@media (prefers-reduced-motion: reduce) {
+  .ico-rapidos .nube,
+  .ico-rapidos .rayo,
+  .btn-ico.rebota,
+  .btn-ico.rebota *,
+  .btn-rapido.agregado .plus,
+  .bf-total.pop { animation: none !important; }
+}
 
 
 

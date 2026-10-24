@@ -2461,7 +2461,7 @@ function crearBotonRapido(p, esGrupo, itemsGrupo) {
       '<span class="icono">' + iconoParaGrupo(p) + '</span>' +
       '<span class="nom">' + p + '</span>' +
       '<span class="pre">' + itemsGrupo.length + ' opciones</span>' +
-      '<span class="plus">›</span>';
+      '<span class="plus">+</span>';
   } else {
     btn.innerHTML =
       '<span class="icono">' + iconoParaProducto(p) + '</span>' +
@@ -2472,8 +2472,8 @@ function crearBotonRapido(p, esGrupo, itemsGrupo) {
 
   const onTap = function () {
     if (esGrupo) {
-      // 👇 AQUÍ ESTÁ EL CAMBIO CLAVE 👇
-      // Si el grupo es de Combos, abrimos el constructor
+      btn.classList.add('agregado');
+      setTimeout(function () { btn.classList.remove('agregado'); }, 400);
       if (norm_(p).indexOf('combo') >= 0) {
         abrirConstructorCombo();
       } else {
@@ -3248,6 +3248,7 @@ function abrirConstructorCombo() {
   $('btnAgregarCombo').disabled = true;
 
   const conCombo = productos.filter(p => p.precio_combo > 0 && p.stock > 0);
+  alert('Con precio combo y stock: ' + conCombo.length + ' | Con precio combo (sin mirar stock): ' + productos.filter(p => p.precio_combo > 0).length + ' | Total: ' + productos.length);
   const empanadas = conCombo.filter(p => norm_(p.categoria).indexOf('empanada') >= 0);
   const bebidas = conCombo.filter(p => norm_(p.categoria).indexOf('empanada') < 0);
 

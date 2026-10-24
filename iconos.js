@@ -196,6 +196,56 @@ function pintarIconoRapidos() {
   h.style.gap = '6px';
   h.innerHTML = '<span class="ico-rapidos" style="display:inline-flex; width:26px; height:26px; flex-shrink:0;">' + icoSvg('rayos').replace('<svg ', '<svg width="26" height="26" style="display:block;" ') + '</span>Rápidos';
 }
+
+
+// ===== ICONO DEL ENCABEZADO (carrito del menú dentro de un círculo) =====
+function pintarIconoTitulo() {
+  const viejo = document.querySelector('.titulo-con-icono .ico-registradora');
+  if (!viejo) return;
+  const chip = document.createElement('span');
+  chip.className = 'ico-titulo';
+  chip.innerHTML = SVG_PACK.ventas.trim().replace(/^<svg /, '<svg class="ico-svg" aria-hidden="true" focusable="false" ');
+  viejo.replaceWith(chip);
+}
+
+// ===== BUSCADOR: lupa adentro, botón borrar y sin etiqueta (solo en Ventas) =====
+function mejorarBuscador() {
+  const input = document.getElementById('buscar');
+  if (!input || !document.getElementById('zonaRapidos')) return;
+  if (input.parentNode.classList.contains('buscador-wrap')) return;
+
+  // La etiqueta "Buscar producto" se oculta; el placeholder ya lo dice
+  const etiqueta = input.previousElementSibling;
+  if (etiqueta && etiqueta.tagName === 'LABEL') etiqueta.style.display = 'none';
+  input.placeholder = 'Buscar producto…';
+  input.setAttribute('aria-label', 'Buscar producto');
+
+  const wrap = document.createElement('div');
+  wrap.className = 'buscador-wrap';
+  input.parentNode.insertBefore(wrap, input);
+  wrap.appendChild(input);
+
+  wrap.insertAdjacentHTML('afterbegin',
+    '<svg class="buscador-lupa" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>');
+  wrap.insertAdjacentHTML('beforeend',
+    '<button type="button" class="buscador-borrar" aria-label="Borrar búsqueda">✕</button>');
+
+  const borrar = wrap.querySelector('.buscador-borrar');
+
+  function sync() {
+    wrap.classList.toggle('con-texto', input.value.length > 0);
+  }
+  input.addEventListener('input', sync);
+  input.addEventListener('focus', sync);
+  input.addEventListener('blur', sync);
+
+  borrar.addEventListener('click', function () {
+    input.value = '';
+    sync();
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.focus();
+  });
+}
 // ===== FUNCIÓN PARA PINTAR ICONOS DE BOTONES DE ACCIÓN =====
 
 document.addEventListener('DOMContentLoaded', pintarIconosBotones);

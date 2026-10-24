@@ -1539,7 +1539,92 @@ window.addEventListener('unhandledrejection', function (e) {
   .bf-total.pop { animation: none !important; }
 }
 
+/* ===== FASE 4b: encabezado y buscador ===== */
 
+/* Icono del título: carrito del menú en círculo translúcido */
+.ico-titulo {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+}
+.ico-titulo .ico-svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+/* Buscador */
+.buscador-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.buscador-wrap #buscar {
+  width: 100%;
+  height: 50px;
+  margin: 0;
+  padding: 0 46px 0 46px;
+  box-sizing: border-box;
+  font-family: var(--fuente), system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--texto);
+  background: var(--superficie-2);
+  border: 1.5px solid var(--azul-borde);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 2px rgba(50, 72, 110, 0.06);
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.buscador-wrap #buscar::placeholder {
+  color: var(--texto-suave);
+  font-weight: 500;
+  opacity: 0.85;
+}
+.buscador-wrap #buscar:focus {
+  outline: none;
+  background: var(--superficie);
+  border-color: var(--azul);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+.buscador-lupa {
+  position: absolute;
+  left: 16px;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--texto-suave);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  pointer-events: none;
+  transition: stroke 0.15s;
+}
+.buscador-wrap:focus-within .buscador-lupa {
+  stroke: var(--azul);
+}
+.buscador-wrap .buscador-borrar {
+  position: absolute;
+  right: 9px;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  display: none;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  font-size: 13px;
+  line-height: 1;
+  background: var(--superficie);
+  color: var(--texto-suave);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.14);
+}
+.buscador-wrap.con-texto .buscador-borrar {
+  display: grid;
+}
 
 
 

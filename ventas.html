@@ -32,6 +32,69 @@ window.addEventListener('unhandledrejection', function (e) {
 
 <style>
 
+  /* ===== Modal de Combos Rediseñado ===== */
+  .modal-combo-overlay {
+    display: none;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); z-index: 300;
+    padding: 12px; box-sizing: border-box;
+    align-items: flex-end; /* Lo pegamos abajo como panel */
+  }
+  .modal-combo-overlay.abierto { display: flex; }
+  
+  .mc-contenido {
+    width: 100%; max-width: 480px; margin: 0 auto;
+    background: var(--superficie); color: var(--texto);
+    border-radius: 20px; padding: 16px;
+    max-height: 90vh; display: flex; flex-direction: column;
+    animation: msEntra 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .mc-header {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 17px; margin-bottom: 12px;
+  }
+
+  .mc-pills { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 8px; scrollbar-width: none; }
+  .mc-pills::-webkit-scrollbar { display: none; }
+  .mc-pill {
+    flex-shrink: 0; padding: 6px 12px; border-radius: 16px;
+    background: var(--superficie-2); color: var(--texto-suave);
+    font-size: 13px; font-weight: 600; border: 2px solid transparent; cursor: pointer; white-space: nowrap;
+  }
+  .mc-pill.activa { background: var(--azul); color: #fff; border-color: var(--azul-claro); }
+
+  .mc-seccion { margin-bottom: 12px; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .mc-seccion label { font-size: 12px; font-weight: 700; color: var(--texto-suave); margin-bottom: 6px; text-transform: uppercase; }
+  
+  .mc-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px;
+    overflow-y: auto; padding-bottom: 4px;
+  }
+
+  .mc-btn-combo {
+    background: var(--superficie-2); border: 2px solid transparent; border-radius: 10px;
+    padding: 8px; text-align: center; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    transition: all 0.15s;
+  }
+  .mc-btn-combo:active { transform: scale(0.95); }
+  .mc-btn-combo.seleccionado { border-color: var(--azul); background: rgba(37, 99, 235, 0.1); }
+  html.tema-oscuro .mc-btn-combo.seleccionado { background: rgba(96, 165, 250, 0.15); }
+  .mc-btn-combo .icono-mc { width: 40px; height: 40px; }
+  .mc-btn-combo .nom-mc { font-size: 11px; font-weight: 600; line-height: 1.2; color: var(--texto); }
+  .mc-btn-combo .recargo-mc { font-size: 10px; color: var(--alerta); font-weight: 700; }
+
+  .mc-total-box {
+    background: var(--azul-suave); border-radius: 12px; padding: 12px; text-align: center;
+    margin: 8px 0 12px; flex-shrink: 0;
+  }
+  html.tema-oscuro .mc-total-box { background: rgba(96, 165, 250, 0.15); }
+
+
+
+
+
   /* ===== Buscador ===== */
   #resultados { max-height: 340px; overflow-y: auto; margin-top: 8px; }
 
@@ -1847,28 +1910,35 @@ html.tema-oscuro .buscador-wrap #buscar:focus {
 </div>
 
 <!-- Modal para armar combos -->
-<div id="modalCombo" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:300; padding:20px; box-sizing:border-box; overflow-y:auto;">
-  <div style="max-width:480px; margin:40px auto; background:var(--superficie); color:var(--texto); border-radius:16px; padding:20px;">
-    <h3 style="margin-top:0; text-align:center;">🍔 Armar Combo</h3>
-    <p style="text-align:center; color:var(--texto-suave); font-size:14px;">Elige 1 Empanada y 1 Bebida</p>
-
-    <div style="margin-bottom:15px;">
-      <label style="font-weight:700; font-size:13px;">1. Elige la Empanada</label>
-      <div id="listaEmpanadasCombo" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;"></div>
+<!-- Modal para armar combos (Flujo Rápido) -->
+<div id="modalCombo" class="modal-combo-overlay">
+  <div class="mc-contenido">
+    <div class="mc-header">
+      <strong>⚡ Armar Combo</strong>
+      <button id="btnCerrarCombo" style="background:transparent; color:var(--texto-suave); font-size:20px; padding:4px 8px; margin:0;">✕</button>
     </div>
 
-    <div style="margin-bottom:15px;">
-      <label style="font-weight:700; font-size:13px;">2. Elige la Bebida</label>
-      <div id="listaBebidasCombo" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;"></div>
+    <!-- Pills de categorías (se llenan solas) -->
+    <div id="mcPillsCat" class="mc-pills"></div>
+
+    <div class="mc-seccion">
+      <label>1. Producto Base</label>
+      <div id="listaEmpanadasCombo" class="mc-grid"></div>
     </div>
 
-    <div style="background:var(--superficie-2); padding:10px; border-radius:8px; margin-bottom:15px; text-align:center;">
-      <span style="font-size:12px; color:var(--texto-suave);">Total del Combo:</span>
-      <div id="totalCombo" style="font-size:22px; font-weight:800; color:var(--azul);">$0</div>
+    <div class="mc-seccion">
+      <label>2. Bebida</label>
+      <div id="listaBebidasCombo" class="mc-grid"></div>
     </div>
 
-    <button id="btnAgregarCombo" class="main" style="width:100%; padding:14px; font-size:16px; margin-bottom:8px;" disabled>Agregar Combo al Carrito</button>
-    <button id="btnCerrarCombo" style="width:100%; padding:12px;">Cancelar</button>
+    <div class="mc-total-box">
+      <div id="mcComboTexto" style="font-size:13px; color:var(--texto-suave); margin-bottom:4px;">Selecciona base y bebida</div>
+      <div id="totalCombo" style="font-size:28px; font-weight:800; color:var(--azul);">$0</div>
+    </div>
+
+    <!-- Botón de respaldo (por si acaso, pero el flujo es automático) -->
+    <button id="btnAgregarCombo" class="main" style="width:100%; padding:14px; font-size:15px; margin-bottom:8px;" disabled>Agregar Combo</button>
+    <button id="btnCerrarCombo2" style="width:100%; padding:12px;">Cerrar</button>
   </div>
 </div>
 
@@ -2475,7 +2545,7 @@ function crearBotonRapido(p, esGrupo, itemsGrupo) {
       btn.classList.add('agregado');
       setTimeout(function () { btn.classList.remove('agregado'); }, 400);
       if (norm_(p).indexOf('combo') >= 0) {
-        abrirConstructorCombo();
+        setTimeout(() => abrirConstructorCombo(), 200); // Pequeño delay para que se vea la animación
       } else {
         mostrarVariantes(p, itemsGrupo);
       }
@@ -2611,7 +2681,7 @@ function pintarBarraFlotante() {
         '<span class="bf-cant">' + it.cantidad + '</span>' +
         '<button class="bf-quitar" style="padding:2px 8px; font-size:14px; background:var(--azul); color:#fff;">+</button>' +
       '</div>' +
-      '<span class="bf-precio">' + fmt(it.precio * it.cantidad) + '</span>';
+            '<span class="bf-precio">' + (it.combo && it.precio === 0 ? '<span style="color:var(--exito); font-weight:800;">Gratis</span>' : fmt(it.precio * it.cantidad)) + '</span>';
 
     row.querySelectorAll('.bf-quitar')[0].addEventListener('click', function (e) {
       e.stopPropagation();
@@ -3240,95 +3310,162 @@ if ('serviceWorker' in navigator) {
 // ===== LÓGICA PARA ARMAR COMBOS =====
 let comboEmpanada = null;
 let comboBebida = null;
+let catComboActual = '';
+
 function abrirConstructorCombo() {
   comboEmpanada = null;
   comboBebida = null;
+  catComboActual = '';
+  
   $('totalCombo').textContent = '$0';
+  $('mcComboTexto').textContent = 'Selecciona base y bebida';
   $('btnAgregarCombo').disabled = true;
-
-  // Buscamos los productos bases: los que tienen precio_combo > 0
-  const bases = productos.filter(p => p.precio_combo > 0 && p.stock > 0);
   
-  // Buscamos las bebidas: las que están marcadas como combo_bebida
-  const bebidas = productos.filter(p => p.combo_bebida === true && p.stock > 0);
-
-  const contEmp = $('listaEmpanadasCombo');
-  const contBeb = $('listaBebidasCombo');
-  contEmp.innerHTML = '';
-  contBeb.innerHTML = '';
-
-  function crearBotonCombo(p, tipo) {
-    const btn = document.createElement('button');
-    btn.className = 'btn-variante';
-    btn.style.flexDirection = 'column';
-    btn.style.padding = '8px';
-    btn.style.textAlign = 'center';
-    
-    // Si es bebida, mostramos el recargo si es mayor a 0
-    let textoPrecio = '';
-    if (tipo === 'beb') {
-      textoPrecio = p.recargo_combo > 0 ? '<span style="color:var(--alerta); font-size:11px;">+ ' + fmt(p.recargo_combo) + '</span>' : '';
-    }
-
-    btn.innerHTML = `
-      <span class="icono-v" style="margin-bottom:4px;">${iconoParaProducto(p)}</span>
-      <span class="nom-v" style="font-size:11px; line-height:1.2;">${p.nombre}</span>
-      ${textoPrecio}
-    `;
-    
-    btn.addEventListener('click', () => {
-      const hermanos = (tipo === 'emp') ? contEmp.children : contBeb.children;
-      for (let h of hermanos) h.style.borderColor = 'transparent';
-      btn.style.borderColor = 'var(--azul)';
-      
-      if (tipo === 'emp') comboEmpanada = p; 
-      else comboBebida = p;
-      
-      const listo = comboEmpanada && comboBebida;
-      if (listo) {
-        // Calculamos el total: precio base + recargo bebida
-        const total = comboEmpanada.precio_combo + (comboBebida.recargo_combo || 0);
-        $('totalCombo').textContent = fmt(total);
-        $('btnAgregarCombo').disabled = false;
-      } else {
-        $('totalCombo').textContent = '$0';
-        $('btnAgregarCombo').disabled = true;
-      }
+  // 1. Encontrar todas las categorías que tienen productos base válidos
+  const basesValidas = productos.filter(p => p.precio_combo > 0 && p.stock > 0);
+  const catsConCombo = [...new Set(basesValidas.map(p => p.categoria))];
+  
+  // 2. Pintar pills si hay más de una categoría
+  const contPills = $('mcPillsCat');
+  contPills.innerHTML = '';
+  if (catsConCombo.length > 1) {
+    catsConCombo.forEach(cat => {
+      const pill = document.createElement('div');
+      pill.className = 'mc-pill' + (cat === catsConCombo[0] ? ' activa' : '');
+      pill.textContent = cat;
+      pill.onclick = () => {
+        catComboActual = cat;
+        Array.from(contPills.children).forEach(c => c.classList.remove('activa'));
+        pill.classList.add('activa');
+        pintarBasesCombo(basesValidas, cat);
+        comboEmpanada = null; // Reseteamos base al cambiar de cat
+        checkComboListo();
+      };
+      contPills.appendChild(pill);
     });
-    return btn;
+    catComboActual = catsConCombo[0];
+  } else {
+    catComboActual = catsConCombo[0] || '';
   }
 
-  function vacioCombo(txt) {
-    return '<div style="grid-column:1/-1; padding:14px; border-radius:12px; background:var(--superficie-2); color:var(--texto-suave); font-size:13px; text-align:center; line-height:1.4;">' + txt + '</div>';
-  }
+  // 3. Pintar las bases de la primera categoría
+  pintarBasesCombo(basesValidas, catComboActual);
+
+  // 4. Pintar las bebidas (siempre son las que tienen combo_bebida)
+  const bebidas = productos.filter(p => p.combo_bebida === true && p.stock > 0);
+  const contBeb = $('listaBebidasCombo');
+  contBeb.innerHTML = '';
   
-  if (bases.length) {
-    bases.forEach(p => contEmp.appendChild(crearBotonCombo(p, 'emp')));
+  if (bebidas.length === 0) {
+    contBeb.innerHTML = '<div style="grid-column:1/-1; padding:10px; font-size:12px; color:var(--texto-suave); text-align:center;">No hay bebidas para combo.</div>';
   } else {
-    contEmp.innerHTML = vacioCombo('🥟 No hay productos base disponibles.<br>Revisa que tengan precio combo y stock.');
-  }
-  
-  if (bebidas.length) {
     bebidas.forEach(p => contBeb.appendChild(crearBotonCombo(p, 'beb')));
-  } else {
-    contBeb.innerHTML = vacioCombo('🥤 No hay bebidas para combo.<br>Marca una bebida como "Entra en combos" en Productos.');
+  }
+
+  $('modalCombo').classList.add('abierto');
+  $('modalCombo').style.display = 'flex';
+}
+
+function pintarBasesCombo(lista, cat) {
+  const contEmp = $('listaEmpanadasCombo');
+  contEmp.innerHTML = '';
+  const filtradas = lista.filter(p => p.categoria === cat);
+  
+  if (filtradas.length === 0) {
+    contEmp.innerHTML = '<div style="grid-column:1/-1; padding:10px; font-size:12px; color:var(--texto-suave); text-align:center;">No hay productos base aquí.</div>';
+    return;
+  }
+  filtradas.forEach(p => contEmp.appendChild(crearBotonCombo(p, 'emp')));
+}
+
+function crearBotonCombo(p, tipo) {
+  const btn = document.createElement('div');
+  btn.className = 'mc-btn-combo';
+  
+  let recargo = '';
+  if (tipo === 'beb' && p.recargo_combo > 0) {
+    recargo = '<span class="recargo-mc">+ ' + fmt(p.recargo_combo) + '</span>';
   }
   
-  $('modalCombo').style.display = 'block';
+  btn.innerHTML = `
+    <div class="icono-mc">${iconoParaProducto(p)}</div>
+    <span class="nom-mc">${p.nombre}</span>
+    ${recargo}
+  `;
+  
+  btn.onclick = () => {
+    // Desmarcar hermanos
+    const hermanos = (tipo === 'emp') ? $('listaEmpanadasCombo').children : $('listaBebidasCombo').children;
+    Array.from(hermanos).forEach(h => h.classList.remove('seleccionado'));
+    // Marcar este
+    btn.classList.add('seleccionado');
+    
+    if (tipo === 'emp') comboEmpanada = p; else comboBebida = p;
+    if (navigator.vibrate) navigator.vibrate(30);
+    
+    checkComboListo();
+  };
+  return btn;
+}
+
+function checkComboListo() {
+  if (comboEmpanada && comboBebida) {
+    const total = comboEmpanada.precio_combo + (comboBebida.recargo_combo || 0);
+    $('mcComboTexto').textContent = comboEmpanada.nombre + ' + ' + comboBebida.nombre;
+    $('totalCombo').textContent = fmt(total);
+    $('btnAgregarCombo').disabled = false;
+    
+    // ✨ MAGIA: Auto-agregar al carrito (Flujo de 3 toques)
+    ejecutarAgregarCombo();
+    
+  } else {
+    $('mcComboTexto').textContent = 'Selecciona base y bebida';
+    $('totalCombo').textContent = '$0';
+    $('btnAgregarCombo').disabled = true;
+  }
 }
 
 // Cerrar el modal de combos
-document.addEventListener('click', (ev) => { if (!ev.target.closest('#btnCerrarCombo')) return;
+// Función que hace el trabajo sucio de agregar (la usan el botón y el auto-agregar)
+function ejecutarAgregarCombo() {
+  if (!comboEmpanada || !comboBebida) return;
+
+  // Validar stock
+  if (cantidadEnCarritoDeId(comboEmpanada.id) + 1 > comboEmpanada.stock) {
+    mostrar('No hay stock de ' + comboEmpanada.nombre, 'error'); return;
+  }
+  if (cantidadEnCarritoDeId(comboBebida.id) + 1 > comboBebida.stock) {
+    mostrar('No hay stock de ' + comboBebida.nombre, 'error'); return;
+  }
+
+  const precioBase = comboEmpanada.precio_combo;
+  const precioBebida = comboBebida.recargo_combo || 0;
+
+  agregarProductoAlCarrito(comboEmpanada, 1, { combo: true, precio: precioBase });
+  agregarProductoAlCarrito(comboBebida, 1, { combo: true, precio: precioBebida });
+
+  mostrar('Combo agregado: ' + comboEmpanada.nombre + ' + ' + comboBebida.nombre + ' · ' + fmt(precioBase + precioBebida), 'ok');
+  
+  // Cerrar y limpiar para el siguiente cliente
+  $('modalCombo').classList.remove('abierto');
   $('modalCombo').style.display = 'none';
-  // Limpiamos todo para la próxima vez
   comboEmpanada = null;
   comboBebida = null;
-  $('totalCombo').textContent = '$0';
-  $('btnAgregarCombo').disabled = true;
-  // Limpiamos los bordes visuales de los botones
-  document.querySelectorAll('#listaEmpanadasCombo .btn-variante, #listaBebidasCombo .btn-variante').forEach(b => {
-    b.style.borderColor = 'transparent';
-  });
+}
+
+// Botón manual (por si no se disparó el automático)
+document.addEventListener('click', (ev) => {
+  if (ev.target.closest('#btnAgregarCombo')) {
+    ejecutarAgregarCombo();
+  }
+});
+
+// Botones de cerrar
+document.addEventListener('click', (ev) => {
+  if (ev.target.closest('#btnCerrarCombo') || ev.target.closest('#btnCerrarCombo2')) {
+    $('modalCombo').classList.remove('abierto');
+    $('modalCombo').style.display = 'none';
+  }
 });
 
 // Agregar el combo al carrito

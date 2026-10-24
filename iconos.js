@@ -3,9 +3,11 @@ const SVG_PACK = {
   // ===== ICONOS PARA BOTONES DE ACCIÓN =====
   camara: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path d="M17 11h14l2.5 4H40a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V19a4 4 0 0 1 4-4h6.5z" fill="#ffffff"/><circle cx="24" cy="28" r="9" fill="#2563eb"/><circle cx="24" cy="28" r="5" fill="#ffffff" opacity="0.9"/><circle cx="37" cy="21" r="1.8" fill="#2563eb"/></svg>`,
 
-  efectivo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect x="8" y="9" width="36" height="22" rx="4" fill="#ffffff" opacity="0.45"/><rect x="4" y="15" width="40" height="24" rx="5" fill="#ffffff"/><circle cx="24" cy="27" r="6.5" fill="#16a34a"/><circle cx="11" cy="27" r="2" fill="#16a34a"/><circle cx="37" cy="27" r="2" fill="#16a34a"/></svg>`,
+  efectivo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><g transform="translate(0 -1)"><path d="M4 28L24 38V43L4 33Z" fill="#78AE3E"/><path d="M24 38L44 28V33L24 43Z" fill="#5C9231"/><path d="M4 23L24 33V38L4 28Z" fill="#78AE3E"/><path d="M24 33L44 23V28L24 38Z" fill="#5C9231"/><path d="M4 18L24 28V33L4 23Z" fill="#78AE3E"/><path d="M24 28L44 18V23L24 33Z" fill="#5C9231"/><path d="M4 23L24 33L44 23M4 28L24 38L44 28" fill="none" stroke="#3F6B1F" stroke-width=".8" opacity=".55"/><path d="M24 8L44 18L24 28L4 18Z" fill="#A9D272"/><path d="M24 11.5L39 19L24 26.5L9 19Z" fill="none" stroke="#8DBF55" stroke-width="1"/><ellipse cx="24" cy="18" rx="5.6" ry="2.8" fill="#8DBF55"/><path d="M11 21.5L17 24.5V39.5L11 36.5Z" fill="#C99A57"/><path d="M11 21.5L17 24.5L37 14.5L31 11.5Z" fill="#EBC184"/></g></svg>`,
 
-  transferencia: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><g fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h26"/><path d="M30 10l7 7-7 7"/><path d="M38 33H12"/><path d="M18 26l-7 7 7 7"/></g></svg>`,
+  transferencia: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect x="3" y="3" width="22" height="42" rx="4.5" fill="#E6E6FC" stroke="#4FA8FF" stroke-width="2.4"/><circle cx="14" cy="7.5" r="1.3" fill="#4FA8FF"/><rect x="9.5" y="40" width="9" height="1.8" rx=".9" fill="#4FA8FF"/><path d="M28 10H44M32 6L27.5 10L32 14" fill="none" stroke="#6F86D6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 42H41M37 38L41.5 42L37 46" fill="none" stroke="#6F86D6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" transform="translate(3 -1)"/><rect x="11" y="18" width="35" height="17" rx="2.5" fill="#39CC36"/><rect x="13.5" y="20.5" width="30" height="12" rx="1.5" fill="#8EFF7A"/><circle cx="28.5" cy="26.5" r="5" fill="#2EB82B"/><circle cx="28.5" cy="26.5" r="2.2" fill="#8EFF7A"/><rect x="15.5" y="25.7" width="3.5" height="1.6" rx=".8" fill="#2EB82B"/><rect x="38" y="25.7" width="3.5" height="1.6" rx=".8" fill="#2EB82B"/></svg>`,
+
+  rayos: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M38 27L24 47H32L27 61L47 37H38L44 27Z" fill="#FFCB4D"/><path d="M38 27L44 27L38 37H47L27 61L30 49L36 41H31Z" fill="#FFAC3B"/><path d="M13 36A8 8 0 0 1 14 20A13 13 0 0 1 40 14A10 10 0 0 1 49 36Z" fill="#C7E0EB"/><path d="M13 36A8 8 0 0 1 14 20A11 11 0 0 1 24 18A9 9 0 0 0 19 36Z" fill="#DCE8F2"/><path d="M40 14A10 10 0 0 1 49 36H38A12 12 0 0 0 40 14Z" fill="#A6D8E2"/><path d="M34 14Q39 11 43 15" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.55"/></svg>`,
 
   nuevo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#f4f5f6" rx="110" /><circle cx="256" cy="256" r="140" fill="#ffffff" /><defs><clipPath id="blueCircle"><circle cx="256" cy="256" r="118" /></clipPath></defs><circle cx="256" cy="256" r="118" fill="#69c3f7" /><circle cx="248" cy="248" r="118" fill="#7dd0fa" clip-path="url(#blueCircle)" /><path d="M 228 192 Q 228 186 234 186 L 278 186 Q 284 186 284 192 L 284 228 L 320 228 Q 326 228 326 234 L 326 278 Q 326 284 320 284 L 284 284 L 284 320 Q 284 326 278 326 L 234 326 Q 228 326 228 320 L 228 284 L 192 284 Q 186 284 186 278 L 186 234 Q 186 228 192 228 L 228 228 Z" fill="#ffffff" /><path d="M 256 326 L 278 326 Q 284 326 284 320 L 284 284 L 320 284 Q 326 284 326 278 L 326 256 L 272 256 Q 256 256 256 272 Z" fill="#eaf5fe" /></svg>`,
 
@@ -134,10 +136,37 @@ function icoSvg(clave) {
   return SVG_PACK[clave].trim().replace(/^<svg /, '<svg class="ico-svg" aria-hidden="true" focusable="false" ');
 }
 
-function ponerBotonConIcono(el, clave, texto) {
+function ponerBotonConIcono(el, clave, texto, solido) {
   if (!el) return;
   el.classList.add('btn-con-icono');
-  el.innerHTML = '<span class="btn-ico">' + icoSvg(clave) + '</span><span class="btn-txt">' + texto + '</span>';
+  el.innerHTML = '<span class="btn-ico' + (solido ? ' btn-ico-solido' : '') + '">' + icoSvg(clave) + '</span><span class="btn-txt">' + texto + '</span>';
+}
+
+// ===== FUNCIÓN PARA PINTAR ICONOS DE BOTONES DE ACCIÓN =====
+function pintarIconosBotones() {
+  // 1. CÁMARA
+  ponerBotonConIcono(document.querySelector('#btnCam, #btnEscanearCodigo'), 'camara', 'Escanear con cámara', false);
+
+  // 2. NUEVO PRODUCTO
+  const btnNuevo = document.getElementById('btnNuevo');
+  if (btnNuevo && btnNuevo.innerHTML.indexOf('Nuevo producto') >= 0 && !btnNuevo.querySelector('.ico-nuevo')) {
+    btnNuevo.innerHTML = '<span class="ico-nuevo" style="width:22px; height:22px; display:inline-block; vertical-align:middle; margin-right:6px;">' + SVG_PACK.nuevo + '</span> Nuevo producto';
+  }
+
+  // 3. EFECTIVO Y TRANSFERENCIA (Barra flotante)
+  ponerBotonConIcono(document.getElementById('bfEfectivo'), 'efectivo', 'EFECTIVO', true);
+  ponerBotonConIcono(document.getElementById('bfTransferencia'), 'transferencia', 'TRANSFERENCIA', true);
+
+  // 4. EFECTIVO Y TRANSFERENCIA (Modal cobro rápido)
+  ponerBotonConIcono(document.getElementById('mcEfectivo'), 'efectivo', 'EFECTIVO', true);
+  ponerBotonConIcono(document.getElementById('mcTransferencia'), 'transferencia', 'TRANSFERENCIA', true);
+}
+
+// ===== ICONO DEL TÍTULO "RÁPIDOS" =====
+function pintarIconoRapidos() {
+  const h = document.querySelector('#zonaRapidos .titulo-fila h4');
+  if (!h) return;
+  h.innerHTML = '<span class="ico-rapidos">' + icoSvg('rayos') + '</span>Rápidos';
 }
 
 // ===== FUNCIÓN PARA PINTAR ICONOS DE BOTONES DE ACCIÓN =====
@@ -161,3 +190,4 @@ function pintarIconosBotones() {
 }
 document.addEventListener('DOMContentLoaded', pintarIconosBotones);
 document.addEventListener('DOMContentLoaded', pintarIconosMenu);
+document.addEventListener('DOMContentLoaded', pintarIconoRapidos);

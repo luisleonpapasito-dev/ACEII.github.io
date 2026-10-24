@@ -1,11 +1,11 @@
 // ===== Pack de iconos para las pills y el menú =====
 const SVG_PACK = {
   // ===== ICONOS PARA BOTONES DE ACCIÓN =====
-  camara: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 250"><path d="M 40 100 L 40 200 Q 40 210 50 210 L 260 210 Q 270 210 270 200 L 270 100 Z" fill="#d0d6de"/><path d="M 30 60 L 270 60 Q 280 60 280 70 L 280 100 L 30 100 Z" fill="#e2e8f0"/><rect x="30" y="100" width="250" height="100" fill="#465a6e"/><path d="M 120 30 L 180 30 Q 190 30 190 40 L 200 60 L 110 60 L 120 40 Q 120 30 130 30 Z" fill="#e2e8f0"/><rect x="140" y="40" width="30" height="10" fill="#465a6e"/><circle cx="150" cy="140" r="50" fill="#2c3e50"/><circle cx="150" cy="140" r="35" fill="#e2e8f0"/><circle cx="150" cy="140" r="20" fill="#5bc0eb"/><rect x="40" y="80" width="40" height="15" rx="5" fill="#2c3e50"/><rect x="230" y="110" width="20" height="10" rx="5" fill="#e2e8f0"/></svg>`,
+  camara: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path d="M17 11h14l2.5 4H40a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V19a4 4 0 0 1 4-4h6.5z" fill="#ffffff"/><circle cx="24" cy="28" r="9" fill="#2563eb"/><circle cx="24" cy="28" r="5" fill="#ffffff" opacity="0.9"/><circle cx="37" cy="21" r="1.8" fill="#2563eb"/></svg>`,
 
-  efectivo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 250"><g transform="translate(10, 130)"><path d="M 10 0 L 260 0 L 280 20 L 280 80 L 30 80 L 10 60 Z" fill="#8bc34a"/><path d="M 10 0 L 30 20 L 30 80 L 10 60 Z" fill="#689f38"/><path d="M 30 20 L 280 20 L 280 80 L 30 80 Z" fill="#9ccc65"/></g><g transform="translate(15, 95)"><path d="M 10 0 L 260 0 L 280 20 L 280 80 L 30 80 L 10 60 Z" fill="#7cb342"/><path d="M 10 0 L 30 20 L 30 80 L 10 60 Z" fill="#558b2f"/><path d="M 30 20 L 280 20 L 280 80 L 30 80 Z" fill="#8bc34a"/></g><g transform="translate(20, 40)"><path d="M 10 0 L 240 0 L 260 20 L 260 70 L 30 70 L 10 50 Z" fill="#9ccc65"/><path d="M 10 0 L 30 20 L 30 70 L 10 50 Z" fill="#689f38"/><path d="M 30 20 L 260 20 L 260 70 L 30 70 Z" fill="#aed581"/><rect x="100" y="0" width="60" height="70" fill="#ffcc80"/><rect x="100" y="20" width="60" height="50" fill="#ffb74d"/><path d="M 30 35 A 15 15 0 0 0 60 35 A 15 15 0 0 0 30 35" fill="#7cb342" opacity="0.4"/><path d="M 230 35 A 15 15 0 0 0 260 35 A 15 15 0 0 0 230 35" fill="#7cb342" opacity="0.4"/><path d="M 130 45 L 100 45 L 100 35 L 130 35 Z" fill="#7cb342" opacity="0.6"/><path d="M 160 45 L 190 45 L 190 35 L 160 35 Z" fill="#7cb342" opacity="0.6"/><path d="M 130 60 L 100 60 L 100 50 L 130 50 Z" fill="#7cb342" opacity="0.6"/><path d="M 160 60 L 190 60 L 190 50 L 160 50 Z" fill="#7cb342" opacity="0.6"/></g></svg>`,
+  efectivo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect x="8" y="9" width="36" height="22" rx="4" fill="#ffffff" opacity="0.45"/><rect x="4" y="15" width="40" height="24" rx="5" fill="#ffffff"/><circle cx="24" cy="27" r="6.5" fill="#16a34a"/><circle cx="11" cy="27" r="2" fill="#16a34a"/><circle cx="37" cy="27" r="2" fill="#16a34a"/></svg>`,
 
-  transferencia: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 250"><rect x="30" y="30" width="140" height="200" rx="15" fill="#a0c4ff"/><rect x="25" y="20" width="150" height="220" rx="20" fill="#4ea8de"/><rect x="35" y="40" width="130" height="180" rx="10" fill="#f0f4f8"/><rect x="50" y="120" width="150" height="70" rx="8" fill="#5cb85c" stroke="#388e3c" stroke-width="3"/><path d="M 70 135 Q 90 125 110 135 Q 130 145 150 135 Q 170 125 190 135" fill="none" stroke="#4caf50" stroke-width="3" opacity="0.6"/><path d="M 70 175 Q 90 185 110 175 Q 130 165 150 175 Q 170 185 190 175" fill="none" stroke="#4caf50" stroke-width="3" opacity="0.6"/><circle cx="125" cy="155" r="22" fill="#43a047"/><text x="125" y="165" font-family="Arial" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">$</text><rect x="140" y="50" width="100" height="50" rx="10" fill="#f4a261"/><path d="M 160 70 L 210 70 L 210 80 L 160 80 Z" fill="#e76f51"/><path d="M 150 100 L 170 110 L 150 120 Z" fill="#457b9d"/><path d="M 260 150 L 240 160 L 260 170 Z" fill="#457b9d"/><path d="M 240 160 L 200 160 L 200 150 L 240 150 Z" fill="#457b9d"/><path d="M 180 90 L 220 90 L 220 100 L 180 100 Z" fill="#457b9d"/></svg>`,
+  transferencia: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><g fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h26"/><path d="M30 10l7 7-7 7"/><path d="M38 33H12"/><path d="M18 26l-7 7 7 7"/></g></svg>`,
 
   nuevo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#f4f5f6" rx="110" /><circle cx="256" cy="256" r="140" fill="#ffffff" /><defs><clipPath id="blueCircle"><circle cx="256" cy="256" r="118" /></clipPath></defs><circle cx="256" cy="256" r="118" fill="#69c3f7" /><circle cx="248" cy="248" r="118" fill="#7dd0fa" clip-path="url(#blueCircle)" /><path d="M 228 192 Q 228 186 234 186 L 278 186 Q 284 186 284 192 L 284 228 L 320 228 Q 326 228 326 234 L 326 278 Q 326 284 320 284 L 284 284 L 284 320 Q 284 326 278 326 L 234 326 Q 228 326 228 320 L 228 284 L 192 284 Q 186 284 186 278 L 186 234 Q 186 228 192 228 L 228 228 Z" fill="#ffffff" /><path d="M 256 326 L 278 326 Q 284 326 284 320 L 284 284 L 320 284 Q 326 284 326 278 L 326 256 L 272 256 Q 256 256 256 272 Z" fill="#eaf5fe" /></svg>`,
 
@@ -129,12 +129,21 @@ function pintarIconosMenu() {
 }
 
 // ===== FUNCIÓN PARA PINTAR ICONOS DE BOTONES DE ACCIÓN =====
+// ===== Helper: SVG con clase y sin tamaño propio =====
+function icoSvg(clave) {
+  return SVG_PACK[clave].trim().replace(/^<svg /, '<svg class="ico-svg" aria-hidden="true" focusable="false" ');
+}
+
+function ponerBotonConIcono(el, clave, texto) {
+  if (!el) return;
+  el.classList.add('btn-con-icono');
+  el.innerHTML = '<span class="btn-ico">' + icoSvg(clave) + '</span><span class="btn-txt">' + texto + '</span>';
+}
+
+// ===== FUNCIÓN PARA PINTAR ICONOS DE BOTONES DE ACCIÓN =====
 function pintarIconosBotones() {
   // 1. CÁMARA
-  const btnCam = document.querySelector('#btnCam, #btnEscanearCodigo');
-  if (btnCam && !btnCam.querySelector('.ico-cam')) {
-    btnCam.innerHTML = '<span class="ico-cam" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-right:8px;">' + SVG_PACK.camara + '</span>' + btnCam.innerHTML;
-  }
+  ponerBotonConIcono(document.querySelector('#btnCam, #btnEscanearCodigo'), 'camara', 'Escanear con cámara');
 
   // 2. NUEVO PRODUCTO
   const btnNuevo = document.getElementById('btnNuevo');
@@ -142,28 +151,13 @@ function pintarIconosBotones() {
     btnNuevo.innerHTML = '<span class="ico-nuevo" style="width:22px; height:22px; display:inline-block; vertical-align:middle; margin-right:6px;">' + SVG_PACK.nuevo + '</span> Nuevo producto';
   }
 
-  // 3. EFECTIVO Y TRANSFERENCIA (Barra Flotante)
-  const bfEfectivo = document.getElementById('bfEfectivo');
-  if (bfEfectivo && !bfEfectivo.querySelector('.ico-pago')) {
-    bfEfectivo.innerHTML = '<span class="ico-pago" style="width:26px; height:26px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:6px;">' + SVG_PACK.efectivo + '</span> EFECTIVO';
-  }
+  // 3. EFECTIVO Y TRANSFERENCIA (Barra flotante)
+  ponerBotonConIcono(document.getElementById('bfEfectivo'), 'efectivo', 'EFECTIVO');
+  ponerBotonConIcono(document.getElementById('bfTransferencia'), 'transferencia', 'TRANSFERENCIA');
 
-  const bfTransferencia = document.getElementById('bfTransferencia');
-  if (bfTransferencia && !bfTransferencia.querySelector('.ico-pago')) {
-    bfTransferencia.innerHTML = '<span class="ico-pago" style="width:26px; height:26px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:6px;">' + SVG_PACK.transferencia + '</span> TRANSFERENCIA';
-  }
-
-  // 4. EFECTIVO Y TRANSFERENCIA (Modal Cobro Rápido)
-  const mcEfectivo = document.getElementById('mcEfectivo');
-  if (mcEfectivo && !mcEfectivo.querySelector('.ico-pago')) {
-    mcEfectivo.innerHTML = '<span class="ico-pago" style="width:24px; height:24px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:4px;">' + SVG_PACK.efectivo + '</span> EFECTIVO';
-  }
-
-  const mcTransferencia = document.getElementById('mcTransferencia');
-  if (mcTransferencia && !mcTransferencia.querySelector('.ico-pago')) {
-    mcTransferencia.innerHTML = '<span class="ico-pago" style="width:24px; height:24px; display:inline-flex; align-items:center; vertical-align:middle; margin-right:4px;">' + SVG_PACK.transferencia + '</span> TRANSFERENCIA';
-  }
+  // 4. EFECTIVO Y TRANSFERENCIA (Modal cobro rápido)
+  ponerBotonConIcono(document.getElementById('mcEfectivo'), 'efectivo', 'EFECTIVO');
+  ponerBotonConIcono(document.getElementById('mcTransferencia'), 'transferencia', 'TRANSFERENCIA');
 }
-
 document.addEventListener('DOMContentLoaded', pintarIconosBotones);
 document.addEventListener('DOMContentLoaded', pintarIconosMenu);

@@ -346,6 +346,9 @@
     border: 2px solid var(--azul-borde);
     font-weight: 700;
   }
+
+
+    .codigo-fila button svg { width: 24px; height: 24px; display: block; }
 </style>
 </head>
 <body>
@@ -498,8 +501,7 @@
     <label>Código de barras (opcional)</label>
     <div class="codigo-fila">
       <input type="text" id="fCodigo" maxlength="30" placeholder="Escanéalo o escríbelo">
-      <button id="btnEscanearCodigo" type="button"></button>.
-    </div>
+      <button id="btnEscanearCodigo" type="button" style="flex:0 0 auto; width:48px; height:44px; padding:0; display:flex; align-items:center; justify-content:center;"></button>    </div>
 
     <label>Nota (opcional)</label>
     <textarea id="fNota" maxlength="200" rows="2" placeholder="Observaciones internas"></textarea>

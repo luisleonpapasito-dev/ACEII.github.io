@@ -1626,56 +1626,7 @@ window.addEventListener('unhandledrejection', function (e) {
   display: grid;
 }
 
-/* ===== FASE 4c: encabezado compacto (solo celular) ===== */
-@media (max-width: 699px) {
-  .app-header {
-    padding: 14px 18px 40px;
-    border-radius: 0 0 26px 26px;
-  }
-  .app-header::before {
-    width: 150px;
-    height: 150px;
-    right: -75px;
-    top: -85px;
-  }
-  .app-header::after {
-    height: 40px;
-    bottom: -20px;
-  }
-  .app-header-contenido {
-    gap: 12px;
-  }
-  .app-header-logo {
-    width: 46px;
-    height: 46px;
-    padding: 4px;
-    border-radius: 14px;
-  }
-  .app-header-titulo {
-    font-size: 24px;
-    letter-spacing: 0.5px;
-  }
-  .app-header-sub {
-    margin-top: 3px;
-  }
-  .link-volver {
-    margin-top: 0;
-    padding: 3px 11px 3px 7px;
-    font-size: 12.5px;
-  }
-  .link-volver svg {
-    width: 14px;
-    height: 14px;
-  }
-  .ico-titulo {
-    width: 32px;
-    height: 32px;
-  }
-  .ico-titulo .ico-svg {
-    width: 20px;
-    height: 20px;
-  }
-}
+
 
 /* ===== Buscador en modo oscuro ===== */
 html.tema-oscuro .buscador-wrap #buscar {

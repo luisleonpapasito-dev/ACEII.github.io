@@ -2546,21 +2546,35 @@ $('btnCerrarVariantes').addEventListener('click', function () {
 });
 
 // ===== Carrito =====
-function agregarProductoAlCarrito(p, cant) {
-  const enCarrito = carrito.find(function (x) { return x.id === p.id; });
-  const yaEnCarrito = enCarrito ? enCarrito.cantidad : 0;
+function cantidadEnCarritoDeId(id) {
+  return carrito.reduce(function (s, x) { return x.id === id ? s + x.cantidad : s; }, 0);
+}
+
+function agregarProductoAlCarrito(p, cant, opc) {
+  opc = opc || {};
+  const esCombo = !!opc.combo;
+  const yaEnCarrito = cantidadEnCarritoDeId(p.id);
   if (yaEnCarrito + cant > p.stock) {
     mostrar('Solo hay ' + (p.stock - yaEnCarrito) + ' disponibles de ' + p.nombre, 'error');
-    return;
+    return false;
   }
+  const enCarrito = carrito.find(function (x) { return x.id === p.id && !!x.combo === esCombo; });
   if (enCarrito) {
     enCarrito.cantidad += cant;
   } else {
-    carrito.push({ id: p.id, nombre: p.nombre, precio: p.precio, cantidad: cant, stock: p.stock });
+    carrito.push({
+      id: p.id,
+      nombre: p.nombre + (esCombo ? ' (combo)' : ''),
+      precio: esCombo ? opc.precio : p.precio,
+      cantidad: cant,
+      stock: p.stock,
+      combo: esCombo
+    });
   }
   if (navigator.vibrate) navigator.vibrate(40);
   pintarBarraFlotante();
   guardarCarrito();
+  return true;
 }
 
 function totalCarrito() {
@@ -2613,7 +2627,7 @@ function pintarBarraFlotante() {
     row.querySelectorAll('.bf-quitar')[1].addEventListener('click', function (e) {
       e.stopPropagation();
       const prodOriginal = productos.find(p => p.id === it.id);
-      if (prodOriginal && it.cantidad < prodOriginal.stock) {
+      if (prodOriginal && cantidadEnCarritoDeId(it.id) < prodOriginal.stock) {
         it.cantidad += 1;
         pintarBarraFlotante();
         guardarCarrito();
@@ -2683,7 +2697,7 @@ async function cobrar(medio) {
       id_turno: (getTurnoActual() ? getTurnoActual().id : ''),
       medio_pago: medio,
       observaciones: '',
-      items: carrito.map(function (it) { return { id_producto: it.id, cantidad: it.cantidad }; })
+            items: carrito.map(function (it) { return { id_producto: it.id, cantidad: it.cantidad, combo: !!it.combo }; })
     });
     if (r.ok) {
       let msj = '✓ ' + medio + ' · ' + r.lineas + ' línea(s)';
@@ -3233,9 +3247,9 @@ function abrirConstructorCombo() {
   $('totalCombo').textContent = '$0';
   $('btnAgregarCombo').disabled = true;
 
-  // Filtrar productos por categoría (empanadas y bebidas con stock)
   const empanadas = productos.filter(p => norm_(p.categoria).indexOf('empanada') >= 0 && p.stock > 0);
-  const bebidas = productos.filter(p => norm_(p.categoria).indexOf('bebida') >= 0 && p.stock > 0);
+  // Solo bebidas pequeñas (gaseosas y aguas)
+  const bebidas = productos.filter(p => norm_(p.categoria).indexOf('bebida') >= 0 && norm_(p.nombre).indexOf('pequen') >= 0 && p.stock > 0);
 
   const contEmp = $('listaEmpanadasCombo');
   const contBeb = $('listaBebidasCombo');
@@ -3251,22 +3265,17 @@ function abrirConstructorCombo() {
     btn.innerHTML = `
       <span class="icono-v" style="margin-bottom:4px;">${iconoParaProducto(p)}</span>
       <span class="nom-v" style="font-size:11px; line-height:1.2;">${p.nombre}</span>
-      <span class="pre-v" style="font-size:12px;">${fmt(p.precio)}</span>
     `;
     btn.addEventListener('click', () => {
-      // Desmarcar otros botones del mismo tipo (empanadas o bebidas)
       const hermanos = (tipo === 'emp') ? contEmp.children : contBeb.children;
       for (let h of hermanos) h.style.borderColor = 'transparent';
-      
-      // Marcar el botón seleccionado
       btn.style.borderColor = 'var(--azul)';
       if (tipo === 'emp') comboEmpanada = p;
       else comboBebida = p;
 
-      // Calcular total
-      const total = (comboEmpanada ? comboEmpanada.precio : 0) + (comboBebida ? comboBebida.precio : 0);
-      $('totalCombo').textContent = fmt(total);
-      $('btnAgregarCombo').disabled = !(comboEmpanada && comboBebida);
+      const listo = comboEmpanada && comboBebida;
+      $('totalCombo').textContent = listo ? fmt(4800) : '$0';
+      $('btnAgregarCombo').disabled = !listo;
     });
     return btn;
   }
@@ -3294,16 +3303,21 @@ document.addEventListener('click', (ev) => { if (!ev.target.closest('#btnCerrarC
 // Agregar el combo al carrito
 document.addEventListener('click', (ev) => { if (!ev.target.closest('#btnAgregarCombo')) return;
   if (!comboEmpanada || !comboBebida) return;
-  
-  // Agregamos ambos productos individuales al carrito.
-  // Esto garantiza que el backend descuente el inventario correctamente.
-  agregarProductoAlCarrito(comboEmpanada, 1);
-  agregarProductoAlCarrito(comboBebida, 1);
+
+  // Revisar stock de ambos ANTES de agregar, para no dejar medio combo
+  if (cantidadEnCarritoDeId(comboEmpanada.id) + 1 > comboEmpanada.stock) {
+    mostrar('No hay stock de ' + comboEmpanada.nombre, 'error'); return;
+  }
+  if (cantidadEnCarritoDeId(comboBebida.id) + 1 > comboBebida.stock) {
+    mostrar('No hay stock de ' + comboBebida.nombre, 'error'); return;
+  }
+
+  agregarProductoAlCarrito(comboEmpanada, 1, { combo: true, precio: 3800 });
+  agregarProductoAlCarrito(comboBebida, 1, { combo: true, precio: 1000 });
 
   $('modalCombo').style.display = 'none';
-  mostrar('Combo agregado: ' + comboEmpanada.nombre + ' + ' + comboBebida.nombre, 'ok');
-  
-  // Limpiamos variables y bordes después de agregar
+  mostrar('Combo agregado: ' + comboEmpanada.nombre + ' + ' + comboBebida.nombre + ' · $4.800', 'ok');
+
   comboEmpanada = null;
   comboBebida = null;
   document.querySelectorAll('#listaEmpanadasCombo .btn-variante, #listaBebidasCombo .btn-variante').forEach(b => {

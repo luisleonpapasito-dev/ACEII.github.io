@@ -29,43 +29,7 @@ window.addEventListener('unhandledrejection', function (e) {
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
 
-/* ===== Botones con ícono (Fase 1) ===== */
-.btn-con-icono {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-.btn-con-icono .btn-ico {
-  flex: 0 0 auto;
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-}
-.btn-con-icono .btn-ico .ico-svg {
-  width: 18px;
-  height: 18px;
-  display: block;
-}
-.btn-con-icono .btn-txt {
-  line-height: 1;
-}
 
-/* Cámara: más grande porque tiene espacio */
-#btnCam.btn-con-icono {
-  gap: 10px;
-}
-#btnCam.btn-con-icono .btn-ico {
-  width: 34px;
-  height: 34px;
-}
-#btnCam.btn-con-icono .btn-ico .ico-svg {
-  width: 22px;
-  height: 22px;
-}
 <style>
 
   /* ===== Buscador ===== */
@@ -1387,7 +1351,43 @@ window.addEventListener('unhandledrejection', function (e) {
   .pill-cat .pill-icon img.ic { animation: none !important; }
 }
 
+/* ===== Botones con ícono (Fase 1) ===== */
+.btn-con-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn-con-icono .btn-ico {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+.btn-con-icono .btn-ico .ico-svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+.btn-con-icono .btn-txt {
+  line-height: 1;
+}
 
+/* Cámara: más grande porque tiene espacio */
+#btnCam.btn-con-icono {
+  gap: 10px;
+}
+#btnCam.btn-con-icono .btn-ico {
+  width: 34px;
+  height: 34px;
+}
+#btnCam.btn-con-icono .btn-ico .ico-svg {
+  width: 22px;
+  height: 22px;
+}
 
 
 

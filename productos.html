@@ -792,6 +792,7 @@ function abrirEditar(p) {
   $('fProveedor').value = p.proveedor || '';
   $('fPrecio').value = p.precio;
   $('fCosto').value = p.costo;
+  $('fPrecioCombo').value = p.precio_combo > 0 ? p.precio_combo : '';
   $('fUpp').value = p.upp > 0 ? p.upp : '';
   $('fCodigo').value = p.codigo || '';
   $('fNota').value = p.nota || '';
@@ -987,8 +988,7 @@ $('btnGuardar').addEventListener('click', async function () {
         id_usuario: u.id,
         id_producto: nuevoId,
         nombre: nombre, categoria: cat, modo: modoReg, proveedor: proveedor,
-        precio: precio, costo: costo, upp: upp, codigo: codigo, nota: nota, imagen_url: imagenUrlActual
-      });
+        codigo: codigo, nota: nota, imagen_url: imagenUrlActual, precio_combo: precioCombo      });
     } else {
       nuevoId = productoEditando.id;
       r = await post({
@@ -996,7 +996,7 @@ $('btnGuardar').addEventListener('click', async function () {
         id_usuario: u.id,
         id_producto: nuevoId,
         nombre: nombre, categoria: cat, modo: modoReg, proveedor: proveedor,
-        precio: precio, costo: costo, upp: upp, codigo: codigo, nota: nota, imagen_url: imagenUrlActual
+        codigo: codigo, nota: nota, imagen_url: imagenUrlActual, precio_combo: precioCombo
       });
     }
 
@@ -1004,7 +1004,7 @@ $('btnGuardar').addEventListener('click', async function () {
       // === ACTUALIZACIÓN OPTIMISTA EN EL FRONTEND ===
       const productoActualizado = {
         id: nuevoId, nombre, categoria: cat, modo: modoReg,
-        codigo, proveedor, precio, costo, upp, nota,
+        codigo, proveedor, precio, precio_combo: precioCombo, costo, upp, nota,
         imagen_url: imagenUrlActual,
         activo: modoForm === 'crear' ? 'Sí' : productoEditando.activo,
         stock: modoForm === 'crear' ? 0 : productoEditando.stock

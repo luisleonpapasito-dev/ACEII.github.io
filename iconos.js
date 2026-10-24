@@ -170,8 +170,9 @@ function ponerBotonConIcono(el, clave, texto, solido) {
 // ===== FUNCIÓN PARA PINTAR ICONOS DE BOTONES DE ACCIÓN =====
 function pintarIconosBotones() {
   // 1. CÁMARA
-  ponerBotonConIcono(document.querySelector('#btnCam, #btnEscanearCodigo'), 'camara', 'Escanear con cámara', false);
-
+  ponerBotonConIcono(document.getElementById('btnCam'), 'camara', 'Escanear con cámara', false);
+  const btnEsc = document.getElementById('btnEscanearCodigo');
+  if (btnEsc) btnEsc.innerHTML = icoSvg('camara').replace('<svg ', '<svg width="26" height="26" style="display:block;" ');
   // 2. NUEVO PRODUCTO
   const btnNuevo = document.getElementById('btnNuevo');
   if (btnNuevo && btnNuevo.innerHTML.indexOf('Nuevo producto') >= 0 && !btnNuevo.querySelector('.ico-nuevo')) {

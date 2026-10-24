@@ -3248,9 +3248,9 @@ function abrirConstructorCombo() {
   $('btnAgregarCombo').disabled = true;
 
   const conCombo = productos.filter(p => p.precio_combo > 0 && p.stock > 0);
-  alert('Con precio combo y stock: ' + conCombo.length + ' | Con precio combo (sin mirar stock): ' + productos.filter(p => p.precio_combo > 0).length + ' | Total: ' + productos.length);
+
   const empanadas = conCombo.filter(p => norm_(p.categoria).indexOf('empanada') >= 0);
-  const bebidas = conCombo.filter(p => norm_(p.categoria).indexOf('empanada') < 0);
+  const bebidas = conCombo.filter(p => norm_(p.categoria).indexOf('bebida') >= 0);
 
   const contEmp = $('listaEmpanadasCombo');
   const contBeb = $('listaBebidasCombo');
@@ -3279,8 +3279,19 @@ function abrirConstructorCombo() {
     return btn;
   }
 
-  empanadas.forEach(p => contEmp.appendChild(crearBotonCombo(p, 'emp')));
-  bebidas.forEach(p => contBeb.appendChild(crearBotonCombo(p, 'beb')));
+    function vacioCombo(txt) {
+    return '<div style="grid-column:1/-1; padding:14px; border-radius:12px; background:var(--superficie-2); color:var(--texto-suave); font-size:13px; text-align:center; line-height:1.4;">' + txt + '</div>';
+  }
+  if (empanadas.length) {
+    empanadas.forEach(p => contEmp.appendChild(crearBotonCombo(p, 'emp')));
+  } else {
+    contEmp.innerHTML = vacioCombo('🥟 No hay empanadas disponibles para combo.<br>Revisa que tengan precio combo y stock.');
+  }
+  if (bebidas.length) {
+    bebidas.forEach(p => contBeb.appendChild(crearBotonCombo(p, 'beb')));
+  } else {
+    contBeb.innerHTML = vacioCombo('🥤 No hay bebidas disponibles para combo.<br>Revisa que tengan precio combo y stock.');
+  }
   $('modalCombo').style.display = 'block';
 }
 

@@ -982,7 +982,10 @@ $('fCategoria').addEventListener('change', async function () {
 });
 
 $('btnGuardar').addEventListener('click', async function () {
-  const precioCombo = Number($('fPrecioCombo').value || 0);
+  const rolCombo = $('fRolCombo').value;
+  const precioCombo = (rolCombo === 'base') ? Number($('fPrecioCombo').value || 0) : 0;
+  const comboBebida = (rolCombo === 'bebida');
+  const recargoCombo = (rolCombo === 'bebida') ? Number($('fRecargoCombo').value || 0) : 0;
   const cat = $('fCategoria').value;
   const nombre = $('fNombre').value.trim();
   const modoReg = $('fModo').value;
@@ -1027,7 +1030,8 @@ $('btnGuardar').addEventListener('click', async function () {
         id_producto: nuevoId,
         nombre: nombre, categoria: cat, modo: modoReg, proveedor: proveedor,
         precio: precio, costo: costo, upp: upp,
-        codigo: codigo, nota: nota, imagen_url: imagenUrlActual, precio_combo: precioCombo
+        codigo: codigo, nota: nota, imagen_url: imagenUrlActual, precio_combo: precioCombo,
+        combo_bebida: comboBebida, recargo_combo: recargoCombo
       });
     } else {
       nuevoId = productoEditando.id;
@@ -1037,16 +1041,17 @@ $('btnGuardar').addEventListener('click', async function () {
         id_producto: nuevoId,
         nombre: nombre, categoria: cat, modo: modoReg, proveedor: proveedor,
         precio: precio, costo: costo, upp: upp,
-        codigo: codigo, nota: nota, imagen_url: imagenUrlActual, precio_combo: precioCombo
+        codigo: codigo, nota: nota, imagen_url: imagenUrlActual, precio_combo: precioCombo,
+        combo_bebida: comboBebida, recargo_combo: recargoCombo
       });
     }
 
     if (r.ok) {
       // === ACTUALIZACIÓN OPTIMISTA EN EL FRONTEND ===
-      const productoActualizado = {
+           const productoActualizado = {
         id: nuevoId, nombre, categoria: cat, modo: modoReg,
         codigo, proveedor, precio, precio_combo: precioCombo, costo, upp, nota,
-        imagen_url: imagenUrlActual,
+        imagen_url: imagenUrlActual, combo_bebida: comboBebida, recargo_combo: recargoCombo,
         activo: modoForm === 'crear' ? 'Sí' : productoEditando.activo,
         stock: modoForm === 'crear' ? 0 : productoEditando.stock
       };

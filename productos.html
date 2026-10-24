@@ -486,6 +486,9 @@
     <label>Precio de venta *</label>
     <input type="number" id="fPrecio" min="0" step="50" inputmode="numeric" placeholder="Ej: 4000">
 
+    <label>Precio combo (opcional, vacío = no entra en combo)</label>
+    <input type="number" id="fPrecioCombo" min="0" step="50" inputmode="numeric" placeholder="Ej: 3800">
+
     <label>Costo unitario (opcional)</label>
     <input type="number" id="fCosto" min="0" step="50" inputmode="numeric" placeholder="Ej: 1850">
 
@@ -761,6 +764,7 @@ $('btnNuevo').addEventListener('click', async function () {
   $('fModo').value = '';
   $('fProveedor').value = '';
   $('fPrecio').value = '';
+  $('fPrecioCombo').value = ''
   $('fCosto').value = '';
   $('fUpp').value = '';
   $('fCodigo').value = '';
@@ -937,6 +941,7 @@ $('fCategoria').addEventListener('change', async function () {
 });
 
 $('btnGuardar').addEventListener('click', async function () {
+  const precioCombo = Number($('fPrecioCombo').value || 0);
   const cat = $('fCategoria').value;
   const nombre = $('fNombre').value.trim();
   const modoReg = $('fModo').value;

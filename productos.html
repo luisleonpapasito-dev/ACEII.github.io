@@ -793,7 +793,10 @@ $('btnNuevo').addEventListener('click', async function () {
   $('fNombre').value = '';
   $('fModo').value = '';
   $('fProveedor').value = '';
-  $('fPrecio').value = '';
+    $('fRolCombo').value = 'no';
+  $('fPrecioCombo').value = '';
+  $('fRecargoCombo').value = '';
+  actualizarCamposCombo();
   $('fPrecioCombo').value = ''
   $('fCosto').value = '';
   $('fUpp').value = '';
@@ -820,7 +823,14 @@ function abrirEditar(p) {
   $('fProveedor').value = p.proveedor || '';
   $('fPrecio').value = p.precio;
   $('fCosto').value = p.costo;
-  $('fPrecioCombo').value = p.precio_combo > 0 ? p.precio_combo : '';
+    // Papel en combos
+  let rol = 'no';
+  if (p.combo_bebida) rol = 'bebida';
+  else if (p.precio_combo > 0) rol = 'base';
+  $('fRolCombo').value = rol;
+  $('fPrecioCombo').value = (rol === 'base' && p.precio_combo > 0) ? p.precio_combo : '';
+  $('fRecargoCombo').value = (rol === 'bebida' && p.recargo_combo > 0) ? p.recargo_combo : '';
+  actualizarCamposCombo();
   $('fUpp').value = p.upp > 0 ? p.upp : '';
   $('fCodigo').value = p.codigo || '';
   $('fNota').value = p.nota || '';

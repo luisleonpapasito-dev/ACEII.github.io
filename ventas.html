@@ -1994,20 +1994,21 @@ function iconoParaGrupo(nombreCategoria) {
 
 
 
-function iconoPill(cat) {
+// Reemplaza la función actual en tu HTML por esta:
+function iconoPillAnimado(cat) {
   const c = norm_(cat);
-  if (c.indexOf('empanada') >= 0) return '🥟';
-  if (c.indexOf('bebida') >= 0) return '🥤';
-  if (c.indexOf('combo') >= 0) return '🍔';
-  if (c.indexOf('dulce') >= 0 || c.indexOf('confiteria') >= 0) return '🍫';
-  if (c.indexOf('galleta') >= 0 || c.indexOf('ponque') >= 0) return '🍪';
-  if (c.indexOf('pasaboca') >= 0) return '🍟';
-  if (c.indexOf('lacteo') >= 0 || c.indexOf('avena') >= 0) return '🥛';
-  if (c.indexOf('preparado') >= 0 || c.indexOf('instantanea') >= 0) return '🍽';
-  if (c.indexOf('comida') >= 0) return '🍽';
-  if (c.indexOf('papeleria') >= 0) return '📄';
-  if (c.indexOf('higiene') >= 0) return '🧼';
-  return '📁';
+  // Usamos los SVGs que ya tienes definidos en iconos.js
+  if (c.indexOf('empanada') >= 0) return ICONOS_PILL.empanada;
+  if (c.indexOf('bebida') >= 0) return ICONOS_PILL.bebida;
+  if (c.indexOf('combo') >= 0) return ICONOS_PILL.combo; // Tu SVG de combo es perfecto
+  if (c.indexOf('dulce') >= 0 || c.indexOf('confiteria') >= 0) return ICONOS_PILL.dulce;
+  if (c.indexOf('galleta') >= 0 || c.indexOf('ponque') >= 0) return ICONOS_PILL.galleta;
+  if (c.indexOf('pasaboca') >= 0) return ICONOS_PILL.pasaboca;
+  if (c.indexOf('lacteo') >= 0 || c.indexOf('avena') >= 0) return ICONOS_PILL.lacteo;
+  if (c.indexOf('preparado') >= 0 || c.indexOf('instantanea') >= 0) return ICONOS_PILL.plato;
+  if (c.indexOf('papeleria') >= 0) return ICONOS_PILL.papeleria;
+  if (c.indexOf('higiene') >= 0) return ICONOS_PILL.higiene;
+  return ICONOS_PILL.carpeta;
 }
 
 // ===== Detector tap / scroll =====
@@ -2435,7 +2436,13 @@ function crearBotonRapido(p, esGrupo, itemsGrupo) {
 
   const onTap = function () {
     if (esGrupo) {
-      mostrarVariantes(p, itemsGrupo);
+      // 👇 AQUÍ ESTÁ EL CAMBIO CLAVE 👇
+      // Si el grupo es de Combos, abrimos el constructor
+      if (norm_(p).indexOf('combo') >= 0) {
+        abrirConstructorCombo();
+      } else {
+        mostrarVariantes(p, itemsGrupo);
+      }
     } else {
       agregarProductoAlCarrito(p, 1);
       btn.classList.add('agregado');
@@ -2445,7 +2452,12 @@ function crearBotonRapido(p, esGrupo, itemsGrupo) {
 
   const onLongPress = function () {
     if (esGrupo) {
-      mostrarVariantes(p, itemsGrupo);
+      // Hacemos lo mismo para el tap largo (mantener presionado)
+      if (norm_(p).indexOf('combo') >= 0) {
+        abrirConstructorCombo();
+      } else {
+        mostrarVariantes(p, itemsGrupo);
+      }
     } else {
       if (navigator.vibrate) navigator.vibrate(80);
       abrirCobroRapido(p, 1);
@@ -3174,7 +3186,90 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// ===== LÓGICA PARA ARMAR COMBOS =====
+let comboEmpanada = null;
+let comboBebida = null;
 
+function abrirConstructorCombo() {
+  comboEmpanada = null;
+  comboBebida = null;
+  $('totalCombo').textContent = '$0';
+  $('btnAgregarCombo').disabled = true;
+
+  // Filtrar productos por categoría
+  const empanadas = productos.filter(p => norm_(p.categoria).indexOf('empanada') >= 0 && p.stock > 0);
+  const bebidas = productos.filter(p => norm_(p.categoria).indexOf('bebida') >= 0 && p.stock > 0);
+
+  const contEmp = $('listaEmpanadasCombo');
+  const contBeb = $('listaBebidasCombo');
+  contEmp.innerHTML = '';
+  contBeb.innerHTML = '';
+
+  function crearBotonCombo(p, tipo) {
+    const btn = document.createElement('button');
+    btn.className = 'btn-variante';
+    btn.style.flexDirection = 'column';
+    btn.style.padding = '8px';
+    btn.style.textAlign = 'center';
+    btn.innerHTML = `
+      <span class="icono-v" style="margin-bottom:4px;">${iconoParaProducto(p)}</span>
+      <span class="nom-v" style="font-size:11px; line-height:1.2;">${p.nombre}</span>
+      <span class="pre-v" style="font-size:12px;">${fmt(p.precio)}</span>
+    `;
+    btn.addEventListener('click', () => {
+      // Desmarcar otros del mismo tipo
+      const hermanos = (tipo === 'emp') ? contEmp.children : contBeb.children;
+      for (let h of hermanos) h.style.borderColor = 'transparent';
+      
+      btn.style.borderColor = 'var(--azul)';
+      if (tipo === 'emp') comboEmpanada = p;
+      else comboBebida = p;
+
+      // Calcular total
+      const total = (comboEmpanada ? comboEmpanada.precio : 0) + (comboBebida ? comboBebida.precio : 0);
+      $('totalCombo').textContent = fmt(total);
+      $('btnAgregarCombo').disabled = !(comboEmpanada && comboBebida);
+    });
+    return btn;
+  }
+
+  empanadas.forEach(p => contEmp.appendChild(crearBotonCombo(p, 'emp')));
+  bebidas.forEach(p => contBeb.appendChild(crearBotonCombo(p, 'beb')));
+
+  $('modalCombo').style.display = 'block';
+}
+
+$('btnCerrarCombo').addEventListener('click', () => {
+  $('modalCombo').style.display = 'none';
+});
+
+$('btnAgregarCombo').addEventListener('click', () => {
+  if (!comboEmpanada || !comboBebida) return;
+  
+  // Agregamos ambos productos individuales al carrito.
+  // Esto garantiza que el backend descuente el inventario correctamente.
+  agregarProductoAlCarrito(comboEmpanada, 1);
+  agregarProductoAlCarrito(comboBebida, 1);
+
+  $('modalCombo').style.display = 'none';
+  mostrar('Combo agregado: ' + comboEmpanada.nombre + ' + ' + comboBebida.nombre, 'ok');
+});
+
+// Modificar la función crearBotonRapido para detectar si es un grupo de Combos
+// Busca la función crearBotonRapido en tu código y cambia el onTap:
+// ...
+// const onTap = function () {
+//   if (esGrupo) {
+//     if (norm_(p).indexOf('combo') >= 0) {
+//       abrirConstructorCombo(); // <--- NUEVA LÍNEA
+//     } else {
+//       mostrarVariantes(p, itemsGrupo);
+//     }
+//   } else {
+//     agregarProductoAlCarrito(p, 1);
+//     // ...
+//   }
+// };
 
 
 
@@ -3183,5 +3278,33 @@ if ('serviceWorker' in navigator) {
 
 
 </script>
+<!-- Modal para armar Combos -->
+<div id="modalCombo" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:300; padding:20px; box-sizing:border-box; overflow-y:auto;">
+  <div style="max-width:480px; margin:40px auto; background:var(--superficie); color:var(--texto); border-radius:16px; padding:20px;">
+    <h3 style="margin-top:0; text-align:center;">🍔 Armar Combo</h3>
+    <p style="text-align:center; color:var(--texto-suave); font-size:14px;">Elige 1 Empanada y 1 Bebida</p>
+    
+    <div style="margin-bottom:15px;">
+      <label style="font-weight:700; font-size:13px;">1. Elige la Empanada</label>
+      <div id="listaEmpanadasCombo" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;"></div>
+    </div>
+
+    <div style="margin-bottom:15px;">
+      <label style="font-weight:700; font-size:13px;">2. Elige la Bebida</label>
+      <div id="listaBebidasCombo" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;"></div>
+    </div>
+
+    <div style="background:var(--superficie-2); padding:10px; border-radius:8px; margin-bottom:15px; text-align:center;">
+      <span style="font-size:12px; color:var(--texto-suave);">Total del Combo:</span>
+      <div id="totalCombo" style="font-size:22px; font-weight:800; color:var(--azul);">$0</div>
+    </div>
+
+    <button id="btnAgregarCombo" class="main" style="width:100%; padding:14px; font-size:16px; margin-bottom:8px;" disabled>Agregar Combo al Carrito</button>
+    <button id="btnCerrarCombo" style="width:100%; padding:12px;">Cancelar</button>
+  </div>
+</div>
+
+
+
 </body>
 </html>
